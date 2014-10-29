@@ -1,0 +1,11 @@
+{
+    "name": "PenguinGUI",
+    "version": "Beta v. Enraged Koala",
+    "path": ".",
+    "dependencies": [],
+    "metadata": {
+        "author": "PenguinToast",
+        "version": "0.1",
+        "description": "Retained-mode GUI library in LUA for canvases"
+    }
+}
