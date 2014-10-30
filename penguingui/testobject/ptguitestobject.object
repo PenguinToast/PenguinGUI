@@ -1,0 +1,32 @@
+{
+  "objectName" : "ptguitestobject",
+  "rarity" : "Rare",
+  "description" : "Testing object for the PenguinGUI library",
+  "shortdescription" : "Penguin GUI Test",
+  "race" : "generic",
+
+  "category" : "wire",
+  "price" : 1,
+  "printable" : false,
+
+  "inventoryIcon" : "ptguitestobjecticon.png",
+  "orientations" : [
+    {
+      "image" : "ptguitestobject.png:default.off",
+      "imagePosition" : [0, 0],
+
+      "spaceScan" : 0.1,
+      "direction" : "right"
+    }
+  ],
+
+  "scripts" : [ "/penguingui/Util.lua", "ptguitestobject.lua" ],
+  "scriptDelta" : 15,
+
+  "animation" : "/objects/wired/switch/switchtoggle.animation",
+
+  "animationParts" : {
+    "switch" : "ptguitestobject.png"
+  },
+  "animationPosition" : [0, 0]
+}
