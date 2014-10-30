@@ -1,3 +1,18 @@
+-- Get a list of all lua scripts in the PenguinGUI library.
+--
+-- @return A list of strings containing the paths to the PenguinGUI scripts.
+function penguinGuiLibrary()
+  return {
+    "/penguingui/Util.lua",
+    "/penguingui/GUI.lua",
+    "/penguingui/Component.lua",
+    "/penguingui/Button.lua",
+    "/penguingui/Label.lua",
+    "/penguingui/TextButton.lua"
+  }
+end
+
+-- Creates a new class with the specified superclass(es)
 function class(...)
   -- "cls" is the new class
   local cls, bases = {}, {...}
@@ -31,4 +46,46 @@ function class(...)
   )
   -- return the new class table, that's ready to fill with methods
   return cls
+end
+
+-- Dumps value as a string closely resemling Lua code that could be used to
+-- recreate it (with the exception of functions, threads and recursive tables).
+--
+-- Basic usage: dump(value)
+--
+-- @param value The value to be dumped.
+-- @param indent (optional) String used for indenting the dumped value.
+-- @param seen (optional) Table of already processed tables which will be
+--                        dumped as "{...}" to prevent infinite recursion.
+function dump(value, indent, seen)
+  if type(value) ~= "table" then
+    if type(value) == "string" then
+      return string.format('%q', value)
+    else
+      return tostring(value)
+    end
+  else
+    if type(seen) ~= "table" then
+      seen = {}
+    elseif seen[value] then
+      return "{...}"
+    end
+    seen[value] = true
+    indent = indent or ""
+    if next(value) == nil then
+      return "{}"
+    end
+    local str = "{"
+    local first = true
+    for k,v in pairs(value) do
+      if first then
+        first = false
+      else
+        str = str..","
+      end
+      str = str.."\n"..indent.."  ".."["..dump(k).."] = "..dump(v, indent.."  ")
+    end
+    str = str.."\n"..indent.."}"
+    return str
+  end
 end
