@@ -11,6 +11,16 @@ function GUI.add(component)
   GUI.components[#GUI.components + 1] = component
 end
 
+-- Sets the focus of the GUI to the component
+function GUI.setFocusedComponent(component)
+  local focusedComponent = GUI.focusedComponent
+  if focusedComponent then
+    focusedComponent.hasFocus = false
+  end
+  GUI.focusedComponent = component
+  component.hasFocus = true
+end
+
 -- Must be called in canvasClickEvent to handle mouse events.
 --
 -- @param position The position of the click.
@@ -18,13 +28,23 @@ end
 -- @param pressed Whether the event is pressed or released.
 function GUI.clickEvent(position, button, pressed)
   GUI.mouseState[button] = pressed
-  for _,component in ipairs(GUI.components) do
-    -- Only check bounds if the component has a clickEvent
-    if component.clickEvent then
-      if component:contains(position) then
-        component:clickEvent(position, button, pressed)
-      end
+  local components = GUI.components
+  for _,component in ipairs(components) do
+    GUI.clickEventHelper(component, position, button, pressed)
+  end
+end
+
+function GUI.clickEventHelper(component, position, button, pressed)
+  -- Only check bounds if the component has a clickEvent
+  if component.clickEvent then
+    if component:contains(position) then
+      GUI.setFocusedComponent(component)
+      component:clickEvent(position, button, pressed)
     end
+  end
+  local children = component.children
+  for _,child in ipairs(children) do
+    GUI.clickEventHelper(child, position, button, pressed)
   end
 end
 
@@ -34,6 +54,13 @@ end
 -- @param pressed Whether the key was pressed or released.
 function GUI.keyEvent(key, pressed)
   GUI.keyState[key] = pressed
+  local component = GUI.focusedComponent
+  if component then
+    local keyEvent = component.keyEvent
+    if keyEvent then
+      keyEvent(key, pressed)
+    end
+  end
 end
 
 -- Must be called in update to draw and update the GUI.

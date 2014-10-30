@@ -52,20 +52,16 @@ function Label:draw()
   Component.draw(self)
 end
 
--- Pixel widths of the first 255 characters. This was generated in Java, so the
--- numbers are slightly offset.
-Label.charWidths = {6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 6, 6, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 3, 6, 9, 8, 9, 9, 3, 5, 5, 6, 6, 5, 6, 3, 9, 8, 5, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 6, 6, 6, 8, 9, 8, 8, 6, 8, 6, 6, 8, 8, 6, 8, 8, 6, 9, 8, 8, 8, 8, 8, 8, 6, 8, 8, 9, 8, 8, 6, 5, 9, 5, 6, 8, 5, 8, 8, 6, 8, 8, 6, 8, 8, 3, 5, 8, 3, 9, 8, 8, 8, 8, 6, 8, 6, 8, 8, 9, 6, 8, 8, 6, 3, 6, 8, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6}
-
 -- Get the approximate pixel width of a string.
 --
 -- @param text The string to get the width of.
 -- @param fontSize The size of the font to get the width from.
 function Label.getStringWidth(text, fontSize)
-  local widths = Label.charWidths
-  local scale = (fontSize - 16) * 0.0625 + 1
+  local widths = PtUtil.getCharWidth
+  local scale = PtUtil.getFontScale(fontSize)
   local out = 0
   for i=1,#text,1 do
-    out = out + widths[string.byte(text, i)] + 2
+    out = out + widths(string.byte(text, i))
   end
   return out * scale
 end
