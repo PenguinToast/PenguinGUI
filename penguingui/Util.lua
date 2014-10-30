@@ -12,6 +12,25 @@ function penguinGuiLibrary()
   }
 end
 
+PtUtil = {}
+-- Pixel widths of the first 255 characters. This was generated in Java, so the
+-- numbers are slightly offset.
+PtUtil.charWidths = {6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 6, 6, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 3, 6, 9, 8, 9, 9, 3, 5, 5, 6, 6, 5, 6, 3, 9, 8, 5, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 6, 6, 6, 8, 9, 8, 8, 6, 8, 6, 6, 8, 8, 6, 8, 8, 6, 9, 8, 8, 8, 8, 8, 8, 6, 8, 8, 9, 8, 8, 6, 5, 9, 5, 6, 8, 5, 8, 8, 6, 8, 8, 6, 8, 8, 3, 5, 8, 3, 9, 8, 8, 8, 8, 6, 8, 6, 8, 8, 9, 6, 8, 8, 6, 3, 6, 8, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6}
+
+-- Gets the pixel width of the char of size 12.
+--
+-- @param char The character to get the width of.
+function PtUtil.getCharWidth(char)
+  return PtUtil.charWidths[char] + 2
+end
+
+-- Gets the scale of the specified font size.
+--
+-- @param size The font size to get the scale for
+function PtUtil.getFontScale(size)
+  return (size - 16) * 0.0625 + 1
+end
+
 -- Creates a new class with the specified superclass(es)
 function class(...)
   -- "cls" is the new class
