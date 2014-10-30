@@ -13,15 +13,21 @@ function penguinGuiLibrary()
 end
 
 PtUtil = {}
--- Pixel widths of the first 255 characters. This was generated in Java, so the
--- numbers are slightly offset.
-PtUtil.charWidths = {6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 6, 6, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 3, 6, 9, 8, 9, 9, 3, 5, 5, 6, 6, 5, 6, 3, 9, 8, 5, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 6, 6, 6, 8, 9, 8, 8, 6, 8, 6, 6, 8, 8, 6, 8, 8, 6, 9, 8, 8, 8, 8, 8, 8, 6, 8, 8, 9, 8, 8, 6, 5, 9, 5, 6, 8, 5, 8, 8, 6, 8, 8, 6, 8, 8, 3, 5, 8, 3, 9, 8, 8, 8, 8, 6, 8, 6, 8, 8, 9, 6, 8, 8, 6, 3, 6, 8, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6}
+-- Pixel widths of the first 255 characters. This was generated in Java.
+PtUtil.charWidths = {8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 8, 8, 0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 4, 8, 12, 10, 12, 12, 4, 6, 6, 8, 8, 6, 8, 4, 12, 10, 6, 10, 10, 10, 10, 10, 10, 10, 10, 4, 4, 8, 8, 8, 10, 12, 10, 10, 8, 10, 8, 8, 10, 10, 8, 10, 10, 8, 12, 10, 10, 10, 10, 10, 10, 8, 10, 10, 12, 10, 10, 8, 6, 12, 6, 8, 10, 6, 10, 10, 8, 10, 10, 8, 10, 10, 4, 6, 10, 4, 12, 10, 10, 10, 10, 8, 10, 8, 10, 10, 12, 8, 10, 10, 8, 4, 8, 10, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}
 
--- Gets the pixel width of the char of size 12.
+-- Get the approximate pixel width of a string.
 --
--- @param char The character to get the width of.
-function PtUtil.getCharWidth(char)
-  return PtUtil.charWidths[char] + 2
+-- @param text The string to get the width of.
+-- @param fontSize The size of the font to get the width from.
+function PtUtil.getStringWidth(text, fontSize)
+  local widths = PtUtil.charWidths
+  local scale = PtUtil.getFontScale(fontSize)
+  local out = 0
+  for i=1,#text,1 do
+    out = out + widths[string.byte(text, i)]
+  end
+  return out * scale
 end
 
 -- Gets the scale of the specified font size.

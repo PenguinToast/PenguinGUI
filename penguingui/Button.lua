@@ -51,8 +51,9 @@ function Button:draw()
   local innerBorderRect = {
     startX + 1, startY + 1, startX + w - 1, startY + h - 1
   }
+  local rectOffset = 1.5
   local rect = {
-    startX + 2, startY + 2, startX + w - 2, startY + h - 2
+    startX + rectOffset, startY + rectOffset, startX + w - rectOffset, startY + h - rectOffset
   }
 
   console.canvasDrawPoly(borderPoly, self.outerBorderColor)

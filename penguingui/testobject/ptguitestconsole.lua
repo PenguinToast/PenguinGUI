@@ -4,8 +4,12 @@ function init()
   testbutton.onClick = testButtonClick
   GUI.add(testbutton)
 
-  local testLabel = Label(10, 100, "Hello there!")
-  GUI.add(testLabel)
+  local lastY = 10
+  for i=5,20,1 do
+    local testLabel = Label(10, lastY, "Hello there!", i)
+    lastY = lastY + testLabel.height + 3
+    GUI.add(testLabel)
+  end
 
   for i=1,10,1 do
     local testTextButton = TextButton(170, i * 18, genString(i))
