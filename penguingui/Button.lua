@@ -22,7 +22,7 @@ function Button:_init(x, y, width, height)
   self.height = height
 end
 
-function Button:draw()
+function Button:draw(dt)
   if self.pressed then
     if self.mouseOver then
       self.x = self.x + 1
@@ -65,7 +65,7 @@ function Button:draw()
     console.canvasDrawRect(rect, self.color)
   end
   
-  Component.draw(self)
+  Component.draw(self, dt)
   
   if self.pressed then
     self.x = self.x - 1
@@ -79,4 +79,5 @@ function Button:clickEvent(position, button, pressed)
     self.onClick(self, button)
   end
   self.pressed = pressed
+  return true
 end

@@ -1,5 +1,9 @@
 -- Superclass for all GUI components.
 Component = class()
+Component.x = 0
+Component.y = 0
+Component.width = 0
+Component.height = 0
 
 -- Constructs a component.
 function Component:_init()
@@ -17,13 +21,13 @@ function Component:add(child)
 end
 
 -- Draws and updates the component, and any children.
-function Component:draw()
+function Component:draw(dt)
   for _,child in ipairs(self.children) do
     if self.layout then
       child:calculateOffset()
       child.layout = true
     end
-    child:draw()
+    child:draw(dt)
   end
   if self.layout then
     self.layout = nil

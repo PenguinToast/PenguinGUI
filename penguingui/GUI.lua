@@ -29,22 +29,40 @@ end
 function GUI.clickEvent(position, button, pressed)
   GUI.mouseState[button] = pressed
   local components = GUI.components
-  for _,component in ipairs(components) do
-    GUI.clickEventHelper(component, position, button, pressed)
+  local topFound = false
+  for index,component in ripairs(components) do
+    -- Focus top-level components
+    if not topFound then
+      if component:contains(position) then
+        table.remove(components, index)
+        components[#components + 1] = component
+        topFound = true
+      end
+    end
+    if GUI.clickEventHelper(component, position, button, pressed) then
+      -- The click was consumed
+      break
+    end
   end
 end
 
 function GUI.clickEventHelper(component, position, button, pressed)
+  local children = component.children
+  for _,child in ripairs(children) do
+    if GUI.clickEventHelper(child, position, button, pressed) then
+      -- The click was consumed
+      return true
+    end
+  end
   -- Only check bounds if the component has a clickEvent
   if component.clickEvent then
     if component:contains(position) then
       GUI.setFocusedComponent(component)
-      component:clickEvent(position, button, pressed)
+      if component:clickEvent(position, button, pressed) then
+        -- The click was consumed
+        return true
+      end
     end
-  end
-  local children = component.children
-  for _,child in ipairs(children) do
-    GUI.clickEventHelper(child, position, button, pressed)
   end
 end
 
