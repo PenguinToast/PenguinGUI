@@ -86,19 +86,26 @@ end
 -- @param dt The time elapsed since the last draw, in seconds.
 function GUI.draw(dt)
   GUI.mousePosition = console.canvasMousePosition()
+  local hoverComponent
   for _,component in ipairs(GUI.components) do
     -- Also check for hover functions
     if component.mouseOver ~= nil then
       if component:contains(GUI.mousePosition) then
-        component.mouseOver = true
+        hoverComponent = component
       else
         component.mouseOver = false
       end
     end
 
     if component.visible ~= false then
-      component:draw(dt)
+      local result = component:draw(dt)
+      if result then
+        hoverComponent = result
+      end
     end
+  end
+  if hoverComponent then
+    hoverComponent.mouseOver = true
   end
 end
 

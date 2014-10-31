@@ -1,15 +1,26 @@
 function init()
   storage = console.configParameter("scriptStorage")
+
+  local panel = Panel()
+  -- GUI.add(panel)
+  
   local testbutton = Button(100, 100, 50, 20)
   testbutton.onClick = testButtonClick
   GUI.add(testbutton)
 
-  testTextButton = TextButton(170, 50, "text", 100, 16)
-  GUI.add(testTextButton)
+  local frame = Frame()
+  frame.x = 100
+  frame.y = 50
+  GUI.add(frame)
+  testTextButton = TextButton(80, 20, "text", 100, 16)
+  frame:add(testTextButton)
   
-  local testField = TextField(100, 50, 50, 18, "text")
+  local testField = TextField(20, 20, 50, 16, "text")
   testField.onEnter = testFieldEnter
-  GUI.add(testField)
+  frame:add(testField)
+
+  frame.width = frame.width + 20
+  frame.height = frame.height + 20
 
   local lastY = 10
   for i=5,20,1 do

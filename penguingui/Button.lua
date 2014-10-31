@@ -65,13 +65,14 @@ function Button:draw(dt)
     PtUtil.fillRect(rect, self.color)
   end
   
-  Component.draw(self, dt)
+  local out = Component.draw(self, dt)
   
   if self.pressed then
     self.x = self.x - 1
     self.y = self.y + 1
     self.layout = true
   end
+  return out
 end
 
 function Button:clickEvent(position, button, pressed)
