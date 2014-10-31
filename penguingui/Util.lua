@@ -110,6 +110,19 @@ function PtUtil.getKey(key, shift, capslock)
   end
 end
 
+-- Does the same thing as ipairs, except backwards
+--
+-- @param t The table to iterate backwards over
+function ripairs(t)
+  local function ripairs_it(t,i)
+    i=i-1
+    local v=t[i]
+    if v==nil then return v end
+    return i,v
+  end
+  return ripairs_it, t, #t+1
+end
+
 -- Creates a new class with the specified superclass(es)
 function class(...)
   -- "cls" is the new class
@@ -148,6 +161,7 @@ end
 
 -- Dumps value as a string closely resemling Lua code that could be used to
 -- recreate it (with the exception of functions, threads and recursive tables).
+-- Credit to MrMagical.
 --
 -- Basic usage: dump(value)
 --

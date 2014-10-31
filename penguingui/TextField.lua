@@ -170,6 +170,8 @@ function TextField:clickEvent(position, button, pressed)
     totalWidth = totalWidth + charWidth
   end
   self:setCursorPosition(#text)
+
+  return true
 end
 
 function TextField:keyEvent(keyCode, pressed)

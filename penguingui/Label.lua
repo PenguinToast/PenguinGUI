@@ -34,7 +34,7 @@ function Label:recalculateBounds()
   self.height = self.fontSize
 end
 
-function Label:draw()
+function Label:draw(dt)
   local startX = self.x + self.offset[1]
   local startY = self.y + self.offset[2]
   
@@ -49,5 +49,5 @@ function Label:draw()
                     verticalAnchor = "bottom"
                              }, self.fontSize, self.fontColor)
 
-  Component.draw(self)
+  Component.draw(self, dt)
 end
