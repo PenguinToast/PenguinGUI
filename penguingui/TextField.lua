@@ -69,13 +69,13 @@ function TextField:draw(dt)
                   + (self.textClip or #text))
 
   -- Draw the text
-  console.canvasDrawText(text, {
-                           position = {
-                             startX + self.hPadding,
-                             startY + self.vPadding
-                           },
-                           verticalAnchor = "bottom"
-                               }, self.fontSize, textColor)
+  PtUtil.drawText(text, {
+                    position = {
+                      startX + self.hPadding,
+                      startY + self.vPadding
+                    },
+                    verticalAnchor = "bottom"
+                        }, self.fontSize, textColor)
 
   -- Text cursor
   if self.hasFocus then
