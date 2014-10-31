@@ -39,7 +39,7 @@ function Label:draw(dt)
   local startY = self.y + self.offset[2]
   
   --[[
-  console.canvasDrawRect(
+  PtUtil.fillRect(
     {startX, startY, startX + self.width, startY + self.height},
     "red")
   --]]

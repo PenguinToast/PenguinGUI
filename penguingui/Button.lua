@@ -56,13 +56,13 @@ function Button:draw(dt)
     startX + rectOffset, startY + rectOffset, startX + w - rectOffset, startY + h - rectOffset
   }
 
-  console.canvasDrawPoly(borderPoly, self.outerBorderColor)
+  PtUtil.fillPoly(borderPoly, self.outerBorderColor)
   if self.mouseOver then
-    console.canvasDrawRect(innerBorderRect, self.innerBorderHoverColor)
-    console.canvasDrawRect(rect, self.hoverColor)
+    PtUtil.fillRect(innerBorderRect, self.innerBorderHoverColor)
+    PtUtil.fillRect(rect, self.hoverColor)
   else
-    console.canvasDrawRect(innerBorderRect, self.innerBorderColor)
-    console.canvasDrawRect(rect, self.color)
+    PtUtil.fillRect(innerBorderRect, self.innerBorderColor)
+    PtUtil.fillRect(rect, self.color)
   end
   
   Component.draw(self, dt)
