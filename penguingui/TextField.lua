@@ -38,6 +38,8 @@ function TextField:draw(dt)
   local startY = self.y
   local w = self.width
   local h = self.height
+
+  -- Draw border and background
   local borderRect = {
     startX, startY, startX + w, startY + h
   }
@@ -48,9 +50,11 @@ function TextField:draw(dt)
   console.canvasDrawRect(backgroundRect, self.backgroundColor)
 
   local text = self.text
+  -- Decide if the default text should be displayed
   local default = (text == "") and (self.defaultText ~= nil)
   
   local textColor
+  -- Choose the color to draw the text with
   if self.mouseOver then
     textColor = default and self.defaultTextHoverColor or self.textHoverColor
   else
@@ -60,6 +64,7 @@ function TextField:draw(dt)
   local cursorPosition = self.cursorPosition
   text = default and self.defaultText or text
 
+  -- Draw the text
   console.canvasDrawText(text, {
                            position = {
                              startX + self.hPadding,
@@ -110,8 +115,18 @@ end
 
 function TextField:clickEvent(position, button, pressed)
   local xPos = position[1] - self.offset[1] - self.hPadding
-  
-  
+
+  local text = self.text
+  local totalWidth = 0
+  for i=1,#text,1 do
+    local charWidth = PtUtil.getStringWidth(text:sub(i, i), self.fontSize)
+    if xPos < (totalWidth + charWidth * 0.8) then
+      self:setCursorPosition(i - 1)
+      return
+    end
+    totalWidth = totalWidth + charWidth
+  end
+  self:setCursorPosition(#text)
 end
 
 function TextField:keyEvent(keyCode, pressed)
