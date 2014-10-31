@@ -1,12 +1,31 @@
 -- A window
 Frame = class(Panel)
 Frame.borderColor = "black"
-Frame.backgroundColor = "#545454"
+Frame.borderThickness = 1
+Frame.backgroundColor = "#232323"
 
 function Frame:_init()
-  Component._init(self)
+  Panel._init(self)
 end
 
 function Frame:draw(dt)
+  local startX = self.x - self.offset[1]
+  local startY = self.y - self.offset[2]
+  local w = self.width
+  local h = self.height
+  local border = self.borderThickness
   
+  local borderRect = {
+    startX, startY,
+    startX + w, startY + h
+  }
+  local backgroundRect = {
+    startX + border / 2, startY + border / 2,
+    startX + w - border / 2, startY + h - border / 2
+  }
+  
+  PtUtil.drawRect(borderRect, self.borderColor, border)
+  PtUtil.fillRect(backgroundRect, self.backgroundColor)
+
+  return Panel.draw(self, dt)
 end

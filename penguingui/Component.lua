@@ -22,16 +22,33 @@ end
 
 -- Draws and updates the component, and any children.
 function Component:draw(dt)
+  local hoverComponent
+  local layout = self.layout
   for _,child in ipairs(self.children) do
-    if self.layout then
+    if layout then
       child:calculateOffset()
       child.layout = true
     end
-    child:draw(dt)
+    if child.visible ~= false then
+      -- Also check for hover functions
+      if child.mouseOver ~= nil then
+        if child:contains(GUI.mousePosition) then
+          hoverComponent = child
+        else
+          child.mouseOver = false
+        end
+      end
+      
+      local result = child:draw(dt)
+      if result then
+        hoverComponent = result
+      end
+    end
   end
   if self.layout then
     self.layout = nil
   end
+  return hoverComponent
 end
 
 -- Sets the parent of this component, and updates the offset of this component.
@@ -40,19 +57,20 @@ end
 --               top level component.
 function Component:setParent(parent)
   self.parent = parent
-  self:calculateOffset()
+  -- self:calculateOffset()
+  parent.layout = true
 end
 
 -- Calculates the offset from the origin that this component should use, based
 -- on its parents.
 --
 -- @return The calculated offset.
-function Component:calculateOffset()
+function Component:calculateOffset(direction)
   local offset = self.offset
   
   local parent = self.parent
   if parent then
-    parent:calculateOffset()
+    -- parent:calculateOffset()
     offset[1] = parent.offset[1] + parent.x
     offset[2] = parent.offset[2] + parent.y
   else

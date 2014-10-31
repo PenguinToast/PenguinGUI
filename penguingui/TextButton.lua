@@ -15,6 +15,7 @@ function TextButton:_init(x, y, text, width, height, fontColor)
   local padding = 2
   local fontSize = height - padding * 2
   local label = Label(0, padding, text, fontSize, fontColor)
+  
   self.padding = padding
   self.label = label
   self:add(label)

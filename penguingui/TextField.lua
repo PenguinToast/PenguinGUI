@@ -36,8 +36,8 @@ function TextField:_init(x, y, width, height, defaultText)
 end
 
 function TextField:draw(dt)
-  local startX = self.x
-  local startY = self.y
+  local startX = self.x + self.offset[1]
+  local startY = self.y + self.offset[2]
   local w = self.width
   local h = self.height
 
@@ -98,7 +98,7 @@ function TextField:draw(dt)
     self.cursorTimer = timer
   end
   
-  Component.draw(self)
+  return Component.draw(self)
 end
 
 -- Set the character position of the text cursor.

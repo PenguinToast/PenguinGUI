@@ -49,5 +49,5 @@ function Label:draw(dt)
                     verticalAnchor = "bottom"
                              }, self.fontSize, self.fontColor)
 
-  Component.draw(self, dt)
+  return Component.draw(self, dt)
 end

@@ -6,6 +6,8 @@ function penguinGuiLibrary()
     "/penguingui/Util.lua",
     "/penguingui/GUI.lua",
     "/penguingui/Component.lua",
+    "/penguingui/Panel.lua",
+    "/penguingui/Frame.lua",
     "/penguingui/Button.lua",
     "/penguingui/Label.lua",
     "/penguingui/TextButton.lua",
@@ -127,17 +129,31 @@ end
 
 -- Draws a line.
 function PtUtil.drawLine(p1, p2, color, width)
-  console.canvasDrawLine(p1, p2, color, width)
+  console.canvasDrawLine(p1, p2, color, width * 2)
 end
 
 -- Draws a rectangle.
 function PtUtil.drawRect(rect, color, width)
-
+  local minX = rect[1]
+  local minY = rect[2]
+  local maxX = rect[3]
+  local maxY = rect[4]
+  local poly = {
+    {minX, minY},
+    {maxX, minY},
+    {maxX, maxY},
+    {minX, maxY}
+  }
+  PtUtil.drawPoly(poly, color, width)
 end
 
 -- Draws a polygon.
 function PtUtil.drawPoly(poly, color, width)
-
+  -- Draw lines
+  for i=1,#poly - 1,1 do
+    PtUtil.drawLine(poly[i], poly[i + 1], color, width)
+  end
+  PtUtil.drawLine(poly[#poly], poly[1], color, width)
 end
 
 -- Does the same thing as ipairs, except backwards
