@@ -8,7 +8,8 @@ function penguinGuiLibrary()
     "/penguingui/Component.lua",
     "/penguingui/Button.lua",
     "/penguingui/Label.lua",
-    "/penguingui/TextButton.lua"
+    "/penguingui/TextButton.lua",
+    "/penguingui/TextField.lua"
   }
 end
 
@@ -35,6 +36,62 @@ end
 -- @param size The font size to get the scale for
 function PtUtil.getFontScale(size)
   return (size - 16) * 0.0625 + 1
+end
+
+PtUtil.specialKeyMap = {
+  [8] = "backspace",
+  [13] = "enter",
+  [127] = "delete",
+  [275] = "right",
+  [276] = "left",
+  [278] = "home",
+  [279] = "end",
+  [301] = "capslock",
+  [303] = "shift",
+  [304] = "shift"
+}
+
+PtUtil.shiftKeyMap = {
+  [39] = "\"",
+  [44] = "<",
+  [45] = "_",
+  [46] = ">",
+  [47] = "?",
+  [48] = ")",
+  [49] = "!",
+  [50] = "@",
+  [51] = "#",
+  [52] = "$",
+  [53] = "%",
+  [54] = "^",
+  [55] = "&",
+  [56] = "*",
+  [57] = "(",
+  [59] = ":",
+  [61] = "+",
+  [91] = "{",
+  [92] = "|",
+  [93] = "}",
+  [96] = "~"
+}
+
+function PtUtil.getKey(key, shift, capslock)
+  if (capslock and not shift) or (shift and not capslock) then
+    if key >= 97 and key <= 122 then
+      return string.upper(string.char(key))
+    end
+  end
+  if shift and PtUtil.shiftKeyMap[key] then
+    return PtUtil.shiftKeyMap[key]
+  else
+    if key >= 32 and key <= 122 then
+      return string.char(key)
+    elseif PtUtil.specialKeyMap[key] then
+      return PtUtil.specialKeyMap[key]
+    else
+      return "unknown"
+    end
+  end
 end
 
 -- Creates a new class with the specified superclass(es)
