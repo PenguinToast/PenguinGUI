@@ -17,6 +17,22 @@ PtUtil = {}
 -- Pixel widths of the first 255 characters. This was generated in Java.
 PtUtil.charWidths = {8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 8, 8, 0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 4, 8, 12, 10, 12, 12, 4, 6, 6, 8, 8, 6, 8, 4, 12, 10, 6, 10, 10, 10, 10, 10, 10, 10, 10, 4, 4, 8, 8, 8, 10, 12, 10, 10, 8, 10, 8, 8, 10, 10, 8, 10, 10, 8, 12, 10, 10, 10, 10, 10, 10, 8, 10, 10, 12, 10, 10, 8, 6, 12, 6, 8, 10, 6, 10, 10, 8, 10, 10, 8, 10, 10, 4, 6, 10, 4, 12, 10, 10, 10, 10, 8, 10, 8, 10, 10, 12, 8, 10, 10, 8, 4, 8, 10, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}
 
+-- Draw the text string, offsetting the string to account for leading whitespace.
+--
+-- All parameters are identical to those of console.canvasDrawText
+function PtUtil.drawText(text, options, fontSize, color)
+  if text:sub(1, 1) == " " then
+    fontSize = fontSize or 16
+    local xOffset = PtUtil.getStringWidth(" ", fontSize)
+    local oldX = options.position[1]
+    options.position[1] = oldX + xOffset
+    console.canvasDrawText(text, options, fontSize, color)
+    options.position[1] = oldX
+  else
+    console.canvasDrawText(text, options, fontSize, color)
+  end
+end
+
 -- Get the approximate pixel width of a string.
 --
 -- @param text The string to get the width of.

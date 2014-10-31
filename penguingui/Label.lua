@@ -44,10 +44,10 @@ function Label:draw()
     "red")
   --]]
   
-  console.canvasDrawText(self.text, {
-                           position = {startX, startY},
-                           verticalAnchor = "bottom"
-                                    }, self.fontSize, self.fontColor)
+  PtUtil.drawText(self.text, {
+                    position = {startX, startY},
+                    verticalAnchor = "bottom"
+                             }, self.fontSize, self.fontColor)
 
   Component.draw(self)
 end
