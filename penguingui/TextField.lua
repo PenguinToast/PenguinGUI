@@ -30,6 +30,8 @@ function TextField:_init(x, y, width, height, defaultText)
   self.cursorTimer = self.cursorRate
   self.text = ""
   self.defaultText = defaultText
+  self.textOffset = 0
+  self.textClip = nil
   self.mouseOver = false
 end
 
@@ -62,7 +64,9 @@ function TextField:draw(dt)
   end
 
   local cursorPosition = self.cursorPosition
-  text = default and self.defaultText or text
+  text = default and self.defaultText
+    or text:sub(self.textOffset, self.textOffset
+                  + (self.textClip or #text))
 
   -- Draw the text
   console.canvasDrawText(text, {
@@ -103,9 +107,21 @@ end
 --            field.
 function TextField:setCursorPosition(pos)
   self.cursorPosition = pos
+
+  if pos < self.textOffset then
+    self.textOffset = pos
+  end
+  self:calculateTextClip()
+  local textClip = self.textClip
+  while (textClip) and (pos > self.textOffset + textClip) do
+    self.textOffset = self.textOffset + 1
+    self:calculateTextClip()
+    textClip = self.textClip
+  end
+  
   local text = self.text
   local cursorX = 0
-  for i=1,pos,1 do
+  for i=self.textOffset + 1,pos,1 do
     local charWidth = PtUtil.getStringWidth(text:sub(i, i), self.fontSize)
     cursorX = cursorX + charWidth
   end
@@ -113,12 +129,29 @@ function TextField:setCursorPosition(pos)
   self.cursorTimer = self.cursorRate
 end
 
+-- Calculates the text clip, i.e. how many characters to display.
+function TextField:calculateTextClip()
+  local maxX = self.width - self.hPadding * 2
+  local text = self.text
+  local totalWidth = 0
+  local startI = self.textOffset + 1
+  for i=startI,#text,1 do
+    totalWidth = totalWidth
+      + PtUtil.getStringWidth(text:sub(i, i), self.fontSize)
+    if totalWidth > maxX then
+      self.textClip = i - startI
+      return
+    end
+  end
+  self.textClip = nil
+end
+
 function TextField:clickEvent(position, button, pressed)
   local xPos = position[1] - self.offset[1] - self.hPadding
 
   local text = self.text
   local totalWidth = 0
-  for i=1,#text,1 do
+  for i=self.textOffset + 1,#text,1 do
     local charWidth = PtUtil.getStringWidth(text:sub(i, i), self.fontSize)
     if xPos < (totalWidth + charWidth * 0.8) then
       self:setCursorPosition(i - 1)
