@@ -58,13 +58,15 @@ function GUI.keyEvent(key, pressed)
   if component then
     local keyEvent = component.keyEvent
     if keyEvent then
-      keyEvent(key, pressed)
+      keyEvent(component, key, pressed)
     end
   end
 end
 
 -- Must be called in update to draw and update the GUI.
-function GUI.draw()
+--
+-- @param dt The time elapsed since the last draw, in seconds.
+function GUI.draw(dt)
   GUI.mousePosition = console.canvasMousePosition()
   for _,component in ipairs(GUI.components) do
     -- Also check for hover functions
@@ -77,7 +79,7 @@ function GUI.draw()
     end
 
     if component.visible ~= false then
-      component:draw()
+      component:draw(dt)
     end
   end
 end

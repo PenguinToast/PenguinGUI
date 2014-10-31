@@ -4,6 +4,9 @@ function init()
   testbutton.onClick = testButtonClick
   GUI.add(testbutton)
 
+  local testField = TextField(100, 50, 50, 18, "text")
+  GUI.add(testField)
+
   local lastY = 10
   for i=5,20,1 do
     local testLabel = Label(10, lastY, "Hello there!", i)
@@ -34,7 +37,7 @@ function syncStorage()
 end
 
 function update(dt)
-  GUI.draw()
+  GUI.draw(dt)
 end
 
 function canvasClickEvent(position, button, pressed)
