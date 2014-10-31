@@ -5,7 +5,7 @@ TextField.hPadding = 4
 TextField.borderColor = "#545454"
 TextField.backgroundColor = "black"
 TextField.textColor = "white"
-TextField.textHoverColor = "#777777"
+TextField.textHoverColor = "#999999"
 TextField.defaultTextColor = "#333333"
 TextField.defaultTextHoverColor = "#777777"
 TextField.cursorColor = "white"
@@ -65,7 +65,7 @@ function TextField:draw(dt)
 
   local cursorPosition = self.cursorPosition
   text = default and self.defaultText
-    or text:sub(self.textOffset, self.textOffset
+    or text:sub(self.textOffset + 1, self.textOffset
                   + (self.textClip or #text))
 
   -- Draw the text
@@ -118,6 +118,16 @@ function TextField:setCursorPosition(pos)
     self:calculateTextClip()
     textClip = self.textClip
   end
+  while self.textOffset > 0 and not textClip do
+    self.textOffset = self.textOffset - 1
+    self:calculateTextClip()
+    textClip = self.textClip
+    if textClip then
+      self.textOffset = self.textOffset + 1
+      self:calculateTextClip()
+    end
+  end
+  -- world.logInfo("cursor: %s, textOffset: %s, textClip: %s", pos, self.textOffset, self.textClip)
   
   local text = self.text
   local cursorX = 0
@@ -147,13 +157,13 @@ function TextField:calculateTextClip()
 end
 
 function TextField:clickEvent(position, button, pressed)
-  local xPos = position[1] - self.offset[1] - self.hPadding
+  local xPos = position[1] - self.x - self.offset[1] - self.hPadding
 
   local text = self.text
   local totalWidth = 0
   for i=self.textOffset + 1,#text,1 do
     local charWidth = PtUtil.getStringWidth(text:sub(i, i), self.fontSize)
-    if xPos < (totalWidth + charWidth * 0.8) then
+    if xPos < (totalWidth + charWidth * 0.6) then
       self:setCursorPosition(i - 1)
       return
     end
@@ -163,11 +173,15 @@ function TextField:clickEvent(position, button, pressed)
 end
 
 function TextField:keyEvent(keyCode, pressed)
-  if not pressed then
+  -- Ignore key releases and any keys pressed while ctrl or alt is held
+  local keyState = GUI.keyState
+  if not pressed
+    or keyState[305] or keyState[306]
+    or keyState[307] or keyState[308]
+  then
     return
   end
   
-  local keyState = GUI.keyState
   local shift = keyState[303] or keyState[304]
   local caps = keyState[301]
   local key = PtUtil.getKey(keyCode, shift, caps)
