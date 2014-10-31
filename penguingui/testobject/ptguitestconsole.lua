@@ -4,7 +4,11 @@ function init()
   testbutton.onClick = testButtonClick
   GUI.add(testbutton)
 
+  testTextButton = TextButton(170, 50, "text", 100, 16)
+  GUI.add(testTextButton)
+  
   local testField = TextField(100, 50, 50, 18, "text")
+  testField.onEnter = testFieldEnter
   GUI.add(testField)
 
   local lastY = 10
@@ -13,19 +17,10 @@ function init()
     lastY = lastY + testLabel.height + 3
     GUI.add(testLabel)
   end
-
-  for i=1,10,1 do
-    local testTextButton = TextButton(170, i * 18, genString(i))
-    GUI.add(testTextButton)
-  end
 end
 
-function genString(len)
-  local out = ""
-  for i=1,len,1 do
-    out = out .. i
-  end
-  return out
+function testFieldEnter(field)
+  testTextButton:setText(field.text)
 end
 
 function testButtonClick(button, mouseButton)
