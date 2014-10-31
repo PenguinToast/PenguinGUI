@@ -4,38 +4,39 @@ function init()
   local panel = Panel()
   -- GUI.add(panel)
   
-  local testbutton = Button(100, 100, 50, 20)
+  local testbutton = TextButton(10, 10, "Make window", 100, 16)
   testbutton.onClick = testButtonClick
   GUI.add(testbutton)
 
-  local frame = Frame()
-  frame.x = 100
-  frame.y = 50
-  GUI.add(frame)
-  testTextButton = TextButton(80, 20, "text", 100, 16)
-  frame:add(testTextButton)
-  
-  local testField = TextField(20, 20, 50, 16, "text")
-  testField.onEnter = testFieldEnter
-  frame:add(testField)
-
-  frame.width = frame.width + 20
-  frame.height = frame.height + 20
-
+  --[[
   local lastY = 10
   for i=5,20,1 do
     local testLabel = Label(10, lastY, "Hello there!", i)
     lastY = lastY + testLabel.height + 3
     GUI.add(testLabel)
   end
-end
-
-function testFieldEnter(field)
-  testTextButton:setText(field.text)
+  --]]
 end
 
 function testButtonClick(button, mouseButton)
-  world.logInfo("clicked")
+  local frame = Frame()
+  frame.x = 100
+  frame.y = 50
+  GUI.add(frame)
+  local testTextButton = TextButton(80, 20, "text", 100, 16)
+  testTextButton.onClick = function(button)
+    GUI.remove(frame)
+  end
+  frame:add(testTextButton)
+  
+  local testField = TextField(20, 20, 50, 16, "text")
+  testField.onEnter = function(field)
+    testTextButton:setText(field.text)
+  end
+  frame:add(testField)
+
+  frame.width = frame.width + 20
+  frame.height = frame.height + 20
 end
 
 function syncStorage()

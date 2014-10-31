@@ -11,6 +11,17 @@ function GUI.add(component)
   GUI.components[#GUI.components + 1] = component
 end
 
+-- Removes a component to be handled.
+function GUI.remove(component)
+  for index,comp in ripairs(GUI.components) do
+    if (comp == component) then
+      table.remove(GUI.components, index)
+      break
+    end
+  end
+  return component
+end
+
 -- Sets the focus of the GUI to the component
 function GUI.setFocusedComponent(component)
   local focusedComponent = GUI.focusedComponent
