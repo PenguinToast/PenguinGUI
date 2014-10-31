@@ -48,8 +48,8 @@ function TextField:draw(dt)
   local backgroundRect = {
     startX + 1, startY + 1, startX + w - 1, startY + h - 1
   }
-  console.canvasDrawRect(borderRect, self.borderColor)
-  console.canvasDrawRect(backgroundRect, self.backgroundColor)
+  PtUtil.fillRect(borderRect, self.borderColor)
+  PtUtil.fillRect(backgroundRect, self.backgroundColor)
 
   local text = self.text
   -- Decide if the default text should be displayed
@@ -89,7 +89,7 @@ function TextField:draw(dt)
     if timer > rate / 2 then -- Draw cursor
       local cursorX = startX + self.cursorX + self.hPadding
       local cursorY = startY + self.vPadding
-      console.canvasDrawLine({cursorX, cursorY},
+      PtUtil.drawLine({cursorX, cursorY},
         {cursorX, cursorY + h - self.vPadding * 2},
         self.cursorColor,
         1)

@@ -91,6 +91,11 @@ PtUtil.shiftKeyMap = {
   [96] = "~"
 }
 
+-- Gets a string representation of the keycode.
+--
+-- @param key The keycode of the key.
+-- @param shift Boolean representing whether or not shift is pressed.
+-- @param capslock Boolean representing whether or not capslock is on.
 function PtUtil.getKey(key, shift, capslock)
   if (capslock and not shift) or (shift and not capslock) then
     if key >= 97 and key <= 122 then
@@ -108,6 +113,31 @@ function PtUtil.getKey(key, shift, capslock)
       return "unknown"
     end
   end
+end
+
+-- Fills a rectangle.
+function PtUtil.fillRect(rect, color)
+  console.canvasDrawRect(rect, color)
+end
+
+-- Fills a polygon.
+function PtUtil.fillPoly(poly, color)
+  console.canvasDrawPoly(poly, color)
+end
+
+-- Draws a line.
+function PtUtil.drawLine(p1, p2, color, width)
+  console.canvasDrawLine(p1, p2, color, width)
+end
+
+-- Draws a rectangle.
+function PtUtil.drawRect(rect, color, width)
+
+end
+
+-- Draws a polygon.
+function PtUtil.drawPoly(poly, color, width)
+
 end
 
 -- Does the same thing as ipairs, except backwards
