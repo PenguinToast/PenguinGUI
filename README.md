@@ -3,5 +3,6 @@ PenguinGUI
 
 RMGUI library for Starbound lua canvases
 
-![Demo](http://giant.gfycat.com/WarlikeEdibleFishingcat.gif)
-
+Usage
+==========
+See /penguingui/testobject/ for example usage
