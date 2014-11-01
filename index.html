@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!Doctype html>
 <html>
   <head>
     <meta charset='utf-8'>
@@ -6,10 +6,23 @@
     <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css"
+          media="print">
+    <link rel="stylesheet" href="highlight/styles/github.css">
+    <script src="highlight/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+      (function(d, t) {
+      var g = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+      g.src = 'http://assets.gfycat.com/js/gfyajax-0.517d.js';
+      s.parentNode.insertBefore(g, s);
+      }(document, 'script'));
+    </script>
+
     <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
     <title>PenguinGUI by PenguinToast</title>
   </head>
 
@@ -23,8 +36,8 @@
         </header>
 
         <section id="downloads" class="clearfix">
-          <a href="https://github.com/PenguinToast/PenguinGUI/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
-          <a href="https://github.com/PenguinToast/PenguinGUI/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/PenguinToast/PenguinGUI/zipball/develop" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/PenguinToast/PenguinGUI/tarball/develop" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
           <a href="https://github.com/PenguinToast/PenguinGUI" id="view-on-github" class="button"><span>View on GitHub</span></a>
         </section>
 
@@ -32,9 +45,102 @@
 
         <section id="main_content">
           <h1>
-<a name="code-samples" class="anchor" href="#code-samples"><span class="octicon octicon-link"></span></a>Code Samples</h1>
+            <a name="code-samples" class="anchor" href="#code-samples"><span class="octicon octicon-link"></span></a>Code Samples</h1>
 
-<p>In your .object file:</p>
+          In your .object file:
+<pre><code>{
+  "scripts" : ["/penguingui/Util.lua", "/your/object/script.lua"]
+}</code></pre>
+</br>
+In your object script:
+<pre><code>function init(virtual)
+  if not virtual then
+    entity.setInteractive(true)
+  end
+end
+
+function onInteraction(args)
+  local consoleScripts = PtUtil.library()
+  consoleScripts[#consoleScripts + 1] = "/path/to/your/console/script.lua"
+  
+  local interactionConfig = {
+    gui = {
+      background = {
+        zlevel = 0,
+        type = "background",
+        fileHeader = "/path/to/header.png",
+        fileBody = "/path/to/body.png"
+      },
+      scriptCanvas = {
+        zlevel = 1,
+        type = "canvas",
+        rect = {xOffsetOfCanvas, yOffsetOfCanvas, canvasWidth, canvasHeight},
+        captureMouseEvents = true,
+        captureKeyboardEvents = true
+      },
+      close = {
+        zlevel = 2,
+        type = "button",
+        base = "/interface/cockpit/xup.png",
+        hover = "/interface/cockpit/xdown.png",
+        pressed = "/interface/cockpit/xdown.png",
+        callback = "close",
+        position = {419, 263},
+        pressedOffset = {0, -1}
+      }
+    },
+    
+    scripts = consoleScripts,
+    scriptDelta = 5,
+    scriptCanvas = "scriptCanvas"
+  }
+  
+  return {"ScriptConsole", interactionConfig}
+end</code></pre>
+</br>
+
+To make this:
+<img class="gfyitem" data-id="WarlikeEdibleFishingcat" />
+</br>
+In your console script:
+<pre><code>function init()
+  local testbutton = TextButton(10, 10, "Make window", 100, 16)
+  testbutton.onClick = testButtonClick
+  GUI.add(testbutton)
+end
+
+function testButtonClick(button, mouseButton)
+  local frame = Frame()
+  frame.x = 100
+  frame.y = 50
+  GUI.add(frame)
+  local testTextButton = TextButton(80, 20, "text", 100, 16)
+  testTextButton.onClick = function(button)
+    GUI.remove(frame)
+  end
+  frame:add(testTextButton)
+  
+  local testField = TextField(20, 20, 50, 16, "text")
+  testField.onEnter = function(field)
+    testTextButton:setText(field.text)
+  end
+  frame:add(testField)
+
+  frame.width = frame.width + 20
+  frame.height = frame.height + 20
+end
+
+function update(dt)
+  GUI.draw(dt)
+end
+
+function canvasClickEvent(position, button, pressed)
+  GUI.clickEvent(position, button, pressed)
+end
+
+function canvasKeyEvent(key, isKeyDown)
+  GUI.keyEvent(key, isKeyDown)
+end</code></pre>
         </section>
 
         <footer>
