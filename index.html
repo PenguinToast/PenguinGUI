@@ -49,7 +49,37 @@
 
           In your .object file:
 <pre><code>{
-  "scripts" : ["/penguingui/Util.lua", "/your/object/script.lua"]
+  "scripts" : ["/penguingui/Util.lua", "/your/object/script.lua"],
+  "interactionConfig" : {
+    "gui" : {
+      "background" : {
+        "zlevel" : 0,
+        "type" : "background",
+        "fileHeader" : "/path/to/header.png",
+        "fileBody" : "/path/to/body.png"
+      },
+      "scriptCanvas" : {
+        "zlevel" : 1,
+        "type" : "canvas",
+        "rect" : [canvasXOffset, canvasYOffset, canvasWidth, canvasHeight],
+        "captureMouseEvents" : true,
+        "captureKeyboardEvents" : true
+      },
+      "close" : {
+        "zlevel" : 2,
+        "type" : "button",
+        "base" : "/interface/cockpit/xup.png",
+        "hover" : "/interface/cockpit/xdown.png",
+        "pressed" : "/interface/cockpit/xdown.png",
+        "callback" : "close",
+        "position" : [closeButtonX, closeButtonY],
+        "pressedOffset" : [0, -1]
+      }
+    },
+    "scripts" : ["/path/to/your/console/script.lua"],
+    "scriptDelta" : 5,
+    "scriptCanvas" : "scriptCanvas"
+  }  
 }</code></pre>
 </br>
 In your object script:
@@ -60,40 +90,13 @@ In your object script:
 end
 
 function onInteraction(args)
-  local consoleScripts = PtUtil.library()
-  consoleScripts[#consoleScripts + 1] = "/path/to/your/console/script.lua"
+  local interactionConfig = entity.configParameter("interactionConfig")
   
-  local interactionConfig = {
-    gui = {
-      background = {
-        zlevel = 0,
-        type = "background",
-        fileHeader = "/path/to/header.png",
-        fileBody = "/path/to/body.png"
-      },
-      scriptCanvas = {
-        zlevel = 1,
-        type = "canvas",
-        rect = {xOffsetOfCanvas, yOffsetOfCanvas, canvasWidth, canvasHeight},
-        captureMouseEvents = true,
-        captureKeyboardEvents = true
-      },
-      close = {
-        zlevel = 2,
-        type = "button",
-        base = "/interface/cockpit/xup.png",
-        hover = "/interface/cockpit/xdown.png",
-        pressed = "/interface/cockpit/xdown.png",
-        callback = "close",
-        position = {419, 263},
-        pressedOffset = {0, -1}
-      }
-    },
-    
-    scripts = consoleScripts,
-    scriptDelta = 5,
-    scriptCanvas = "scriptCanvas"
-  }
+  local consoleScripts = PtUtil.library()
+  for _,script in ipairs(interactionConfig.scripts) do
+    table.insert(consoleScripts, script)
+  end
+  interactionConfig.scripts = consoleScripts
   
   return {"ScriptConsole", interactionConfig}
 end</code></pre>
