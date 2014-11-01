@@ -10,41 +10,16 @@ function onConsoleStorageRecieve(consoleStorage)
 end
 
 function onInteraction(args)
+  local interactionConfig = entity.configParameter("interactionConfig")
+  
   local consoleScripts = PtUtil.library()
-  consoleScripts[#consoleScripts + 1] = "/penguingui/testobject/ptguitestconsole.lua"
-  
-  local interactionConfig = {
-    gui = {
-      background = {
-        zlevel = 0,
-        type = "background",
-        fileHeader = "/testconsole/consoleheader.png",
-        fileBody = "/testconsole/consolebody.png"
-      },
-      scriptCanvas = {
-        zlevel = 1,
-        type = "canvas",
-        rect = {40, 45, 434, 254},
-        captureMouseEvents = true,
-        captureKeyboardEvents = true
-      },
-      close = {
-        zlevel = 2,
-        type = "button",
-        base = "/interface/cockpit/xup.png",
-        hover = "/interface/cockpit/xdown.png",
-        pressed = "/interface/cockpit/xdown.png",
-        callback = "close",
-        position = {419, 263},
-        pressedOffset = {0, -1}
-      }
-    },
-    
-    scripts = consoleScripts,
-    scriptDelta = 5,
-    scriptCanvas = "scriptCanvas"
-  }
-  
+  --consoleScripts[#consoleScripts + 1] = "/penguingui/testobject/ptguitestconsole.lua"
+
+    for _,script in ipairs(interactionConfig.scripts) do
+    table.insert(consoleScripts, script)
+  end
+  interactionConfig.scripts = consoleScripts
+
   interactionConfig.scriptStorage = storage.consoleStorage
   
   return {"ScriptConsole", interactionConfig}

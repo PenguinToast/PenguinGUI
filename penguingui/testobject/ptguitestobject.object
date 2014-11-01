@@ -28,5 +28,36 @@
   "animationParts" : {
     "switch" : "ptguitestobject.png"
   },
-  "animationPosition" : [0, 0]
+  "animationPosition" : [0, 0],
+
+  "interactionConfig" : {
+    "gui" : {
+      "background" : {
+        "zlevel" : 0,
+        "type" : "background",
+        "fileHeader" : "/testconsole/consoleheader.png",
+        "fileBody" : "/testconsole/consolebody.png"
+      },
+      "scriptCanvas" : {
+        "zlevel" : 1,
+        "type" : "canvas",
+        "rect" : [40, 45, 434, 254],
+        "captureMouseEvents" : true,
+        "captureKeyboardEvents" : true
+      },
+      "close" : {
+        "zlevel" : 2,
+        "type" : "button",
+        "base" : "/interface/cockpit/xup.png",
+        "hover" : "/interface/cockpit/xdown.png",
+        "pressed" : "/interface/cockpit/xdown.png",
+        "callback" : "close",
+        "position" : [419, 263],
+        "pressedOffset" : [0, -1]
+      }
+    },
+    "scripts" : ["/penguingui/testobject/ptguitestconsole.lua"],
+    "scriptDelta" : 5,
+    "scriptCanvas" : "scriptCanvas"
+  }
 }
