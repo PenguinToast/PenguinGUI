@@ -10,7 +10,7 @@ function onConsoleStorageRecieve(consoleStorage)
 end
 
 function onInteraction(args)
-  local consoleScripts = penguinGuiLibrary()
+  local consoleScripts = PtUtil.library()
   consoleScripts[#consoleScripts + 1] = "/penguingui/testobject/ptguitestconsole.lua"
   
   local interactionConfig = {

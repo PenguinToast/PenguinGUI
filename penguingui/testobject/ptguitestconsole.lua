@@ -1,21 +1,9 @@
 function init()
   storage = console.configParameter("scriptStorage")
-
-  local panel = Panel()
-  -- GUI.add(panel)
   
   local testbutton = TextButton(10, 10, "Make window", 100, 16)
   testbutton.onClick = testButtonClick
   GUI.add(testbutton)
-
-  --[[
-  local lastY = 10
-  for i=5,20,1 do
-    local testLabel = Label(10, lastY, "Hello there!", i)
-    lastY = lastY + testLabel.height + 3
-    GUI.add(testLabel)
-  end
-  --]]
 end
 
 function testButtonClick(button, mouseButton)
