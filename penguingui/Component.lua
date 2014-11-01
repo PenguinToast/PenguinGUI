@@ -20,6 +20,21 @@ function Component:add(child)
   child:setParent(self)
 end
 
+-- Removes a child component.
+--
+-- @param child The component to remove
+-- @return Whether or not the child was removed
+function Component:remove(child)
+  local children = self.children
+  for index,comp in ripairs(children) do
+    if (comp == child) then
+      table.remove(children, index)
+      return true
+    end
+  end
+  return false
+end
+
 -- Draws and updates the component, and any children.
 function Component:draw(dt)
   local hoverComponent

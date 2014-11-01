@@ -12,14 +12,16 @@ function GUI.add(component)
 end
 
 -- Removes a component to be handled.
+--
+-- @return Whether or not the component was removed
 function GUI.remove(component)
   for index,comp in ripairs(GUI.components) do
     if (comp == component) then
       table.remove(GUI.components, index)
-      break
+      return true
     end
   end
-  return component
+  return false
 end
 
 -- Sets the focus of the GUI to the component
