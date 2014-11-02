@@ -56,6 +56,60 @@
         <hr>
 
         <section id="main_content">
+          <h1>Usage</h1>
+Basic stuff needed for the GUI to work
+</br>
+In your console script:
+<pre><code>function update(dt)
+  GUI.draw(dt)
+end
+
+function canvasClickEvent(position, button, pressed)
+  GUI.clickEvent(position, button, pressed)
+end
+
+function canvasKeyEvent(key, isKeyDown)
+  GUI.keyEvent(key, isKeyDown)
+end</code></pre>
+</br>
+Create a simple button labeled "Button" that prints "hi" (In your console script):
+<pre><code>local testbutton = TextButton(10, 10, "Button", 100, 16)
+testbutton.onClick = function(button)
+  world.logInfo("hi")
+end
+GUI.add(testbutton)
+</code></pre>
+</br>
+Create a text field with default text "text" that prints whats in it when the
+user hits enter:
+<pre><code>local testfield = TextField(10, 10, 50, 16, "text")
+testfield.onEnter = function(field)
+  world.logInfo(field.text)
+end
+GUI.add(testfield)
+</code></pre>
+</br>
+Create a movable window that closes when a button on it is clicked:
+<pre><code>local frame = Frame()
+GUI.add(frame)
+    
+local testTextButton = TextButton(20, 20, "Close", 100, 16)
+testTextButton.onClick = function(button)
+  GUI.remove(frame)
+end
+frame:add(testTextButton)
+
+frame.width = frame.width + 20
+frame.height = frame.height + 20
+</code></pre>
+</br>
+For people unfamilar with lua,
+<pre><code class="lua">sometable:somefunction(args)</code></pre>
+is equivalent to
+<pre><code class="lua">sometable.somefunction(sometable, args)</code></pre>
+Generally, in this library, calls to functions in GUI will use the "." syntax,
+and calls to functions in any GUI component will use the ":" syntax.
+</br></br>
           <h1>
             <a name="code-samples" class="anchor" href="#code-samples"><span class="octicon octicon-link"></span></a>Code Samples</h1>
 
