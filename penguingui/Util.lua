@@ -16,6 +16,7 @@ function PtUtil.library()
     "/penguingui/Label.lua",
     "/penguingui/TextButton.lua",
     "/penguingui/TextField.lua",
+    "/penguingui/Image.lua",
     "/profilerapi.lua"
   }
 end
@@ -155,6 +156,11 @@ function PtUtil.drawPoly(poly, color, width)
     PtUtil.drawLine(poly[i], poly[i + 1], color, width)
   end
   PtUtil.drawLine(poly[#poly], poly[1], color, width)
+end
+
+-- Draws an image.
+function PtUtil.drawImage(image, position, scale)
+  console.canvasDrawImage(image, position, scale)
 end
 
 -- Does the same thing as ipairs, except backwards
