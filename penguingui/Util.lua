@@ -15,7 +15,8 @@ function PtUtil.library()
     "/penguingui/Button.lua",
     "/penguingui/Label.lua",
     "/penguingui/TextButton.lua",
-    "/penguingui/TextField.lua"
+    "/penguingui/TextField.lua",
+    "/profilerapi.lua"
   }
 end
 
@@ -23,7 +24,7 @@ end
 --
 -- All parameters are identical to those of console.canvasDrawText
 function PtUtil.drawText(text, options, fontSize, color)
-  if text:sub(1, 1) == " " then
+  if text:byte() == 32 then -- If it starts with a space, offset the string
     fontSize = fontSize or 16
     local xOffset = PtUtil.getStringWidth(" ", fontSize)
     local oldX = options.position[1]
