@@ -1,7 +1,7 @@
 function init()
   storage = console.configParameter("scriptStorage")
   
-  local testbutton = TextButton(10, 10, "Make window", 100, 16)
+  local testbutton = TextButton(10, 10, 100, 16, "Make window")
   testbutton.onClick = testButtonClick
   GUI.add(testbutton)
 end
@@ -22,7 +22,7 @@ function testButtonClick(button, mouseButton)
   frame:add(testField)
   
   testTextButton = TextButton(testField.width + 10 + padding,
-                                    padding, "text", 100, 16)
+                                    padding, 100, 16, "text")
   testTextButton.onClick = function(button)
     GUI.remove(frame)
   end

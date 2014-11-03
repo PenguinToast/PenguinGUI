@@ -5,12 +5,12 @@ TextButton = class(Button)
 --
 -- @param x The x coordinate of the new component, relative to its parent.
 -- @param y The y coordinate of the new component, relative to its parent.
--- @param text The text string to display on the button. The button's size will
---             be based on this string.
 -- @param width The width of the new component.
 -- @param height The height of the new component.
+-- @param text The text string to display on the button. The button's size will
+--             be based on this string.
 -- @param fontColor (optional) The color of the text to display, default white.
-function TextButton:_init(x, y, text, width, height, fontColor)
+function TextButton:_init(x, y, width, height, text, fontColor)
   Button._init(self, x, y, width, height)
   local padding = 2
   local fontSize = height - padding * 2
