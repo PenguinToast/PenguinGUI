@@ -1,3 +1,4 @@
+-- Credit to XspeedPL for writing this (I think)
 profilerApi = {
   hookedTables = {}
 }
