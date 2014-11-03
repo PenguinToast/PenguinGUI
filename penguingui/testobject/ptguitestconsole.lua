@@ -7,24 +7,28 @@ function init()
 end
 
 function testButtonClick(button, mouseButton)
+  local padding = 20
+  
   local frame = Frame()
   frame.x = 100
   frame.y = 50
   GUI.add(frame)
-  local testTextButton = TextButton(80, 20, "text", 100, 16)
-  testTextButton.onClick = function(button)
-    GUI.remove(frame)
-  end
-  frame:add(testTextButton)
-  
-  local testField = TextField(20, 20, 50, 16, "text")
+
+  local testTextButton
+  local testField = TextField(padding, padding, 50, 16, "text")
   testField.onEnter = function(field)
     testTextButton:setText(field.text)
   end
   frame:add(testField)
+  
+  testTextButton = TextButton(testField.width + 10 + padding,
+                                    padding, "text", 100, 16)
+  testTextButton.onClick = function(button)
+    GUI.remove(frame)
+  end
+  frame:add(testTextButton)
 
-  frame.width = frame.width + 20
-  frame.height = frame.height + 20
+  frame:pack(padding)
 end
 
 function syncStorage()

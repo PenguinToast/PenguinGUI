@@ -35,6 +35,22 @@ function Component:remove(child)
   return false
 end
 
+-- Resizes this component around its children.
+--
+-- @param padding (Optional) Amount of padding to put between the component's
+--                children and this component's borders.
+function Component:pack(padding)
+  local width = 0
+  local height = 0
+  for _,child in ipairs(self.children) do
+    width = math.max(width, child.x + child.width)
+    height = math.max(height, child.y + child.height)
+  end
+  padding = padding or 0
+  self.width = width + padding
+  self.height = height + padding
+end
+
 -- Draws and updates the component, and any children.
 function Component:draw(dt)
   local hoverComponent
