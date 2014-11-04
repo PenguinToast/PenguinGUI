@@ -95,27 +95,15 @@ function GUI.keyEvent(key, pressed)
   end
 end
 
--- Must be called in update to draw and update the GUI.
+-- Draws and updates every component managed by this GUI.
 --
 -- @param dt The time elapsed since the last draw, in seconds.
-function GUI.draw(dt)
+function GUI.step(dt)
   GUI.mousePosition = console.canvasMousePosition()
   local hoverComponent
   for _,component in ipairs(GUI.components) do
-    -- Also check for hover functions
-    if component.mouseOver ~= nil then
-      if component:contains(GUI.mousePosition) then
-        hoverComponent = component
-      else
-        component.mouseOver = false
-      end
-    end
-
     if component.visible ~= false then
-      local result = component:draw(dt)
-      if result then
-        hoverComponent = result
-      end
+      hoverComponent = component:step(dt) or hoverComponent
     end
   end
   if hoverComponent then

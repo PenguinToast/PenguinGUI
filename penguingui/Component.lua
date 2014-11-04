@@ -51,35 +51,43 @@ function Component:pack(padding)
   self.height = height + padding
 end
 
--- Draws and updates the component, and any children.
-function Component:draw(dt)
+-- Draws and updates this component, and any children.
+function Component:step(dt)
   local hoverComponent
+  if self.mouseOver ~= nil then
+    if self:contains(GUI.mousePosition) then
+      hoverComponent = self
+    else
+      self.mouseOver = false
+    end
+  end
+  
+  self:update(dt)
+  
   local layout = self.layout
+  if layout then
+    self:calculateOffset()
+    self.layout = false
+  end
+  self:draw(dt)
+  
   for _,child in ipairs(self.children) do
     if layout then
-      child:calculateOffset()
       child.layout = true
     end
     if child.visible ~= false then
-      -- Also check for hover functions
-      if child.mouseOver ~= nil then
-        if child:contains(GUI.mousePosition) then
-          hoverComponent = child
-        else
-          child.mouseOver = false
-        end
-      end
-      
-      local result = child:draw(dt)
-      if result then
-        hoverComponent = result
-      end
+      hoverComponent = child:step(dt) or hoverComponent
     end
   end
-  if self.layout then
-    self.layout = nil
-  end
   return hoverComponent
+end
+
+-- Updates this component
+function Component:update(dt)
+end
+
+-- Draws this component
+function Component:draw(dt)
 end
 
 -- Sets the parent of this component, and updates the offset of this component.

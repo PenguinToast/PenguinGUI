@@ -27,6 +27,4 @@ function Image:draw(dt)
   local scale = self.scale or 1
   
   PtUtil.drawImage(image, {startX, startY}, scale)
-  
-  return Component.draw(self, dt)
 end

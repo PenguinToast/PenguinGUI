@@ -23,11 +23,13 @@ function CheckBox:_init(x, y, size)
   self.selected = false
 end
 
-function CheckBox:draw(dt)
+function CheckBox:update(dt)
   if self.pressed and not self.mouseOver then
     self.pressed = false
   end
-  
+end
+
+function CheckBox:draw(dt)
   local startX = self.x + self.offset[1]
   local startY = self.y + self.offset[2]
   local w = self.width
@@ -47,17 +49,24 @@ function CheckBox:draw(dt)
 
   -- Draw check, if needed
   if self.selected then
-    PtUtil.drawLine(
-      {startX + w / 4, startY + w / 2},
-      {startX + w / 3, startY + h / 4},
-      self.checkColor, 1)
-    PtUtil.drawLine(
-      {startX + w / 3, startY + h / 4},
-      {startX + 3 * w / 4, startY + 3 * h / 4},
-      self.checkColor, 1)
+    self:drawCheck(dt)
   end
-  
-  return Component.draw(self, dt)
+end
+
+-- Draw the checkbox
+function CheckBox:drawCheck(dt)
+  local startX = self.x + self.offset[1]
+  local startY = self.y + self.offset[2]
+  local w = self.width
+  local h = self.height
+  PtUtil.drawLine(
+    {startX + w / 4, startY + w / 2},
+    {startX + w / 3, startY + h / 4},
+    self.checkColor, 1)
+  PtUtil.drawLine(
+    {startX + w / 3, startY + h / 4},
+    {startX + 3 * w / 4, startY + 3 * h / 4},
+    self.checkColor, 1)
 end
 
 function CheckBox:clickEvent(position, button, pressed)

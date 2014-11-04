@@ -38,16 +38,8 @@ function Label:draw(dt)
   local startX = self.x + self.offset[1]
   local startY = self.y + self.offset[2]
   
-  --[[
-  PtUtil.fillRect(
-    {startX, startY, startX + self.width, startY + self.height},
-    "red")
-  --]]
-  
   PtUtil.drawText(self.text, {
                     position = {startX, startY},
                     verticalAnchor = "bottom"
                              }, self.fontSize, self.fontColor)
-
-  return Component.draw(self, dt)
 end

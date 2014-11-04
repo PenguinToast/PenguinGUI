@@ -22,17 +22,13 @@ function Button:_init(x, y, width, height)
   self.height = height
 end
 
-function Button:draw(dt)
-  if self.pressed then
-    if self.mouseOver then
-      self.x = self.x + 1
-      self.y = self.y - 1
-      self.layout = true
-    else
-      self.pressed = false
-    end
+function Button:update(dt)
+  if self.pressed and not self.mouseOver then
+    self:setPressed(false)
   end
-  
+end
+
+function Button:draw(dt)
   local startX = self.x + self.offset[1]
   local startY = self.y + self.offset[2]
   local w = self.width
@@ -64,21 +60,26 @@ function Button:draw(dt)
     PtUtil.drawRect(innerBorderRect, self.innerBorderColor, 0.5)
     PtUtil.fillRect(rect, self.color)
   end
-  
-  local out = Component.draw(self, dt)
-  
-  if self.pressed then
+end
+
+function Button:setPressed(pressed)
+  if pressed and not self.pressed then
+    self.x = self.x + 1
+    self.y = self.y - 1
+    self.layout = true
+  end
+  if not pressed and self.pressed then
     self.x = self.x - 1
     self.y = self.y + 1
     self.layout = true
   end
-  return out
+  self.pressed = pressed
 end
 
 function Button:clickEvent(position, button, pressed)
   if self.onClick and not pressed and self.pressed then
     self:onClick(button)
   end
-  self.pressed = pressed
+  self:setPressed(pressed)
   return true
 end

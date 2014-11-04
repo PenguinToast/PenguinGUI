@@ -12,7 +12,7 @@ function Frame:_init(x, y)
   Panel._init(self, x, y)
 end
 
-function Frame:draw(dt)
+function Frame:update(dt)
   if self.dragging then
     if self.hasFocus then
       local mousePos = GUI.mousePosition
@@ -24,7 +24,9 @@ function Frame:draw(dt)
       self.dragging = false
     end
   end
-  
+end
+
+function Frame:draw(dt)
   local startX = self.x - self.offset[1]
   local startY = self.y - self.offset[2]
   local w = self.width
@@ -42,8 +44,6 @@ function Frame:draw(dt)
   
   PtUtil.drawRect(borderRect, self.borderColor, border)
   PtUtil.fillRect(backgroundRect, self.backgroundColor)
-
-  return Panel.draw(self, dt)
 end
 
 function Frame:clickEvent(position, button, pressed)

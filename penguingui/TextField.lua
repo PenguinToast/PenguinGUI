@@ -35,6 +35,18 @@ function TextField:_init(x, y, width, height, defaultText)
   self.mouseOver = false
 end
 
+function TextField:update(dt)
+  if self.hasFocus then
+    local timer = self.cursorTimer
+    local rate = self.cursorRate
+    timer = timer - dt
+    if timer < 0 then
+      timer = rate
+    end
+    self.cursorTimer = timer
+  end
+end
+
 function TextField:draw(dt)
   local startX = self.x + self.offset[1]
   local startY = self.y + self.offset[2]
@@ -81,10 +93,6 @@ function TextField:draw(dt)
   if self.hasFocus then
     local timer = self.cursorTimer
     local rate = self.cursorRate
-    timer = timer - dt
-    if timer < 0 then
-      timer = rate
-    end
 
     if timer > rate / 2 then -- Draw cursor
       local cursorX = startX + self.cursorX + self.hPadding
@@ -94,11 +102,7 @@ function TextField:draw(dt)
         self.cursorColor,
         1)
     end
-
-    self.cursorTimer = timer
   end
-  
-  return Component.draw(self)
 end
 
 -- Set the character position of the text cursor.

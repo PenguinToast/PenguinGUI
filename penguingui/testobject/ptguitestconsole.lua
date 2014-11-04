@@ -45,7 +45,7 @@ function syncStorage()
 end
 
 function update(dt)
-  GUI.draw(dt)
+  GUI.step(dt)
 end
 
 function canvasClickEvent(position, button, pressed)
