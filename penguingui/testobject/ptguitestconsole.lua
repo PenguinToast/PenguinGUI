@@ -4,14 +4,23 @@ function init()
   local testbutton = TextButton(10, 10, 100, 16, "Make window")
   testbutton.onClick = testButtonClick
   GUI.add(testbutton)
+
+  for i=1,5,1 do
+    local testCheck = RadioButton(10, 30 + 15 * i, 10)
+    GUI.add(testCheck)
+  end
+  local checkPanel = Panel(30, 30)
+  GUI.add(checkPanel)
+  for i=1,5,1 do
+    local testCheck = RadioButton(0, 15 * i, 10)
+    checkPanel:add(testCheck)
+  end
 end
 
 function testButtonClick(button, mouseButton)
   local padding = 20
   
-  local frame = Frame()
-  frame.x = 100
-  frame.y = 50
+  local frame = Frame(100, 50)
   GUI.add(frame)
 
   local testTextButton

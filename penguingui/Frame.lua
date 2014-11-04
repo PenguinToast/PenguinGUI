@@ -4,8 +4,12 @@ Frame.borderColor = "black"
 Frame.borderThickness = 1
 Frame.backgroundColor = "#232323"
 
-function Frame:_init()
-  Panel._init(self)
+-- Constructs a Frame.
+-- 
+-- @param x The x coordinate of the new component, relative to its parent.
+-- @param y The y coordinate of the new component, relative to its parent.
+function Frame:_init(x, y)
+  Panel._init(self, x, y)
 end
 
 function Frame:draw(dt)
@@ -32,8 +36,8 @@ function Frame:draw(dt)
     startX + w, startY + h
   }
   local backgroundRect = {
-    startX + border / 2, startY + border / 2,
-    startX + w - border / 2, startY + h - border / 2
+    startX + border, startY + border,
+    startX + w - border, startY + h - border
   }
   
   PtUtil.drawRect(borderRect, self.borderColor, border)
@@ -49,4 +53,5 @@ function Frame:clickEvent(position, button, pressed)
   else
     self.dragging = false
   end
+  return true
 end

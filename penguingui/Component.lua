@@ -89,7 +89,9 @@ end
 function Component:setParent(parent)
   self.parent = parent
   -- self:calculateOffset()
-  parent.layout = true
+  if parent then
+    parent.layout = true
+  end
 end
 
 -- Calculates the offset from the origin that this component should use, based

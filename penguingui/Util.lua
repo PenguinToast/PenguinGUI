@@ -17,6 +17,8 @@ function PtUtil.library()
     "/penguingui/TextButton.lua",
     "/penguingui/TextField.lua",
     "/penguingui/Image.lua",
+    "/penguingui/CheckBox.lua",
+    "/penguingui/RadioButton.lua",
     "/profilerapi.lua"
   }
 end
@@ -124,9 +126,11 @@ function PtUtil.fillRect(rect, color)
   console.canvasDrawRect(rect, color)
 end
 
+-- TODO - There is no way to fill a polygon yet.
 -- Fills a polygon.
 function PtUtil.fillPoly(poly, color)
-  console.canvasDrawPoly(poly, color)
+  console.logInfo("fillPoly is not functional yet")
+  -- console.canvasDrawPoly(poly, color)
 end
 
 -- Draws a line.
@@ -136,17 +140,30 @@ end
 
 -- Draws a rectangle.
 function PtUtil.drawRect(rect, color, width)
-  local minX = rect[1]
-  local minY = rect[2]
-  local maxX = rect[3]
-  local maxY = rect[4]
-  local poly = {
-    {minX, minY},
+  local minX = rect[1] + width / 2
+  local minY = math.floor((rect[2] + width / 2) * 2) / 2
+  local maxX = rect[3] - width / 2
+  local maxY = math.floor((rect[4] - width / 2) * 2) / 2
+  PtUtil.drawLine(
+    {minX - width / 2, minY},
+    {maxX + width / 2, minY},
+    color, width
+  )
+  PtUtil.drawLine(
     {maxX, minY},
     {maxX, maxY},
-    {minX, maxY}
-  }
-  PtUtil.drawPoly(poly, color, width)
+    color, width
+  )
+  PtUtil.drawLine(
+    {minX - width / 2, maxY},
+    {maxX + width / 2, maxY},
+    color, width
+  )
+  PtUtil.drawLine(
+    {minX, minY},
+    {minX, maxY},
+    color, width
+  )
 end
 
 -- Draws a polygon.

@@ -39,14 +39,14 @@ function Button:draw(dt)
   local h = self.height
   
   local borderPoly = {
-    {startX + 1, startY},
-    {startX + w - 1, startY},
-    {startX + w, startY + 1},
-    {startX + w, startY + h - 1},
-    {startX + w - 1, startY + h},
-    {startX + 1, startY + h},
-    {startX, startY + h - 1},
-    {startX, startY + 1},
+    {startX + 1, startY + 0.5},
+    {startX + w - 1, startY + 0.5},
+    {startX + w - 0.5, startY + 1},
+    {startX + w - 0.5, startY + h - 1},
+    {startX + w - 1, startY + h - 0.5},
+    {startX + 1, startY + h - 0.5},
+    {startX + 0.5, startY + h - 1},
+    {startX + 0.5, startY + 1},
   }
   local innerBorderRect = {
     startX + 1, startY + 1, startX + w - 1, startY + h - 1
@@ -56,12 +56,12 @@ function Button:draw(dt)
     startX + rectOffset, startY + rectOffset, startX + w - rectOffset, startY + h - rectOffset
   }
 
-  PtUtil.fillPoly(borderPoly, self.outerBorderColor)
+  PtUtil.drawPoly(borderPoly, self.outerBorderColor, 1)
   if self.mouseOver then
-    PtUtil.fillRect(innerBorderRect, self.innerBorderHoverColor)
+    PtUtil.drawRect(innerBorderRect, self.innerBorderHoverColor, 0.5)
     PtUtil.fillRect(rect, self.hoverColor)
   else
-    PtUtil.fillRect(innerBorderRect, self.innerBorderColor)
+    PtUtil.drawRect(innerBorderRect, self.innerBorderColor, 0.5)
     PtUtil.fillRect(rect, self.color)
   end
   
@@ -77,7 +77,7 @@ end
 
 function Button:clickEvent(position, button, pressed)
   if self.onClick and not pressed and self.pressed then
-    self.onClick(self, button)
+    self:onClick(button)
   end
   self.pressed = pressed
   return true

@@ -9,6 +9,7 @@ GUI = {
 -- Add a new top-level component to be handled by PenguinGUI.
 function GUI.add(component)
   GUI.components[#GUI.components + 1] = component
+  component:setParent(nil)
 end
 
 -- Removes a component to be handled.
