@@ -298,17 +298,15 @@ To make this:
 </br>
 In your console script:
 <pre><code>function init()
-  local testbutton = TextButton(10, 10, "Make window", 100, 16)
+  local testbutton = TextButton(10, 10, 100, 16, "Make window")
   testbutton.onClick = testButtonClick
   GUI.add(testbutton)
 end
 
 function testButtonClick(button, mouseButton)
-  local frame = Frame()
-  frame.x = 100
-  frame.y = 50
+  local frame = Frame(100, 50)
   GUI.add(frame)
-  local testTextButton = TextButton(80, 20, "text", 100, 16)
+  local testTextButton = TextButton(80, 20, 100, 16, "text")
   testTextButton.onClick = function(button)
     GUI.remove(frame)
   end
@@ -320,8 +318,7 @@ function testButtonClick(button, mouseButton)
   end
   frame:add(testField)
 
-  frame.width = frame.width + 20
-  frame.height = frame.height + 20
+  frame:pack(20)
 end
 
 function update(dt)
