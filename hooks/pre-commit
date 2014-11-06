@@ -1,0 +1,33 @@
+#!/bin/bash
+
+scripts=$(awk '
+BEGIN {inLibrary=0;}
+{
+  if (inLibrary == 1) {
+    if ($1 != "return" && $1 != "}") {
+      if ($1 == "end") {
+        inLibrary=0;
+      } else {
+        script=substr($1,3)
+        gsub(/"|,/, "", script)
+        print script;
+      }
+    }
+  } else {
+    if ($2 == "PtUtil.library()") {
+      inLibrary=1;
+    }
+  }
+}' penguingui/Util.lua)
+
+echo -e "-- This script contains all the scripts in this library, so you only need to\n-- include this script for production purposes." > penguingui.lua
+for filename in $scripts; do
+    printf "\n" >> penguingui.lua
+    for i in {1..80}; do printf "-" >> penguingui.lua; done
+    printf "\n-- $(basename $filename)\n" >> penguingui.lua
+    for i in {1..80}; do printf "-" >> penguingui.lua; done
+    printf "\n\n" >> penguingui.lua
+    cat $filename >> penguingui.lua
+done
+
+git add penguingui.lua

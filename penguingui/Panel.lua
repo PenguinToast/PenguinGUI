@@ -1,4 +1,4 @@
--- A group of components
+-- A group of components, will eventually manage layouts (TODO).
 Panel = class(Component)
 
 -- Constructs a Panel.

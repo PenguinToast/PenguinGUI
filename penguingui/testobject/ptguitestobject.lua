@@ -11,14 +11,16 @@ end
 
 function onInteraction(args)
   local interactionConfig = entity.configParameter("interactionConfig")
-  
-  local consoleScripts = PtUtil.library()
-  --consoleScripts[#consoleScripts + 1] = "/penguingui/testobject/ptguitestconsole.lua"
 
+  local development = true
+  if development then
+    local consoleScripts = PtUtil.library()
     for _,script in ipairs(interactionConfig.scripts) do
-    table.insert(consoleScripts, script)
+      table.insert(consoleScripts, script)
+    end
+  else
+    table.insert(interactionConfig.scripts, 1, "/penguingui.lua")
   end
-  interactionConfig.scripts = consoleScripts
 
   interactionConfig.scriptStorage = storage.consoleStorage
   
