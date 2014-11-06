@@ -267,7 +267,7 @@ panel:add(RadioButton(0, 20, 16))
         "pressedOffset" : [0, -1]
       }
     },
-    "scripts" : ["/path/to/your/console/script.lua"],
+    "scripts" : ["/path/to/penguingui.lua", "/path/to/your/console/script.lua"],
     "scriptDelta" : 5,
     "scriptCanvas" : "scriptCanvas"
   }  
@@ -282,13 +282,6 @@ end
 
 function onInteraction(args)
   local interactionConfig = entity.configParameter("interactionConfig")
-  
-  local consoleScripts = PtUtil.library()
-  for _,script in ipairs(interactionConfig.scripts) do
-    table.insert(consoleScripts, script)
-  end
-  interactionConfig.scripts = consoleScripts
-  
   return {"ScriptConsole", interactionConfig}
 end</code></pre>
 </br>
