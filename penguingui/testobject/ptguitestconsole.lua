@@ -25,9 +25,6 @@ function testButtonClick(button, mouseButton)
 
   local testTextButton
   local testField = TextField(padding, padding, 50, 16, "text")
-  testField.onEnter = function(field)
-    testTextButton:setText(field.text)
-  end
   frame:add(testField)
   
   testTextButton = TextButton(testField.width + 10 + padding,
@@ -36,6 +33,8 @@ function testButtonClick(button, mouseButton)
     GUI.remove(frame)
   end
   frame:add(testTextButton)
+
+  testField:bind("text", testTextButton, {"text"})
 
   frame:pack(padding)
 end

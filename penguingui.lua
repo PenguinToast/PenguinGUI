@@ -204,12 +204,14 @@ end
 function class(...)
   -- "cls" is the new class
   local cls, bases = {}, {...}
+  
   -- copy base class contents into the new class
   for i, base in ipairs(bases) do
     for k, v in pairs(base) do
       cls[k] = v
     end
   end
+  
   -- set the class's __index, and start filling an "is_a" table that contains this class and all of its bases
   -- so you can do an "instance of" check using my_instance.is_a[MyClass]
   cls.__index, cls.is_a = cls, {[cls] = true}
@@ -225,10 +227,39 @@ function class(...)
     {
       __call = function (c, ...)
         local instance = setmetatable({}, c)
+        local proxy = setmetatable(
+          {},
+          {
+            __index = function(t, k)
+              return instance[k]
+            end,
+            __newindex = function(t, k, v)
+              local old = instance[k]
+              local listeners = instance.listeners
+              local new = v
+              instance[k] = new
+              if listeners and listeners[k] then
+                if old ~= v then
+                  local keyListeners = listeners[k]
+                  for _,keyListener in ipairs(keyListeners) do
+                    keyListener(instance, k, old, v)
+                  end
+                end
+              end
+            end,
+            __pairs = function(t)
+              return pairs(instance)
+            end,
+            __ipairs = function(t)
+              return ipairs(instance)
+            end
+          }
+        )
+        
         -- run the init method if it's there
         local init = instance._init
         if init then init(instance, ...) end
-        return instance
+        return proxy
       end
     }
   )
@@ -541,6 +572,48 @@ function Component:contains(position)
   return false
 end
 
+-- Adds a listener to the specified key that is called when the key's value
+-- changes.
+--
+-- @param key The key to track changes to
+-- @param listener The function to call upon the value of the key changing.
+--      The function should have the arguments (t, k, old, new) where:
+--           t is the table in which the change happened.
+--           k is the key whose value changed.
+--           old is the old value of the key.
+--           new is the new value of the key.
+function Component:addListener(key, listener)
+  local listeners = self.listeners
+  if not listeners then
+    listeners = {}
+    self.listeners = listeners
+  end
+  local keyListeners = listeners[key]
+  if not keyListeners then
+    keyListeners = {}
+    listeners[key] = keyListeners
+  end
+  table.insert(keyListeners, listener)
+end
+
+-- Binds the target value to the source value.
+--
+-- @param sourceKey The name of the key to be bound by.
+-- @param targetComponent The target table to bind.
+-- @param targetKey The target key to bind.
+function Component:bind(sourceKey, targetComponent, targetKey)
+  local targetLen = #targetKey
+  self:addListener(
+    sourceKey,
+    function(t, k, old, new)
+      local targetTable = targetComponent
+      for i=1,targetLen - 1,1 do
+        targetTable = targetTable[targetKey[i]]
+      end
+      targetTable[targetKey[targetLen]] = new
+    end
+  )
+end
 
 --------------------------------------------------------------------------------
 -- Panel.lua
@@ -722,6 +795,13 @@ end
 
 -- A text label for displaying text.
 Label = class(Component)
+Label.listeners = {
+  text = {
+    function(t, k, old, new)
+      t:recalculateBounds()
+    end
+  }
+}
 
 -- Constructs a new Label.
 --
@@ -739,14 +819,6 @@ function Label:_init(x, y, text, fontSize, fontColor)
   self.text = text
   self.x = x
   self.y = y
-  self:recalculateBounds()
-end
-
--- Set the text of the label, and recalculates its bounds
---
--- @param text The new text for the label to display.
-function Label:setText(text)
-  self.text = text
   self:recalculateBounds()
 end
 
@@ -772,6 +844,15 @@ end
 
 -- A button that has a text label.
 TextButton = class(Button)
+TextButton.listeners = {
+  text = {
+    function(t, k, old, new)
+      local label = t.label
+      label.text = new
+      t:repositionLabel()
+    end
+  }
+}
 
 -- Constructs a button with a text label.
 --
@@ -799,15 +880,6 @@ end
 function TextButton:repositionLabel()
   local label = self.label
   label.x = (self.width - label.width) / 2
-end
-
--- Set the text of the textButton, and recalculates its bounds
---
--- @param text The new text for the button to display.
-function TextButton:setText(text)
-  local label = self.label
-  label:setText(text)
-  self:repositionLabel()
 end
 
 --------------------------------------------------------------------------------

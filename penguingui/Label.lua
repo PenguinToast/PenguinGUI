@@ -1,5 +1,12 @@
 -- A text label for displaying text.
 Label = class(Component)
+Label.listeners = {
+  text = {
+    function(t, k, old, new)
+      t:recalculateBounds()
+    end
+  }
+}
 
 -- Constructs a new Label.
 --
@@ -17,14 +24,6 @@ function Label:_init(x, y, text, fontSize, fontColor)
   self.text = text
   self.x = x
   self.y = y
-  self:recalculateBounds()
-end
-
--- Set the text of the label, and recalculates its bounds
---
--- @param text The new text for the label to display.
-function Label:setText(text)
-  self.text = text
   self:recalculateBounds()
 end
 

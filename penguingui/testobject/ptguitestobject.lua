@@ -18,6 +18,7 @@ function onInteraction(args)
     for _,script in ipairs(interactionConfig.scripts) do
       table.insert(consoleScripts, script)
     end
+    interactionConfig.scripts = consoleScripts
   else
     table.insert(interactionConfig.scripts, 1, "/penguingui.lua")
   end

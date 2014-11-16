@@ -138,3 +138,45 @@ function Component:contains(position)
   return false
 end
 
+-- Adds a listener to the specified key that is called when the key's value
+-- changes.
+--
+-- @param key The key to track changes to
+-- @param listener The function to call upon the value of the key changing.
+--      The function should have the arguments (t, k, old, new) where:
+--           t is the table in which the change happened.
+--           k is the key whose value changed.
+--           old is the old value of the key.
+--           new is the new value of the key.
+function Component:addListener(key, listener)
+  local listeners = self.listeners
+  if not listeners then
+    listeners = {}
+    self.listeners = listeners
+  end
+  local keyListeners = listeners[key]
+  if not keyListeners then
+    keyListeners = {}
+    listeners[key] = keyListeners
+  end
+  table.insert(keyListeners, listener)
+end
+
+-- Binds the target value to the source value.
+--
+-- @param sourceKey The name of the key to be bound by.
+-- @param targetComponent The target table to bind.
+-- @param targetKey The target key to bind.
+function Component:bind(sourceKey, targetComponent, targetKey)
+  local targetLen = #targetKey
+  self:addListener(
+    sourceKey,
+    function(t, k, old, new)
+      local targetTable = targetComponent
+      for i=1,targetLen - 1,1 do
+        targetTable = targetTable[targetKey[i]]
+      end
+      targetTable[targetKey[targetLen]] = new
+    end
+  )
+end

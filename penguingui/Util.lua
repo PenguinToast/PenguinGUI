@@ -197,12 +197,14 @@ end
 function class(...)
   -- "cls" is the new class
   local cls, bases = {}, {...}
+  
   -- copy base class contents into the new class
   for i, base in ipairs(bases) do
     for k, v in pairs(base) do
       cls[k] = v
     end
   end
+  
   -- set the class's __index, and start filling an "is_a" table that contains this class and all of its bases
   -- so you can do an "instance of" check using my_instance.is_a[MyClass]
   cls.__index, cls.is_a = cls, {[cls] = true}
@@ -218,10 +220,39 @@ function class(...)
     {
       __call = function (c, ...)
         local instance = setmetatable({}, c)
+        local proxy = setmetatable(
+          {},
+          {
+            __index = function(t, k)
+              return instance[k]
+            end,
+            __newindex = function(t, k, v)
+              local old = instance[k]
+              local listeners = instance.listeners
+              local new = v
+              instance[k] = new
+              if listeners and listeners[k] then
+                if old ~= v then
+                  local keyListeners = listeners[k]
+                  for _,keyListener in ipairs(keyListeners) do
+                    keyListener(instance, k, old, v)
+                  end
+                end
+              end
+            end,
+            __pairs = function(t)
+              return pairs(instance)
+            end,
+            __ipairs = function(t)
+              return ipairs(instance)
+            end
+          }
+        )
+        
         -- run the init method if it's there
         local init = instance._init
         if init then init(instance, ...) end
-        return instance
+        return proxy
       end
     }
   )

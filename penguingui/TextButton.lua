@@ -1,5 +1,14 @@
 -- A button that has a text label.
 TextButton = class(Button)
+TextButton.listeners = {
+  text = {
+    function(t, k, old, new)
+      local label = t.label
+      label.text = new
+      t:repositionLabel()
+    end
+  }
+}
 
 -- Constructs a button with a text label.
 --
@@ -27,13 +36,4 @@ end
 function TextButton:repositionLabel()
   local label = self.label
   label.x = (self.width - label.width) / 2
-end
-
--- Set the text of the textButton, and recalculates its bounds
---
--- @param text The new text for the button to display.
-function TextButton:setText(text)
-  local label = self.label
-  label:setText(text)
-  self:repositionLabel()
 end
