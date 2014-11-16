@@ -142,7 +142,7 @@ end
     sets its text to "hi" on click
 <pre><code>local testbutton = TextButton(10, 10, 100, 16, "Button")
 testbutton.onClick = function(button)
-  testbutton:setText("hi")
+  testbutton.text = "hi"
 end
 </code></pre>
 <img class="gfyitem" data-id="GrayGoodCanadagoose" />
@@ -307,7 +307,7 @@ function testButtonClick(button, mouseButton)
   
   local testField = TextField(20, 20, 50, 16, "text")
   testField.onEnter = function(field)
-    testTextButton:setText(field.text)
+    testTextButton.text = field.text
   end
   frame:add(testField)
 
