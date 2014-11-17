@@ -8,6 +8,7 @@ PtUtil.charWidths = {8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 8, 8, 0, 8, 8, 8, 8, 8, 8, 8,
 function PtUtil.library()
   return {
     "/penguingui/Util.lua",
+    "/penguingui/Bindings.lua",
     "/penguingui/GUI.lua",
     "/penguingui/Component.lua",
     "/penguingui/Panel.lua",
@@ -220,39 +221,12 @@ function class(...)
     {
       __call = function (c, ...)
         local instance = setmetatable({}, c)
-        local proxy = setmetatable(
-          {},
-          {
-            __index = function(t, k)
-              return instance[k]
-            end,
-            __newindex = function(t, k, v)
-              local old = instance[k]
-              local listeners = instance.listeners
-              local new = v
-              instance[k] = new
-              if listeners and listeners[k] then
-                if old ~= v then
-                  local keyListeners = listeners[k]
-                  for _,keyListener in ipairs(keyListeners) do
-                    keyListener(instance, k, old, v)
-                  end
-                end
-              end
-            end,
-            __pairs = function(t)
-              return pairs(instance)
-            end,
-            __ipairs = function(t)
-              return ipairs(instance)
-            end
-          }
-        )
+        instance = Binding.proxy(instance)
         
         -- run the init method if it's there
         local init = instance._init
         if init then init(instance, ...) end
-        return proxy
+        return instance
       end
     }
   )

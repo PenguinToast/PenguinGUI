@@ -34,7 +34,9 @@ function testButtonClick(button, mouseButton)
   end
   frame:add(testTextButton)
 
-  testField:bind("text", testTextButton, {"text"})
+  Binding.bind(testTextButton, "text", Binding(testField, "text"))
+  Binding.bind(testField, "defaultText", Binding(frame, "x"):add(Binding(frame, "y")):tostring())
+  -- testField:bind("text", testTextButton, {"text"})
 
   frame:pack(padding)
 end
