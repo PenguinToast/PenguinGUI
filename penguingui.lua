@@ -383,18 +383,48 @@ function Binding.valueTable:addValueListener(listener)
 end
 
 function Binding.value(t, k)
+  local out = Binding.proxy(setmetatable({}, Binding.valueTable))
   if type(k) == "string" then -- Single key
-    local value = Binding.proxy(setmetatable({}, Binding.valueTable))
-    value.value = t[k]
+    out.value = t[k]
     t:addListener(
       k,
       function(t, k, old, new)
-        value.value = new
+        out.value = new
       end
     )
-    return value
-  else -- Table of keys TODO
-    
+    return out
+  else -- Table of keys TODO - Untested
+    local numKeys = #k
+    local currTable = t
+    local listenerTable = {}
+    for i=1, numKeys - 1, 1 do
+      local currKey = k[i]
+      local index = i
+      local currTableListener = function(t, k, old, new)
+        -- Remove listeners from old tables, and add listeners to new tables.
+        local oldTable = old
+        local newTable = new
+        local subKey
+        for j=index + 1, numKeys, 1 do
+          subKey = k[j]
+          oldTable:removeListener(subKey, listenerTable[j])
+          newTable:addListener(subKey, listenerTable[j])
+          if j < numKeys then
+            oldTable = oldTable[subKey]
+            newTable = newTable[subKey]
+          end
+        end
+      end
+      listenerTable[index] = currTableListener
+      currTable:addListener(currKey, currTableListener)
+      currTable = t[currKey] 
+    end
+    local lastTableListener = function(t, k, old, new)
+      out.value = new
+    end
+    currTable:addListener(k[numKeys], lastTableListener)
+    listenerTable[numKeys] = lastTableListener
+    return out
   end
 end
 
@@ -420,6 +450,23 @@ function Binding.proxyTable:addListener(key, listener)
     listeners[key] = keyListeners
   end
   table.insert(keyListeners, listener)
+end
+
+-- Removes the first instance of the given listener from the given key.
+--
+-- @param key The key the listener is attached to.
+-- @param listener The listener to remove.
+--
+-- @return A boolean for whether a listener was removed.
+function Binding.proxyTable:removeListener(key, listener)
+  local keyListeners = self.listeners[key]
+  for i=1, #keyListeners, 1 do
+    if keyListeners[i] == listener then
+      table.remove(keyListeners, i)
+      return true
+    end
+  end
+  return false
 end
 
 -- Binds the key in the specified table to the given value
