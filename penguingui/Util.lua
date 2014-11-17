@@ -8,7 +8,8 @@ PtUtil.charWidths = {8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 8, 8, 0, 8, 8, 8, 8, 8, 8, 8,
 function PtUtil.library()
   return {
     "/penguingui/Util.lua",
-    "/penguingui/Bindings.lua",
+    "/penguingui/Binding.lua",
+    "/penguingui/BindingFunctions.lua",
     "/penguingui/GUI.lua",
     "/penguingui/Component.lua",
     "/penguingui/Panel.lua",

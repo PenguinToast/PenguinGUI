@@ -38,25 +38,28 @@ Binding.proxyTable = {
     return ipairs(t._instance)
   end,
   __add = function(a, b)
-    return a._instance + (b._instance or b)
+    return a._instance + (type(b) == "table" and b._instance or b)
+  end,
+  __sub = function(a, b)
+    return a._instance - (type(b) == "table" and b._instance or b)
   end,
   __mul = function(a, b)
-    return a._instance * (b._instance or b)
+    return a._instance * (type(b) == "table" and b._instance or b)
   end,
   __div = function(a, b)
-    return a._instance / (b._instance or b)
+    return a._instance / (type(b) == "table" and b._instance or b)
   end,
   __mod = function(a, b)
-    return a._instance % (b._instance or b)
+    return a._instance % (type(b) == "table" and b._instance or b)
   end,
   __pow = function(a, b)
-    return a._instance ^ (b._instance or b)
+    return a._instance ^ (type(b) == "table" and b._instance or b)
   end,
   __unm = function(a)
     return -a._instance
   end,
   __concat = function(a, b)
-    return a._instance .. (b._instance or b)
+    return a._instance .. (type(b) == "table" and b._instance or b)
   end,
   __len = function(a)
     return #a._instance
@@ -80,48 +83,13 @@ function Binding.isValue(object)
     and getmetatable(object._instance) == Binding.valueTable
 end
 
-Binding.valueTable = {
-  tostring = function(self)
-    local out = Binding.proxy(setmetatable({}, Binding.valueTable))
-    out.value = tostring(self.value)
-    self:addListener(
-      "value",
-      function(t, k, old, new)
-        out.value = tostring(new)
-      end
-    )
-    return out
-  end,
-  add = function(a, b)
-    local out = Binding.proxy(setmetatable({}, Binding.valueTable))
-    if Binding.isValue(b) then
-      out.value = a.value + b.value
-      a:addListener(
-        "value",
-        function(t, k, old, new)
-          out.value = new + b.value
-        end
-      )
-      b:addListener(
-        "value",
-        function(t, k, old, new)
-          out.value = a.value + new
-        end
-      )
-    else
-      out.value = a.value + b
-      a:addListener(
-        "value",
-        function(t, k, old, new)
-          out.value = new + b
-        end
-      )
-    end
-    return out
-  end
-}
+Binding.valueTable = {}
 
 Binding.valueTable.__index = Binding.valueTable
+
+function Binding.valueTable:addValueListener(listener)
+  self:addListener("value", listener)
+end
 
 function Binding.value(t, k)
   if type(k) == "string" then -- Single key
@@ -175,30 +143,6 @@ function Binding.bind(table, key, value)
       table[key] = new
     end
   )
-end
-
--- Binds the target value to the source value.
---
--- @param sourceKey The name of the key to be bound by.
--- @param targetComponent The target table to bind.
--- @param targetKey The target key to bind.
-function Binding.proxyTable:bind(sourceKey, targetComponent, targetKey)
-  local targetLen = #targetKey
-  local transformations = {}
-  self:addListener(
-    sourceKey,
-    function(t, k, old, new)
-      local targetTable = targetComponent
-      for i=1,targetLen - 1,1 do
-        targetTable = targetTable[targetKey[i]]
-      end
-      for _,transformation in ipairs(transformations) do
-        new = transformation(t, k, old, new)
-      end
-      targetTable[targetKey[targetLen]] = new
-    end
-  )
-  return transformations
 end
 
 function Binding.proxy(instance)
