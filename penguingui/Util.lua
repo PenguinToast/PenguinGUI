@@ -271,7 +271,8 @@ function dump(value, indent, seen)
       else
         str = str..","
       end
-      str = str.."\n"..indent.."  ".."["..dump(k).."] = "..dump(v, indent.."  ")
+      str = str.."\n"..indent.."  ".."["..dump(k, "", seen)
+        .."] = "..dump(v, indent.."  ", seen)
     end
     str = str.."\n"..indent.."}"
     return str

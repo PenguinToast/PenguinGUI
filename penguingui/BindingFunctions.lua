@@ -13,32 +13,34 @@ function Binding.valueTable.createFunction(f1, f2)
   if f2 then
     return function(self, other)
       local out = Binding.proxy(setmetatable({}, Binding.valueTable))
+      local calc
       if Binding.isValue(other) then
-        local calc = function(t, k, old, new)
+        calc = function(binding, new)
           out.value = f2(self, other)
         end
-        calc()
-        self:addValueListener(calc)
-        other:addValueListener(calc)
+        other:addValueBinding(out)
+        out.boundto = {self, other}
       else
-        local calc = function(t, k, old, new)
+        calc = function(binding, new)
           out.value = f1(self, other)
         end
-        calc()
-        self:addValueListener(calc)
+        out.boundto = {self}
       end
+      out.valueChanged = calc
+      calc()
+      self:addValueBinding(out)
       return out
     end
   else
     return function(self)
       local out = Binding.proxy(setmetatable({}, Binding.valueTable))
-      out.value = tostring(self.value)
-      self:addListener(
-        "value",
-        function(t, k, old, new)
-          out.value = f1(self)
-        end
-      )
+      local calc = function(binding, new)
+        out.value = f1(self)
+      end
+      calc()
+      out.valueChanged = calc
+      self:addValueBinding(out)
+      out.boundto = {self}
       return out
     end
   end

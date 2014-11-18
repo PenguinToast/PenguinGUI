@@ -278,7 +278,8 @@ function dump(value, indent, seen)
       else
         str = str..","
       end
-      str = str.."\n"..indent.."  ".."["..dump(k).."] = "..dump(v, indent.."  ")
+      str = str.."\n"..indent.."  ".."["..dump(k, "", seen)
+        .."] = "..dump(v, indent.."  ", seen)
     end
     str = str.."\n"..indent.."}"
     return str
@@ -318,6 +319,13 @@ Binding.proxyTable = {
         local keyListeners = listeners[k]
         for _,keyListener in ipairs(keyListeners) do
           new = keyListener(instance, k, old, new) or new
+        end
+      end
+      local bindings = instance.bindings
+      if bindings and bindings[k] then
+        local keyBindings = bindings[k]
+        for _,keyBinding in ipairs(keyBindings) do
+          keyBinding:valueChanged(v)
         end
       end
     end
@@ -374,6 +382,10 @@ function Binding.isValue(object)
     and getmetatable(object._instance) == Binding.valueTable
 end
 
+Binding.weakMetaTable = {
+  __mode = "v"
+}
+
 Binding.valueTable = {}
 
 Binding.valueTable.__index = Binding.valueTable
@@ -382,16 +394,19 @@ function Binding.valueTable:addValueListener(listener)
   self:addListener("value", listener)
 end
 
+function Binding.valueTable:addValueBinding(binding)
+  self:addBinding("value", binding)
+end
+
 function Binding.value(t, k)
   local out = Binding.proxy(setmetatable({}, Binding.valueTable))
   if type(k) == "string" then -- Single key
     out.value = t[k]
-    t:addListener(
-      k,
-      function(t, k, old, new)
-        out.value = new
-      end
-    )
+    out.valueChanged = function(self, new)
+      self.value = new
+    end
+    t:addBinding(k, out)
+    out.boundto = {t}
     return out
   else -- Table of keys TODO - Untested
     local numKeys = #k
@@ -438,6 +453,7 @@ end
 --           k is the key whose value changed.
 --           old is the old value of the key.
 --           new is the new value of the key.
+--      If the function changes the key's value, it should return the new value.
 function Binding.proxyTable:addListener(key, listener)
   local listeners = self.listeners
   if not listeners then
@@ -469,18 +485,38 @@ function Binding.proxyTable:removeListener(key, listener)
   return false
 end
 
+function Binding.proxyTable:addBinding(key, binding)
+  local bindings = self.bindings
+  if not bindings then
+    bindings = {}
+    self.bindings = bindings
+  end
+  local keyBindings = bindings[key]
+  if not keyBindings then
+    keyBindings = setmetatable({}, Binding.weakMetaTable)
+    bindings[key] = keyBindings
+  end
+  table.insert(keyBindings, binding)
+end
+
 -- Binds the key in the specified table to the given value
 --
 -- @param table The table where the key to be bound is.
--- @param kkey The key to be bound.
+-- @param key The key to be bound.
 -- @param value The value to bind to.
 function Binding.bind(table, key, value)
-  value:addListener(
-    "value",
-    function(t, k, old, new)
-      table[key] = new
-    end
-  )
+  local listener = function(t, k, old, new)
+    table[key] = new
+  end
+  value:addValueListener(listener)
+  local boundto = table.boundto
+  if not boundto then
+    boundto = {}
+    table.boundto = boundto
+  end
+  local boundtoKey = boundto[key]
+  assert(not boundtoKey, key .. " is already bound to another value")
+  boundto[key] = value
 end
 
 function Binding.proxy(instance)
@@ -509,32 +545,34 @@ function Binding.valueTable.createFunction(f1, f2)
   if f2 then
     return function(self, other)
       local out = Binding.proxy(setmetatable({}, Binding.valueTable))
+      local calc
       if Binding.isValue(other) then
-        local calc = function(t, k, old, new)
+        calc = function(binding, new)
           out.value = f2(self, other)
         end
-        calc()
-        self:addValueListener(calc)
-        other:addValueListener(calc)
+        other:addValueBinding(out)
+        out.boundto = {self, other}
       else
-        local calc = function(t, k, old, new)
+        calc = function(binding, new)
           out.value = f1(self, other)
         end
-        calc()
-        self:addValueListener(calc)
+        out.boundto = {self}
       end
+      out.valueChanged = calc
+      calc()
+      self:addValueBinding(out)
       return out
     end
   else
     return function(self)
       local out = Binding.proxy(setmetatable({}, Binding.valueTable))
-      out.value = tostring(self.value)
-      self:addListener(
-        "value",
-        function(t, k, old, new)
-          out.value = f1(self)
-        end
-      )
+      local calc = function(binding, new)
+        out.value = f1(self)
+      end
+      calc()
+      out.valueChanged = calc
+      self:addValueBinding(out)
+      out.boundto = {self}
       return out
     end
   end
