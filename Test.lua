@@ -15,10 +15,15 @@ function main()
   })
   locals.targetTable = targetTable
 
-  Binding.bind(targetTable, "otherkey", Binding(sourceTable, "somekey"):concat("hi"))
+  local a = Binding(sourceTable, "somekey")
+  local b = a:concat("hi")
+  Binding.bind(targetTable, "otherkey", b)
   printTables()
   sourceTable.somekey = "newvalue"
-  targetTable.boundto = nil
+  b:unbind()
+  -- a = nil
+  -- b = nil
+  sourceTable.somekey = "newervalue"
   collectgarbage()
   printTables()
 end

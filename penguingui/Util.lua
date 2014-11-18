@@ -195,6 +195,22 @@ function ripairs(t)
   return ripairs_it, t, #t+1
 end
 
+-- Removes the first occurence of an object from the given table.
+--
+-- @param t The table to remove from.
+-- @param o The object to remove.
+--
+-- @return The index of the removed object, or -1 if the object was not found.
+function PtUtil.removeObject(t, o)
+  for i,obj in ipairs(t) do
+    if obj == o then
+      table.remove(t, i)
+      return i
+    end
+  end
+  return -1
+end
+
 -- Creates a new class with the specified superclass(es)
 function class(...)
   -- "cls" is the new class

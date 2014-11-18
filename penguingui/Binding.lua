@@ -98,12 +98,48 @@ Binding.valueTable = {}
 
 Binding.valueTable.__index = Binding.valueTable
 
+-- Adds a listener to the value of this binding.
+--
+-- @param listener The listener to add.
 function Binding.valueTable:addValueListener(listener)
   self:addListener("value", listener)
 end
 
 function Binding.valueTable:addValueBinding(binding)
   self:addBinding("value", binding)
+end
+
+function Binding.valueTable:removeValueBinding(binding)
+  self:removeBinding("value", binding)
+end
+
+-- Unbinds this binding, as well as anything bound to it.
+function Binding.valueTable:unbind()
+  local bindings = self.bindings
+  if bindings and bindings.value then
+    local valueBindings = bindings.value
+    for _,binding in ipairs(valueBindings) do
+      binding:unbind()
+    end
+  end
+  local boundto = self.boundto
+  for _,bound in ipairs(boundto) do
+    for _,boundTable in pairs(bound.bindings) do
+      PtUtil.removeObject(boundTable, self)
+    end
+  end
+  self.boundto = nil
+  local bindTargets = self.bindTargets
+  if bindTargets then
+    for _,bindTarget in ipairs(bindTargets) do
+      local bindTargetBoundto = bindTarget.boundto
+      for key,binding in pairs(bindTargetBoundto) do
+        if binding == self then
+          bindTargetBoundto[key] = nil
+        end
+      end
+    end
+  end
 end
 
 function Binding.value(t, k)
@@ -184,13 +220,7 @@ end
 -- @return A boolean for whether a listener was removed.
 function Binding.proxyTable:removeListener(key, listener)
   local keyListeners = self.listeners[key]
-  for i=1, #keyListeners, 1 do
-    if keyListeners[i] == listener then
-      table.remove(keyListeners, i)
-      return true
-    end
-  end
-  return false
+  return PtUtil.removeObject(keyListeners, listener) ~= -1
 end
 
 function Binding.proxyTable:addBinding(key, binding)
@@ -207,24 +237,39 @@ function Binding.proxyTable:addBinding(key, binding)
   table.insert(keyBindings, binding)
 end
 
+function Binding.proxyTable:removeBinding(key, binding)
+  local keyBindings = self.bindings[key]
+  return PtUtil.removeObject(keyBindings, binding) ~= -1
+end
+
 -- Binds the key in the specified table to the given value
 --
--- @param table The table where the key to be bound is.
+-- @param target The table where the key to be bound is.
 -- @param key The key to be bound.
 -- @param value The value to bind to.
-function Binding.bind(table, key, value)
+function Binding.bind(target, key, value)
   local listener = function(t, k, old, new)
-    table[key] = new
+    target[key] = new
   end
   value:addValueListener(listener)
-  local boundto = table.boundto
+
+  -- Put reference to this binding into the target table to keep this binding
+  -- alive.
+  local boundto = target.boundto
   if not boundto then
     boundto = {}
-    table.boundto = boundto
+    target.boundto = boundto
   end
   local boundtoKey = boundto[key]
   assert(not boundtoKey, key .. " is already bound to another value")
   boundto[key] = value
+
+  local bindTargets = value.bindTargets
+  if not bindTargets then
+    bindTargets = {}
+    value.bindTargets = bindTargets
+  end
+  table.insert(bindTargets, target)
 end
 
 function Binding.proxy(instance)
