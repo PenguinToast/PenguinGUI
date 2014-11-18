@@ -17,12 +17,13 @@ function main()
 
   local a = Binding(sourceTable, "somekey")
   local b = a:concat("hi")
-  Binding.bind(targetTable, "otherkey", b)
+  targetTable:bind("otherkey", b)
+  --Binding.bind(targetTable, "otherkey", b)
   printTables()
   sourceTable.somekey = "newvalue"
-  b:unbind()
-  -- a = nil
-  -- b = nil
+  Binding.unbind(targetTable, "otherkey")
+  a = nil
+  b = nil
   sourceTable.somekey = "newervalue"
   collectgarbage()
   printTables()

@@ -413,6 +413,13 @@ function Binding.valueTable:addValueListener(listener)
   self:addListener("value", listener)
 end
 
+-- Removes a listener to the value of this binding.
+--
+-- @param listener The listener to remove.
+function Binding.valueTable:removeValueListener(listener)
+  self:removeListener("value", listener)
+end
+
 function Binding.valueTable:addValueBinding(binding)
   self:addBinding("value", binding)
 end
@@ -439,7 +446,7 @@ function Binding.valueTable:unbind()
   self.boundto = nil
   local bindTargets = self.bindTargets
   if bindTargets then
-    for _,bindTarget in ipairs(bindTargets) do
+    for bindTarget,_ in pairs(bindTargets) do
       local bindTargetBoundto = bindTarget.boundto
       for key,binding in pairs(bindTargetBoundto) do
         if binding == self then
@@ -577,8 +584,25 @@ function Binding.bind(target, key, value)
     bindTargets = {}
     value.bindTargets = bindTargets
   end
-  table.insert(bindTargets, target)
+  bindTargets[target] = listener
 end
+
+Binding.proxyTable.bind = Binding.bind
+
+-- Removes the binding on the given key in the given target.
+--
+-- @param target The table to remove the binding from.
+-- @param key The key to unbind.
+function Binding.unbind(target, key)
+  local binding = target.boundto[key]
+  if binding then
+    binding:removeValueListener(binding.bindTargets[target])
+    binding.bindTargets[target] = nil
+    target.boundto[key] = nil
+  end
+end
+
+Binding.proxyTable.unbind = Binding.unbind
 
 function Binding.proxy(instance)
   return setmetatable(
