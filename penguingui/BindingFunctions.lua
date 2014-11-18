@@ -15,13 +15,13 @@ function Binding.valueTable.createFunction(f1, f2)
       local out = Binding.proxy(setmetatable({}, Binding.valueTable))
       local calc
       if Binding.isValue(other) then
-        calc = function(binding, new)
+        calc = function(binding, old, new)
           out.value = f2(self, other)
         end
         other:addValueBinding(out)
         out.boundto = {self, other}
       else
-        calc = function(binding, new)
+        calc = function(binding, old, new)
           out.value = f1(self, other)
         end
         out.boundto = {self}
@@ -34,7 +34,7 @@ function Binding.valueTable.createFunction(f1, f2)
   else
     return function(self)
       local out = Binding.proxy(setmetatable({}, Binding.valueTable))
-      local calc = function(binding, new)
+      local calc = function(binding, old, new)
         out.value = f1(self)
       end
       calc()

@@ -1,6 +1,7 @@
 require "penguingui/Util"
 require "penguingui/Binding"
 require "penguingui/BindingFunctions"
+inspect = require "lib/inspect"
 
 function main()
   locals = {}
@@ -31,6 +32,6 @@ end
 
 function printTables()
   print("Tables:")
-  print(dump(locals))
+  print(inspect(locals))
 end
 main()

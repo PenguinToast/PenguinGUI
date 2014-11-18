@@ -33,7 +33,7 @@ Binding.proxyTable = {
       if bindings and bindings[k] then
         local keyBindings = bindings[k]
         for _,keyBinding in ipairs(keyBindings) do
-          keyBinding:valueChanged(v)
+          keyBinding:valueChanged(old, new)
         end
       end
     end
@@ -159,27 +159,36 @@ function Binding.value(t, k)
     t:addBinding(k, out)
     out.boundto = {t}
     return out
-  else -- Table of keys TODO - Untested
+  else -- Table of keys TODO - new binding system
     local numKeys = #k
     local currTable = t
-    local listenerTable = {}
+    local bindingTable = {}
     for i=1, numKeys - 1, 1 do
+      local currBinding = Binding.proxy(setmetatable({}, BInding.valueTable))
       local currKey = k[i]
       local index = i
-      local currTableListener = function(t, k, old, new)
-        -- Remove listeners from old tables, and add listeners to new tables.
+
+      currBinding.valueChanged = function(binding, old, new)
+        -- Transplant bindings from old tables to new tables
         local oldTable = old
         local newTable = new
         local subKey
         for j=index + 1, numKeys, 1 do
           subKey = k[j]
-          oldTable:removeListener(subKey, listenerTable[j])
-          newTable:addListener(subKey, listenerTable[j])
+          oldTable:removeBinding(subKey, bindingTable[j])
+          newTable:addBinding(subKey, binidngTable[j])
+          
           if j < numKeys then
             oldTable = oldTable[subKey]
             newTable = newTable[subKey]
           end
         end
+      end
+      currTable:addBinding(currKey, currBinding)
+      
+      
+      local currTableListener = function(t, k, old, new)
+        -- Remove listeners from old tables, and add listeners to new tables.
       end
       listenerTable[index] = currTableListener
       currTable:addListener(currKey, currTableListener)
