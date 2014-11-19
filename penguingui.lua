@@ -661,32 +661,27 @@ function Binding.valueTable.createFunction(f1, f2)
   if f2 then
     return function(self, other)
       local out = Binding.proxy(setmetatable({}, Binding.valueTable))
-      local calc
       if Binding.isValue(other) then
-        calc = function(binding, old, new)
+        out.valueChanged = function(binding, old, new)
           out.value = f2(self, other)
         end
         other:addValueBinding(out)
         out.boundto = {self, other}
       else
-        calc = function(binding, old, new)
+        out.valueChanged = function(binding, old, new)
           out.value = f1(self, other)
         end
         out.boundto = {self}
       end
-      out.valueChanged = calc
-      calc()
       self:addValueBinding(out)
       return out
     end
   else
     return function(self)
       local out = Binding.proxy(setmetatable({}, Binding.valueTable))
-      local calc = function(binding, old, new)
+      out.valueChanged = function(binding, old, new)
         out.value = f1(self)
       end
-      calc()
-      out.valueChanged = calc
       self:addValueBinding(out)
       out.boundto = {self}
       return out
@@ -923,6 +918,55 @@ Binding.valueTable.NOT = Binding.valueTable.createFunction(
   end
 )
 
+-- Creates a new value with the value of the first value if this value is true,
+-- or the second value if this value is false.
+--
+-- @param ifTrue The value the new binding will be set to when this value is
+--      true. Can either be another value, or a constant (number, etc.)
+-- @param ifFalse The value the new binding will be set to when this value is
+--      false. Can either be another value, or a constant (number, etc.)
+Binding.valueTable.THEN = function(self, ifTrue, ifFalse)
+  local out = Binding.proxy(setmetatable({}, Binding.valueTable))
+  local trueFunction
+  local falseFunction
+  local boundto = {self}
+  if Binding.isValue(ifTrue) then
+    trueFunction = function()
+      return ifTrue.value
+    end
+  else
+    trueFunction = function()
+      return ifTrue
+    end
+  end
+  if Binding.isValue(ifFalse) then
+    falseFunction = function()
+      return ifFalse.value
+    end
+  else
+    falseFunction = function()
+      return ifFalse
+    end
+  end
+  out.valueChanged = function(binding, old, new)
+    if self.value then
+      out.value = trueFunction()
+    else
+      out.value = falseFunction()
+    end
+  end
+  self:addValueBinding(out)
+  if Binding.isValue(ifTrue) then
+    ifTrue:addValueBinding(out)
+    table.insert(boundto, ifTrue)
+  end
+  if Binding.isValue(ifFalse) then
+    ifFalse:addValueBinding(out)
+    table.insert(boundto, ifFalse)
+  end
+  out.boundto = boudnto
+  return out
+end
 
 --------------------------------------------------------------------------------
 -- GUI.lua
