@@ -149,56 +149,68 @@ function Binding.valueTable:unbind()
   end
 end
 
+function Binding.unbindChain(binding)
+  Binding.valueTable.unbind(binding)
+  local bindingTable = binding.bindingTable
+  for i=1, #bindingTable - 1, 1 do
+    bindingTable[i]:unbind()
+    bindingTable[i] = nil
+  end
+end
+
 function Binding.value(t, k)
   local out = Binding.proxy(setmetatable({}, Binding.valueTable))
   if type(k) == "string" then -- Single key
     out.value = t[k]
-    out.valueChanged = function(self, new)
-      self.value = new
+    out.valueChanged = function(binding, old, new)
+      binding.value = new
     end
     t:addBinding(k, out)
     out.boundto = {t}
     return out
-  else -- Table of keys TODO - new binding system
+  else -- Table of keys
     local numKeys = #k
     local currTable = t
     local bindingTable = {}
     for i=1, numKeys - 1, 1 do
-      local currBinding = Binding.proxy(setmetatable({}, BInding.valueTable))
+      local currBinding = Binding.proxy(setmetatable({}, Binding.valueTable))
       local currKey = k[i]
       local index = i
 
       currBinding.valueChanged = function(binding, old, new)
+        if old == new then return end
         -- Transplant bindings from old tables to new tables
         local oldTable = old
         local newTable = new
         local subKey
+        local transplant
         for j=index + 1, numKeys, 1 do
           subKey = k[j]
-          oldTable:removeBinding(subKey, bindingTable[j])
-          newTable:addBinding(subKey, binidngTable[j])
-          
+          transplant = bindingTable[j]
+          transplant.boundto[1] = newTable
+          oldTable:removeBinding(subKey, transplant)
+          newTable:addBinding(subKey, transplant)
+
           if j < numKeys then
             oldTable = oldTable[subKey]
             newTable = newTable[subKey]
           end
         end
       end
+      currBinding.boundto = {currTable}
       currTable:addBinding(currKey, currBinding)
+      bindingTable[index] = currBinding
       
-      
-      local currTableListener = function(t, k, old, new)
-        -- Remove listeners from old tables, and add listeners to new tables.
-      end
-      listenerTable[index] = currTableListener
-      currTable:addListener(currKey, currTableListener)
       currTable = t[currKey] 
     end
-    local lastTableListener = function(t, k, old, new)
-      out.value = new
+    out.valueChanged = function(binding, old, new)
+      binding.value = new
     end
-    currTable:addListener(k[numKeys], lastTableListener)
-    listenerTable[numKeys] = lastTableListener
+    out.bindingTable = bindingTable
+    out.boundto = {currTable}
+    out.unbind = Binding.unbindChain
+    currTable:addBinding(k[numKeys], out)
+    bindingTable[numKeys] = out
     return out
   end
 end
@@ -251,6 +263,7 @@ function Binding.proxyTable:addBinding(key, binding)
     bindings[key] = keyBindings
   end
   table.insert(keyBindings, binding)
+  binding:valueChanged(self[key], self[key])
 end
 
 function Binding.proxyTable:removeBinding(key, binding)
@@ -281,11 +294,14 @@ function Binding.bind(target, key, value)
   boundto[key] = value
 
   local bindTargets = value.bindTargets
+  -- FIX Single bind to multiple keys in one table
   if not bindTargets then
     bindTargets = {}
     value.bindTargets = bindTargets
   end
   bindTargets[target] = listener
+
+  target[key] = value.value
 end
 
 Binding.proxyTable.bind = Binding.bind

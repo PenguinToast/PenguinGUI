@@ -4,28 +4,29 @@ require "penguingui/BindingFunctions"
 inspect = require "lib/inspect"
 
 function main()
-  locals = {}
-
-  local sourceTable = Binding.proxy({
-      somekey = "somevalue"
+  local a = Binding.proxy({
+    a_1 = Binding.proxy({
+      sourceValue = "a_1"
+    }),
+    a_2 = Binding.proxy({
+      sourceValue = "a_2"
+    })
   })
-  locals.sourceTable = sourceTable
-
-  local targetTable = Binding.proxy({
-      otherkey = "othervalue"
+  local b = Binding.proxy({
+    targetValue = "unknown"
   })
-  locals.targetTable = targetTable
 
-  local a = Binding(sourceTable, "somekey")
-  local b = a:concat("hi")
-  targetTable:bind("otherkey", b)
-  --Binding.bind(targetTable, "otherkey", b)
+  local binding = Binding(a, {"a_1", "sourceValue"})
+  b:bind("targetValue", binding)
+  
+  locals = {a = a, b = b}
   printTables()
-  sourceTable.somekey = "newvalue"
-  Binding.unbind(targetTable, "otherkey")
-  a = nil
-  b = nil
-  sourceTable.somekey = "newervalue"
+
+  local tmp = a.a_1
+  a.a_1 = a.a_2
+  a.a_2 = tmp
+  tmp = nil
+  binding = nil
   collectgarbage()
   printTables()
 end
