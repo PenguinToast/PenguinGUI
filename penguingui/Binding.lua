@@ -294,12 +294,17 @@ function Binding.bind(target, key, value)
   boundto[key] = value
 
   local bindTargets = value.bindTargets
-  -- FIX Single bind to multiple keys in one table
+  
   if not bindTargets then
     bindTargets = {}
     value.bindTargets = bindTargets
   end
-  bindTargets[target] = listener
+  local bindKeyTargets = bindTargets[target]
+  if not bindKeyTargets then
+    bindKeyTargets = {}
+    bindTargets[target] = bindKeyTargets
+  end
+  bindKeyTargets[key] = listener
 
   target[key] = value.value
 end
@@ -313,8 +318,8 @@ Binding.proxyTable.bind = Binding.bind
 function Binding.unbind(target, key)
   local binding = target.boundto[key]
   if binding then
-    binding:removeValueListener(binding.bindTargets[target])
-    binding.bindTargets[target] = nil
+    binding:removeValueListener(binding.bindTargets[target][key])
+    binding.bindTargets[target][key] = nil
     target.boundto[key] = nil
   end
 end

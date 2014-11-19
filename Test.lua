@@ -5,27 +5,24 @@ inspect = require "lib/inspect"
 
 function main()
   local a = Binding.proxy({
-    a_1 = Binding.proxy({
-      sourceValue = "a_1"
-    }),
-    a_2 = Binding.proxy({
-      sourceValue = "a_2"
-    })
+      a_1 = "a_1",
+      a_2 = "a_2"
   })
   local b = Binding.proxy({
-    targetValue = "unknown"
+      b_1 = "b_1",
+      b_2 = "b_2"
   })
 
-  local binding = Binding(a, {"a_1", "sourceValue"})
-  b:bind("targetValue", binding)
+  local binding = Binding(a, "a_1")
+  b:bind("b_1", binding)
+  b:bind("b_2", binding)
   
   locals = {a = a, b = b}
   printTables()
 
-  local tmp = a.a_1
-  a.a_1 = a.a_2
-  a.a_2 = tmp
-  tmp = nil
+  a.a_1 = "a_1new"
+  binding:unbind()
+  a.a_1 = "a_1newer"
   binding = nil
   collectgarbage()
   printTables()
