@@ -27,7 +27,7 @@ for filename in $scripts; do
     printf "\n-- $(basename $filename)\n" >> penguingui.lua
     for i in {1..80}; do printf "-" >> penguingui.lua; done
     printf "\n\n" >> penguingui.lua
-    cat $filename >> penguingui.lua
+    grep -v -e "^\s*--" $filename >> penguingui.lua
 done
 
 git add penguingui.lua
