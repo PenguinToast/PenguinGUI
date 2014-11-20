@@ -296,7 +296,7 @@ function Binding.proxyTable:removeBinding(key, binding)
   return PtUtil.removeObject(keyBindings, binding) ~= -1
 end
 
--- Binds the key in the specified table to the given value
+-- Binds the key in the specified table to the 10 given value
 --
 -- @param target The table where the key to be bound is.
 -- @param key The key to be bound.

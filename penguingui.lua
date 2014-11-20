@@ -555,211 +555,226 @@ end
 -- BindingFunctions.lua
 --------------------------------------------------------------------------------
 
-function Binding.valueTable.createFunction(f1, f2)
-  if f2 then
-    return function(self, other)
-      local out = Binding.proxy(setmetatable({}, Binding.valueTable))
-      if Binding.isValue(other) then
-        out.valueChanged = function(binding, old, new)
-          out.value = f2(self, other)
+local createFunction = function(f)
+  return function(...)
+    local out = Binding.proxy(setmetatable({}, Binding.valueTable))
+    local getters = {}
+    local boundto = {self}
+    local args = table.pack(...)
+    local numArgs = args.n
+    for i = 1, numArgs, 1 do
+      local value = args[i]
+      local getter
+      if Binding.isValue(value) then
+        getter = function()
+          return value.value
         end
-        other:addValueBinding(out)
-        out.boundto = {self, other}
       else
-        out.valueChanged = function(binding, old, new)
-          out.value = f1(self, other)
+        getter = function()
+          return value
         end
-        out.boundto = {self}
       end
-      self:addValueBinding(out)
-      return out
+      getters[i] = getter
     end
-  else
-    return function(self)
-      local out = Binding.proxy(setmetatable({}, Binding.valueTable))
-      out.valueChanged = function(binding, old, new)
-        out.value = f1(self)
+    out.valueChanged = function(binding, old, new)
+      out.value = f(unpack(getters))
+    end
+    for i = 1, numArgs, 1 do
+      local value = args[i]
+      if Binding.isValue(value) then
+        value:addValueBinding(out)
       end
-      self:addValueBinding(out)
-      out.boundto = {self}
-      return out
+      table.insert(boundto, value)
     end
+    out.boundto = boundto
+    return out
   end
 end
 
-Binding.valueTable.tostring = Binding.valueTable.createFunction(
-  function(self)
-    return tostring(self.value)
+Binding.valueTable.tostring = createFunction(
+  function(value)
+    return tostring(value())
   end
 )
+Binding.tostring = Binding.valueTable.tostring
 
-Binding.valueTable.tonumber = Binding.valueTable.createFunction(
-  function(self)
-    return tonumber(self.value)
+Binding.valueTable.tonumber = createFunction(
+  function(value)
+    return tonumber(value())
   end
 )
+Binding.tonumber = Binding.valueTable.tonumber
 
-Binding.valueTable.add = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value + other
-  end,
-  function(self, other)
-    return self.value + other.value
+Binding.valueTable.add = createFunction(
+  function(first, ...)
+    local out = first()
+    local args = table.pack(...)
+    for _,value in ipairs(args) do
+      out = out + value()
+    end
+    return out
   end
 )
+Binding.add = Binding.valueTable.add
 
-Binding.valueTable.sub = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value - other
-  end,
-  function(self, other)
-    return self.value - other.value
+Binding.valueTable.sub = createFunction(
+  function(first, ...)
+    local out = first()
+    local args = table.pack(...)
+    for _,value in ipairs(args) do
+      out = out - value()
+    end
+    return out
   end
 )
+Binding.sub = Binding.valueTable.sub
 
-Binding.valueTable.mul = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value * other
-  end,
-  function(self, other)
-    return self.value * other.value
+Binding.valueTable.mul = createFunction(
+  function(first, ...)
+    local out = first()
+    local args = table.pack(...)
+    for _,value in ipairs(args) do
+      out = out * value()
+    end
+    return out
   end
 )
+Binding.mul = Binding.valueTable.mul
 
-Binding.valueTable.div = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value / other
-  end,
-  function(self, other)
-    return self.value / other.value
+Binding.valueTable.div = createFunction(
+  function(first, ...)
+    local out = first()
+    local args = table.pack(...)
+    for _,value in ipairs(args) do
+      out = out / value()
+    end
+    return out
   end
 )
+Binding.div = Binding.valueTable.div
 
-Binding.valueTable.sub = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value - other
-  end,
-  function(self, other)
-    return self.value - other.value
+Binding.valueTable.mod = createFunction(
+  function(first, ...)
+    local out = first()
+    local args = table.pack(...)
+    for _,value in ipairs(args) do
+      out = out % value()
+    end
+    return out
   end
 )
+Binding.mod = Binding.valueTable.mod
 
-Binding.valueTable.mod = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value % other
-  end,
-  function(self, other)
-    return self.value % other.value
+Binding.valueTable.pow = createFunction(
+  function(first, ...)
+    local out = first()
+    local args = table.pack(...)
+    for _,value in ipairs(args) do
+      out = out ^ value()
+    end
+    return out
   end
 )
+Binding.pow = Binding.valueTable.pow
 
-Binding.valueTable.pow = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value ^ other
-  end,
-  function(self, other)
-    return self.value ^ other.value
+Binding.valueTable.negate = createFunction(
+  function(value)
+    return -value()
   end
 )
+Binding.negate = Binding.valueTable.negate
 
-Binding.valueTable.negate = Binding.valueTable.createFunction(
-  function(self)
-    return -(self.value)
+Binding.valueTable.concat = createFunction(
+  function(first, ...)
+    local out = first()
+    local args = table.pack(...)
+    for _,value in ipairs(args) do
+      out = out .. value()
+    end
+    return out
   end
 )
+Binding.concat = Binding.valueTable.concat
 
-Binding.valueTable.concat = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value .. other
-  end,
-  function(self, other)
-    return self.value .. other.value
+Binding.valueTable.len = createFunction(
+  function(value)
+    return #value()
   end
 )
+Binding.len = Binding.valueTable.len
 
-Binding.valueTable.len = Binding.valueTable.createFunction(
-  function(self)
-    return #(self.value)
+Binding.valueTable.eq = createFunction(
+  function(a, b)
+    return a() == b()
   end
 )
+Binding.eq = Binding.valueTable.eq
 
-Binding.valueTable.eq = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value == other
-  end,
-  function(self, other)
-    return self.value == other.value
+Binding.valueTable.ne = createFunction(
+  function(a, b)
+    return a() ~= b()
   end
 )
+Binding.ne = Binding.valueTable.ne
 
-Binding.valueTable.ne = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value ~= other
-  end,
-  function(self, other)
-    return self.value ~= other.value
+Binding.valueTable.lt = createFunction(
+  function(a, b)
+    return a() < b()
   end
 )
+Binding.lt = Binding.valueTable.lt
 
-Binding.valueTable.lt = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value < other
-  end,
-  function(self, other)
-    return self.value < other.value
+Binding.valueTable.gt = createFunction(
+  function(a, b)
+    return a() > b()
   end
 )
+Binding.gt = Binding.valueTable.gt
 
-Binding.valueTable.gt = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value > other
-  end,
-  function(self, other)
-    return self.value > other.value
+Binding.valueTable.le = createFunction(
+  function(a, b)
+    return a() <= b()
   end
 )
+Binding.le = Binding.valueTable.le
 
-Binding.valueTable.le = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value <= other
-  end,
-  function(self, other)
-    return self.value <= other.value
+Binding.valueTable.ge = createFunction(
+  function(a, b)
+    return a() >= b()
   end
 )
+Binding.ge = Binding.valueTable.ge
 
-Binding.valueTable.ge = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value >= other
-  end,
-  function(self, other)
-    return self.value >= other.value
+Binding.valueTable.AND = createFunction(
+  function(first, ...)
+    local out = first()
+    local args = table.pack(...)
+    for _,value in ipairs(args) do
+      out = out and value()
+    end
+    return out
   end
 )
+Binding.AND = Binding.valueTable.AND
 
-Binding.valueTable.AND = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value and other
-  end,
-  function(self, other)
-    return self.value and other.value
+Binding.valueTable.OR = createFunction(
+  function(first, ...)
+    local out = first()
+    local args = table.pack(...)
+    for _,value in ipairs(args) do
+      out = out or value()
+    end
+    return out
   end
 )
+Binding.OR = Binding.valueTable.OR
 
-Binding.valueTable.OR = Binding.valueTable.createFunction(
-  function(self, other)
-    return self.value or other
-  end,
-  function(self, other)
-    return self.value or other.value
+Binding.valueTable.NOT = createFunction(
+  function(value)
+    return not value()
   end
 )
-
-Binding.valueTable.NOT = Binding.valueTable.createFunction(
-  function(self)
-    return not self.value
-  end
-)
+Binding.NOT = Binding.valueTable.NOT
 
 Binding.valueTable.THEN = function(self, ifTrue, ifFalse)
   local out = Binding.proxy(setmetatable({}, Binding.valueTable))
@@ -800,9 +815,10 @@ Binding.valueTable.THEN = function(self, ifTrue, ifFalse)
     ifFalse:addValueBinding(out)
     table.insert(boundto, ifFalse)
   end
-  out.boundto = boudnto
+  out.boundto = boundto
   return out
 end
+Binding.THEN = Binding.valueTable.THEN
 
 --------------------------------------------------------------------------------
 -- GUI.lua

@@ -23,20 +23,20 @@ function testButtonClick(button, mouseButton)
   local frame = Frame(100, 50)
   GUI.add(frame)
 
-  local testTextButton
-  local testField = TextField(padding, padding, 50, 16, "text")
-  frame:add(testField)
-  
-  testTextButton = TextButton(testField.width + 10 + padding,
-                                    padding, 100, 16, "text")
-  testTextButton.onClick = function(button)
+  local closeButton = TextButton(100 + 10 + padding,
+                                    padding, 100, 16, "close")
+  closeButton.onClick = function(button)
     GUI.remove(frame)
   end
-  frame:add(testTextButton)
+  frame:add(closeButton)
 
-  Binding.bind(testTextButton, "text", Binding(testField, "text"))
-  Binding.bind(testField, "defaultText", Binding(frame, "x"):le(Binding(frame, "y")):tostring())
-  -- testField:bind("text", testTextButton, {"text"})
+  local xLabel = Label(padding, padding, "")
+  xLabel:bind("text", Binding.concat("x: ", Binding(frame, "x"):tostring()))
+  frame:add(xLabel)
+  
+  local yLabel = Label(padding, padding + xLabel.height + 10, "")
+  yLabel:bind("text", Binding.concat("y: ", Binding(frame, "y"):tostring()))
+  frame:add(yLabel)
 
   frame:pack(padding)
 end
