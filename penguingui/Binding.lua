@@ -1,3 +1,4 @@
+-- Add listeners or bindings to objects
 Binding = setmetatable(
   {},
   {
@@ -7,6 +8,7 @@ Binding = setmetatable(
   }
 )
 
+-- Proxy metatable to add listeners to a table
 Binding.proxyTable = {
   __index = function(t, k)
     local out = t._instance[k]
@@ -85,6 +87,10 @@ Binding.proxyTable = {
   end
 }
 
+-- Whether the table is a Binding or not.
+--
+-- @param object The table to check.
+-- @return True if the table is a binding, false if not.
 function Binding.isValue(object)
   return type(object) == "table"
     and getmetatable(object._instance) == Binding.valueTable
@@ -112,10 +118,16 @@ function Binding.valueTable:removeValueListener(listener)
   self:removeListener("value", listener)
 end
 
+-- Convenience method for adding a binding to "value"
+--
+-- @param binding The binding to add.
 function Binding.valueTable:addValueBinding(binding)
   self:addBinding("value", binding)
 end
 
+-- Convenience method for removing a binding from "value"
+--
+-- @param binding The binding to remove.
 function Binding.valueTable:removeValueBinding(binding)
   self:removeBinding("value", binding)
 end
@@ -158,6 +170,11 @@ function Binding.unbindChain(binding)
   end
 end
 
+-- Creates a binding bound to the given key in the given table.
+--
+-- @param t The table the binding is bound to.
+-- @param k The key the binding is bound to.
+-- @return A binding to the key in the given table.
 function Binding.value(t, k)
   local out = Binding.proxy(setmetatable({}, Binding.valueTable))
   if type(k) == "string" then -- Single key
@@ -251,6 +268,10 @@ function Binding.proxyTable:removeListener(key, listener)
   return PtUtil.removeObject(keyListeners, listener) ~= -1
 end
 
+-- Adds a binding to the specified key in this table.
+--
+-- @param key The key to bind to.
+-- @param binding The binding to attach.
 function Binding.proxyTable:addBinding(key, binding)
   local bindings = self.bindings
   if not bindings then
@@ -266,6 +287,10 @@ function Binding.proxyTable:addBinding(key, binding)
   binding:valueChanged(self[key], self[key])
 end
 
+-- Removes a binding from a key in this table.
+--
+-- @param key The key to remove a binding from.
+-- @param binding The binding to remove.
 function Binding.proxyTable:removeBinding(key, binding)
   local keyBindings = self.bindings[key]
   return PtUtil.removeObject(keyBindings, binding) ~= -1
@@ -294,7 +319,9 @@ function Binding.bind(target, key, value)
   boundto[key] = value
 
   local bindTargets = value.bindTargets
-  
+
+  -- Keep references to the table this binding is bound to, so we can clean
+  -- up if this binding is unbound.
   if not bindTargets then
     bindTargets = {}
     value.bindTargets = bindTargets
@@ -326,6 +353,10 @@ end
 
 Binding.proxyTable.unbind = Binding.unbind
 
+-- Returns a proxy to a table that allows listeners and bindings to be attached.
+--
+-- @param instance The table to proxy.
+-- @return A proxy table to the given instance.
 function Binding.proxy(instance)
   return setmetatable(
     {_instance = instance},
