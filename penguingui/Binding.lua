@@ -1,4 +1,4 @@
--- Add listeners or bindings to objects
+--- Add listeners or bindings to objects
 Binding = setmetatable(
   {},
   {
@@ -87,7 +87,7 @@ Binding.proxyTable = {
   end
 }
 
--- Whether the table is a Binding or not.
+--- Whether the table is a Binding or not.
 --
 -- @param object The table to check.
 -- @return True if the table is a binding, false if not.
@@ -111,28 +111,28 @@ function Binding.valueTable:addValueListener(listener)
   self:addListener("value", listener)
 end
 
--- Removes a listener to the value of this binding.
+--- Removes a listener to the value of this binding.
 --
 -- @param listener The listener to remove.
 function Binding.valueTable:removeValueListener(listener)
   self:removeListener("value", listener)
 end
 
--- Convenience method for adding a binding to "value"
+--- Convenience method for adding a binding to "value"
 --
 -- @param binding The binding to add.
 function Binding.valueTable:addValueBinding(binding)
   self:addBinding("value", binding)
 end
 
--- Convenience method for removing a binding from "value"
+--- Convenience method for removing a binding from "value"
 --
 -- @param binding The binding to remove.
 function Binding.valueTable:removeValueBinding(binding)
   self:removeBinding("value", binding)
 end
 
--- Unbinds this binding, as well as anything bound to it.
+--- Unbinds this binding, as well as anything bound to it.
 function Binding.valueTable:unbind()
   local bindings = self.bindings
   if bindings and bindings.value then
@@ -170,7 +170,7 @@ function Binding.unbindChain(binding)
   end
 end
 
--- Creates a binding bound to the given key in the given table.
+--- Creates a binding bound to the given key in the given table.
 --
 -- @param t The table the binding is bound to.
 -- @param k The key the binding is bound to.
@@ -232,7 +232,7 @@ function Binding.value(t, k)
   end
 end
 
--- Adds a listener to the specified key that is called when the key's value
+--- Adds a listener to the specified key that is called when the key's value
 -- changes.
 --
 -- @param key The key to track changes to
@@ -257,7 +257,7 @@ function Binding.proxyTable:addListener(key, listener)
   table.insert(keyListeners, listener)
 end
 
--- Removes the first instance of the given listener from the given key.
+--- Removes the first instance of the given listener from the given key.
 --
 -- @param key The key the listener is attached to.
 -- @param listener The listener to remove.
@@ -268,7 +268,7 @@ function Binding.proxyTable:removeListener(key, listener)
   return PtUtil.removeObject(keyListeners, listener) ~= -1
 end
 
--- Adds a binding to the specified key in this table.
+--- Adds a binding to the specified key in this table.
 --
 -- @param key The key to bind to.
 -- @param binding The binding to attach.
@@ -287,7 +287,7 @@ function Binding.proxyTable:addBinding(key, binding)
   binding:valueChanged(self[key], self[key])
 end
 
--- Removes a binding from a key in this table.
+--- Removes a binding from a key in this table.
 --
 -- @param key The key to remove a binding from.
 -- @param binding The binding to remove.
@@ -296,7 +296,7 @@ function Binding.proxyTable:removeBinding(key, binding)
   return PtUtil.removeObject(keyBindings, binding) ~= -1
 end
 
--- Binds the key in the specified table to the 10 given value
+--- Binds the key in the specified table to the 10 given value
 --
 -- @param target The table where the key to be bound is.
 -- @param key The key to be bound.
@@ -338,7 +338,7 @@ end
 
 Binding.proxyTable.bind = Binding.bind
 
--- Removes the binding on the given key in the given target.
+--- Removes the binding on the given key in the given target.
 --
 -- @param target The table to remove the binding from.
 -- @param key The key to unbind.
@@ -353,7 +353,7 @@ end
 
 Binding.proxyTable.unbind = Binding.unbind
 
--- Returns a proxy to a table that allows listeners and bindings to be attached.
+--- Returns a proxy to a table that allows listeners and bindings to be attached.
 --
 -- @param instance The table to proxy.
 -- @return A proxy table to the given instance.
