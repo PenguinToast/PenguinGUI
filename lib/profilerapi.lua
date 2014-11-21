@@ -3,7 +3,7 @@ profilerApi = {
   hookedTables = {}
 }
 
---- Initializes the Profiler and hooks all functions
+-- Initializes the Profiler and hooks all functions
 function profilerApi.init()
   if profilerApi.isInit then return end
   profilerApi.hooks = {}
@@ -12,7 +12,7 @@ function profilerApi.init()
   profilerApi.isInit = true
 end
 
---- Prints all collected data into the log ordered by total time descending
+-- Prints all collected data into the log ordered by total time descending
 function profilerApi.logData()
   local time = profilerApi.getTime() - profilerApi.start
   local arr = {}

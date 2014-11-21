@@ -352,6 +352,7 @@ Binding.valueTable = {}
 
 Binding.valueTable.__index = Binding.valueTable
 
+
 function Binding.valueTable:addValueListener(listener)
   self:addListener("value", listener)
 end
@@ -395,6 +396,7 @@ function Binding.valueTable:unbind()
     end
   end
 end
+
 
 function Binding.unbindChain(binding)
   Binding.valueTable.unbind(binding)
@@ -461,6 +463,7 @@ function Binding.value(t, k)
   end
 end
 
+
 function Binding.proxyTable:addListener(key, listener)
   local listeners = self.listeners
   if not listeners then
@@ -499,6 +502,7 @@ function Binding.proxyTable:removeBinding(key, binding)
   local keyBindings = self.bindings[key]
   return PtUtil.removeObject(keyBindings, binding) ~= -1
 end
+
 
 function Binding.bind(target, key, value)
   local listener = function(t, k, old, new)
@@ -555,6 +559,7 @@ end
 -- BindingFunctions.lua
 --------------------------------------------------------------------------------
 
+
 local createFunction = function(f)
   return function(...)
     local out = Binding.proxy(setmetatable({}, Binding.valueTable))
@@ -590,6 +595,7 @@ local createFunction = function(f)
     return out
   end
 end
+
 
 Binding.valueTable.tostring = createFunction(
   function(value)
@@ -819,6 +825,7 @@ Binding.valueTable.THEN = function(self, ifTrue, ifFalse)
   return out
 end
 Binding.THEN = Binding.valueTable.THEN
+
 
 --------------------------------------------------------------------------------
 -- GUI.lua
@@ -1113,6 +1120,7 @@ Button.innerBorderHoverColor = "#939393"
 Button.color = "#262626"
 Button.hoverColor = "#545454"
 
+
 function Button:_init(x, y, width, height)
   Component._init(self)
   self.mouseOver = false
@@ -1122,6 +1130,7 @@ function Button:_init(x, y, width, height)
   self.width = width
   self.height = height
 end
+
 
 function Button:update(dt)
   if self.pressed and not self.mouseOver then
@@ -1184,6 +1193,7 @@ function Button:clickEvent(position, button, pressed)
   self:setPressed(pressed)
   return true
 end
+
 
 --------------------------------------------------------------------------------
 -- Label.lua
@@ -1506,6 +1516,7 @@ CheckBox.hoverColor = "#1C1C1C"
 CheckBox.checkColor = "#C51A0B"
 CheckBox.pressedColor = "#343434"
 
+
 function CheckBox:_init(x, y, size)
   Component._init(self)
   self.mouseOver = false
@@ -1517,6 +1528,7 @@ function CheckBox:_init(x, y, size)
 
   self.selected = false
 end
+
 
 function CheckBox:update(dt)
   if self.pressed and not self.mouseOver then

@@ -1,4 +1,19 @@
 --- Add listeners or bindings to objects
+-- @module Binding
+-- @usage -- Add a listener to print whenever a value is changed.
+-- local sometable = { a = "somevalue" }
+-- sometable = Binding.proxy(sometable)
+-- sometable:addListener("a", function(t, k, old, new)
+--   print("Key " .. k .. " changed from " .. old .. " to " .. new)
+-- end
+-- @usage -- Bind a value in a table to the sum of two other values.
+-- local table1 = Binding.proxy({ a = 4 })
+-- local table2 = Binding.proxy({ a = 5 })
+-- local sumtable = Binding.proxy({})
+-- sumtable:bind("sum", Binding(table1, "a"):add(Binding(table2, "a")))
+-- -- sumtable.sum == 9
+-- table1.a = 6
+-- -- sumtable.sum == 11
 Binding = setmetatable(
   {},
   {
@@ -8,7 +23,7 @@ Binding = setmetatable(
   }
 )
 
--- Proxy metatable to add listeners to a table
+-- Proxy metatable to add listeners to a table.
 Binding.proxyTable = {
   __index = function(t, k)
     local out = t._instance[k]
@@ -100,11 +115,16 @@ Binding.weakMetaTable = {
   __mode = "v"
 }
 
+-- Functions available to a binding.
 Binding.valueTable = {}
 
 Binding.valueTable.__index = Binding.valueTable
 
--- Adds a listener to the value of this binding.
+--- Contains a value that is based off whatever this binding is bound to.
+-- @type Binding
+
+--- Adds a listener to the value of this binding.
+-- @function addValueListener
 --
 -- @param listener The listener to add.
 function Binding.valueTable:addValueListener(listener)
@@ -112,13 +132,15 @@ function Binding.valueTable:addValueListener(listener)
 end
 
 --- Removes a listener to the value of this binding.
---
+-- @function removeValueListener
+-- 
 -- @param listener The listener to remove.
 function Binding.valueTable:removeValueListener(listener)
   self:removeListener("value", listener)
 end
 
 --- Convenience method for adding a binding to "value"
+-- @function addValueBinding
 --
 -- @param binding The binding to add.
 function Binding.valueTable:addValueBinding(binding)
@@ -126,13 +148,15 @@ function Binding.valueTable:addValueBinding(binding)
 end
 
 --- Convenience method for removing a binding from "value"
---
+-- @function removeValueBinding
+-- 
 -- @param binding The binding to remove.
 function Binding.valueTable:removeValueBinding(binding)
   self:removeBinding("value", binding)
 end
 
 --- Unbinds this binding, as well as anything bound to it.
+-- @function unbind
 function Binding.valueTable:unbind()
   local bindings = self.bindings
   if bindings and bindings.value then
@@ -160,6 +184,8 @@ function Binding.valueTable:unbind()
     end
   end
 end
+
+--- @type end
 
 function Binding.unbindChain(binding)
   Binding.valueTable.unbind(binding)
@@ -232,8 +258,12 @@ function Binding.value(t, k)
   end
 end
 
+--- A proxy to allow listeners & bindings to be attached
+-- @type Proxy
+
 --- Adds a listener to the specified key that is called when the key's value
 -- changes.
+-- @function addListener
 --
 -- @param key The key to track changes to
 -- @param listener The function to call upon the value of the key changing.
@@ -258,6 +288,7 @@ function Binding.proxyTable:addListener(key, listener)
 end
 
 --- Removes the first instance of the given listener from the given key.
+-- @function removeListener
 --
 -- @param key The key the listener is attached to.
 -- @param listener The listener to remove.
@@ -269,6 +300,7 @@ function Binding.proxyTable:removeListener(key, listener)
 end
 
 --- Adds a binding to the specified key in this table.
+-- @function addBinding
 --
 -- @param key The key to bind to.
 -- @param binding The binding to attach.
@@ -288,6 +320,7 @@ function Binding.proxyTable:addBinding(key, binding)
 end
 
 --- Removes a binding from a key in this table.
+-- @function removeBinding
 --
 -- @param key The key to remove a binding from.
 -- @param binding The binding to remove.
@@ -295,6 +328,8 @@ function Binding.proxyTable:removeBinding(key, binding)
   local keyBindings = self.bindings[key]
   return PtUtil.removeObject(keyBindings, binding) ~= -1
 end
+
+--- @type end
 
 --- Binds the key in the specified table to the 10 given value
 --

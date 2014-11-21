@@ -1,3 +1,5 @@
+--- @module Binding
+
 -- Creates a binding function (convenience function)
 --
 -- @param f A function that returns this value's new value after the value
@@ -39,7 +41,11 @@ local createFunction = function(f)
   end
 end
 
--- Calls tonumber on this value.
+--- @type Binding
+
+--- Creates a binding containing the string representation of this binding.
+-- @function tostring
+-- @return A new binding.
 Binding.valueTable.tostring = createFunction(
   function(value)
     return tostring(value())
@@ -47,7 +53,9 @@ Binding.valueTable.tostring = createFunction(
 )
 Binding.tostring = Binding.valueTable.tostring
 
--- Calls tonumber on this value.
+--- Creates a binding containing the number value of this binding.
+-- @function tonumber
+-- @return A new binding.
 Binding.valueTable.tonumber = createFunction(
   function(value)
     return tonumber(value())
@@ -55,9 +63,10 @@ Binding.valueTable.tonumber = createFunction(
 )
 Binding.tonumber = Binding.valueTable.tonumber
 
--- Creates a new value containing the sum of this value and others.
---
--- @param others Can be values, or constants (number, etc.)
+--- Creates a new binding containing the sum of this binding and others.
+-- @function add
+-- @param ... Can be bindings, or constants (number, etc.)
+-- @return A new binding.
 Binding.valueTable.add = createFunction(
   function(first, ...)
     local out = first()
@@ -70,9 +79,10 @@ Binding.valueTable.add = createFunction(
 )
 Binding.add = Binding.valueTable.add
 
--- Creates a new value containing the difference of this value and others.
---
--- @param others Can be values, or constants (number, etc.)
+--- Creates a new binding containing the difference of this binding and others.
+-- @function sub
+-- @param ... Can be bindings, or constants (number, etc.)
+-- @return A new binding.
 Binding.valueTable.sub = createFunction(
   function(first, ...)
     local out = first()
@@ -85,9 +95,10 @@ Binding.valueTable.sub = createFunction(
 )
 Binding.sub = Binding.valueTable.sub
 
--- Creates a new value containing the product of this value and others.
---
--- @param others Can be values, or constants (number, etc.)
+--- Creates a new binding containing the product of this binding and others.
+-- @function mul
+-- @param ... Can be bindings, or constants (number, etc.)
+-- @return A new binding.
 Binding.valueTable.mul = createFunction(
   function(first, ...)
     local out = first()
@@ -100,9 +111,10 @@ Binding.valueTable.mul = createFunction(
 )
 Binding.mul = Binding.valueTable.mul
 
--- Creates a new value containing the quotient of this value and others.
---
--- @param others Can be values, or constants (number, etc.)
+--- Creates a new binding containing the quotient of this binding and others.
+-- @function div
+-- @param ... Can be bindings, or constants (number, etc.)
+-- @return A new binding.
 Binding.valueTable.div = createFunction(
   function(first, ...)
     local out = first()
@@ -115,9 +127,10 @@ Binding.valueTable.div = createFunction(
 )
 Binding.div = Binding.valueTable.div
 
--- Creates a new value containing the modulus of this value and others.
---
--- @param others Can be values, or constants (number, etc.)
+--- Creates a new binding containing the modulus of this binding and others.
+-- @function mod
+-- @param ... Can be bindings, or constants (number, etc.)
+-- @return A new binding.
 Binding.valueTable.mod = createFunction(
   function(first, ...)
     local out = first()
@@ -130,9 +143,11 @@ Binding.valueTable.mod = createFunction(
 )
 Binding.mod = Binding.valueTable.mod
 
--- Creates a new value containing the power of this value and others.
---
--- @param others Can be values, or constants (number, etc.)
+--- Creates a new binding containing the exponentiation of this binding and
+-- others.
+-- @function pow
+-- @param ... Can be bindings, or constants (number, etc.)
+-- @return A new binding.
 Binding.valueTable.pow = createFunction(
   function(first, ...)
     local out = first()
@@ -145,7 +160,9 @@ Binding.valueTable.pow = createFunction(
 )
 Binding.pow = Binding.valueTable.pow
 
--- Creates a new value containing the negation of this value.
+--- Creates a new binding containing the negation of this binding.
+-- @function negate
+-- @return A new binding.
 Binding.valueTable.negate = createFunction(
   function(value)
     return -value()
@@ -153,9 +170,11 @@ Binding.valueTable.negate = createFunction(
 )
 Binding.negate = Binding.valueTable.negate
 
--- Creates a new value containing the concatenation of this value and other.
---
--- @param others Can be values, or constants (number, etc.)
+--- Creates a new binding containing the concatenation of this binding and
+-- others.
+-- @function concat
+-- @param ... Can be bindings, or constants (number, etc.)
+-- @return A new binding.
 Binding.valueTable.concat = createFunction(
   function(first, ...)
     local out = first()
@@ -168,7 +187,9 @@ Binding.valueTable.concat = createFunction(
 )
 Binding.concat = Binding.valueTable.concat
 
--- Creates a new value containing the length of this value.
+--- Creates a new binding containing the length of this binding.
+-- @function len
+-- @return A new binding.
 Binding.valueTable.len = createFunction(
   function(value)
     return #value()
@@ -176,9 +197,10 @@ Binding.valueTable.len = createFunction(
 )
 Binding.len = Binding.valueTable.len
 
--- Creates a new value containing the equality of this value and another.
---
--- @param other Can either be another value, or a constant (number, etc.)
+--- Creates a new binding representing if this value is equal to another.
+-- @function eq
+-- @param other Can be another binding or a constant (number, etc.)
+-- @return A new binding.
 Binding.valueTable.eq = createFunction(
   function(a, b)
     return a() == b()
@@ -186,9 +208,10 @@ Binding.valueTable.eq = createFunction(
 )
 Binding.eq = Binding.valueTable.eq
 
--- Creates a new value containing the unequality of this value and another.
---
--- @param other Can either be another value, or a constant (number, etc.)
+--- Creates a new binding representing if this value is not equal to another.
+-- @function ne
+-- @param other Can be another binding or a constant (number, etc.)
+-- @return A new binding.
 Binding.valueTable.ne = createFunction(
   function(a, b)
     return a() ~= b()
@@ -196,9 +219,10 @@ Binding.valueTable.ne = createFunction(
 )
 Binding.ne = Binding.valueTable.ne
 
--- Creates a new value containing whether this value is less than another.
---
--- @param other Can either be another value, or a constant (number, etc.)
+--- Creates a new binding representing if this value is less than to another.
+-- @function lt
+-- @param other Can be another binding or a constant (number, etc.)
+-- @return A new binding.
 Binding.valueTable.lt = createFunction(
   function(a, b)
     return a() < b()
@@ -206,9 +230,10 @@ Binding.valueTable.lt = createFunction(
 )
 Binding.lt = Binding.valueTable.lt
 
--- Creates a new value containing whether this value is greater than another.
---
--- @param other Can either be another value, or a constant (number, etc.)
+--- Creates a new binding representing if this value is greater than to another.
+-- @function gt
+-- @param other Can be another binding or a constant (number, etc.)
+-- @return A new binding.
 Binding.valueTable.gt = createFunction(
   function(a, b)
     return a() > b()
@@ -216,10 +241,11 @@ Binding.valueTable.gt = createFunction(
 )
 Binding.gt = Binding.valueTable.gt
 
--- Creates a new value containing whether this value is less than or equal to
--- another.
---
--- @param other Can either be another value, or a constant (number, etc.)
+--- Creates a new binding representing if this value is less than or equal
+-- to another.
+-- @function le
+-- @param other Can be another binding or a constant (number, etc.)
+-- @return A new binding.
 Binding.valueTable.le = createFunction(
   function(a, b)
     return a() <= b()
@@ -227,10 +253,11 @@ Binding.valueTable.le = createFunction(
 )
 Binding.le = Binding.valueTable.le
 
--- Creates a new value containing whether this value is greater than or equal to
--- another.
---
--- @param other Can either be another value, or a constant (number, etc.)
+--- Creates a new binding representing if this value is greater than or equal
+-- to another.
+-- @function ge
+-- @param other Can be another binding or a constant (number, etc.)
+-- @return A new binding.
 Binding.valueTable.ge = createFunction(
   function(a, b)
     return a() >= b()
@@ -238,9 +265,10 @@ Binding.valueTable.ge = createFunction(
 )
 Binding.ge = Binding.valueTable.ge
 
--- Creates a new value containing this value AND others.
---
--- @param others Can be values, or constants (number, etc.)
+--- Creates a new binding containing this binding AND others.
+-- @function AND
+-- @param ... Can be bindings, or constants (number, etc.)
+-- @return A new binding.
 Binding.valueTable.AND = createFunction(
   function(first, ...)
     local out = first()
@@ -253,9 +281,10 @@ Binding.valueTable.AND = createFunction(
 )
 Binding.AND = Binding.valueTable.AND
 
--- Creates a new value containing this value OR others.
---
--- @param others Can be values, or constants (number, etc.)
+--- Creates a new binding containing this binding OR others.
+-- @function OR
+-- @param ... Can be bindings, or constants (number, etc.)
+-- @return A new binding.
 Binding.valueTable.OR = createFunction(
   function(first, ...)
     local out = first()
@@ -268,7 +297,9 @@ Binding.valueTable.OR = createFunction(
 )
 Binding.OR = Binding.valueTable.OR
 
--- Creates a new value containing NOT this value
+--- Creates a new binding containing NOT this binding.
+-- @function NOT
+-- @return A new binding.
 Binding.valueTable.NOT = createFunction(
   function(value)
     return not value()
@@ -276,13 +307,15 @@ Binding.valueTable.NOT = createFunction(
 )
 Binding.NOT = Binding.valueTable.NOT
 
--- Creates a new value with the value of the first value if this value is true,
--- or the second value if this value is false.
+--- Creates a new binding with the value of the first value if this binding is
+-- true, or the second value if this binding is false.
+-- @function THEN
 --
 -- @param ifTrue The value the new binding will be set to when this value is
 --      true. Can either be another value, or a constant (number, etc.)
 -- @param ifFalse The value the new binding will be set to when this value is
 --      false. Can either be another value, or a constant (number, etc.)
+-- @return A new binding.
 Binding.valueTable.THEN = function(self, ifTrue, ifFalse)
   local out = Binding.proxy(setmetatable({}, Binding.valueTable))
   local trueFunction
@@ -326,3 +359,5 @@ Binding.valueTable.THEN = function(self, ifTrue, ifFalse)
   return out
 end
 Binding.THEN = Binding.valueTable.THEN
+
+--- @type end

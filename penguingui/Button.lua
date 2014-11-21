@@ -1,12 +1,26 @@
--- A clickable button
+--- A clickable button.
+-- @classmod Button
+-- @usage -- Create an empty button that prints when it is clicked
+-- local button = Button(0, 0, 100, 100)
+-- button.onClick = function(component, button)
+--   print("Clicked with mouse button " .. button)
+-- end
 Button = class(Component)
+--- The color of the outer border of this button.
 Button.outerBorderColor = "black"
+--- The color of the inner border of this button.
 Button.innerBorderColor = "#545454"
+--- The color of the inner border of this button when the mouse is over it.
 Button.innerBorderHoverColor = "#939393"
+--- The color of this button.
 Button.color = "#262626"
+--- The color of this button when the mouse is over it.
 Button.hoverColor = "#545454"
 
--- Constructs a new Button.
+--- Constructor
+-- @section
+
+--- Constructs a new Button.
 --
 -- @param x The x coordinate of the new component, relative to its parent.
 -- @param y The y coordinate of the new component, relative to its parent.
@@ -21,6 +35,8 @@ function Button:_init(x, y, width, height)
   self.width = width
   self.height = height
 end
+
+--- @section end
 
 function Button:update(dt)
   if self.pressed and not self.mouseOver then
@@ -83,3 +99,8 @@ function Button:clickEvent(position, button, pressed)
   self:setPressed(pressed)
   return true
 end
+
+--- Called when this button is clicked.
+-- @function onClick
+--
+-- @param button The mouse button that was used.

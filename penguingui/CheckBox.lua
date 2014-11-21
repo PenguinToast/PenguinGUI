@@ -1,4 +1,8 @@
--- A check box
+--- A check box.
+-- @classmod CheckBox
+-- @usage -- Create a checkbox that prints when it is checked
+-- local checkbox = CheckBox(0, 0, 16)
+-- 
 CheckBox = class(Component)
 CheckBox.borderColor = "#545454"
 CheckBox.backgroundColor = "black"
@@ -6,7 +10,10 @@ CheckBox.hoverColor = "#1C1C1C"
 CheckBox.checkColor = "#C51A0B"
 CheckBox.pressedColor = "#343434"
 
--- Constructs a new CheckBox.
+--- Constructor
+-- @section
+
+--- Constructs a new CheckBox.
 -- 
 -- @param x The x coordinate of the new component, relative to its parent.
 -- @param y The y coordinate of the new component, relative to its parent.
@@ -22,6 +29,8 @@ function CheckBox:_init(x, y, size)
 
   self.selected = false
 end
+
+--- @section end
 
 function CheckBox:update(dt)
   if self.pressed and not self.mouseOver then
@@ -53,7 +62,7 @@ function CheckBox:draw(dt)
   end
 end
 
--- Draw the checkbox
+--- Draw the checkbox
 function CheckBox:drawCheck(dt)
   local startX = self.x + self.offset[1]
   local startY = self.y + self.offset[2]
