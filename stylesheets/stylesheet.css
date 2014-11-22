@@ -161,6 +161,13 @@ a.button span {
 #download-tar-gz span {
   background: transparent url(../images/tar-gz-icon.png) 12px 50% no-repeat;
 }
+#docs {
+  width: 100%;
+}
+#docs span {
+  text-align: center;
+  padding-left: 0px;
+}
 #view-on-github span {
   background: transparent url(../images/octocat-icon.png) 12px 50% no-repeat;
 }

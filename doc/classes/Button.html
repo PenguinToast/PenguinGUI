@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Fields">Fields</a></li>
+<li><a href="#Constructor">Constructor </a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><strong>Button</strong></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/penguingui.html">penguingui</a></li>
+  <li><a href="../modules/Binding.html">Binding</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>Button</code></h1>
+<p>A clickable button.</p>
+<p></p>
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"> -- Create an empty button that prints when it is clicked
+ local button = Button(0, 0, 100, 100)
+ button.onClick = function(component, button)
+   print(&quot;Clicked with mouse button &quot; .. button)
+ end</pre>
+    </ul>
+
+
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Button.outerBorderColor">Button.outerBorderColor</a></td>
+	<td class="summary">The color of the outer border of this button.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Button.innerBorderColor">Button.innerBorderColor</a></td>
+	<td class="summary">The color of the inner border of this button.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Button.innerBorderHoverColor">Button.innerBorderHoverColor</a></td>
+	<td class="summary">The color of the inner border of this button when the mouse is over it.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Button.color">Button.color</a></td>
+	<td class="summary">The color of this button.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Button.hoverColor">Button.hoverColor</a></td>
+	<td class="summary">The color of this button when the mouse is over it.</td>
+	</tr>
+</table>
+<h2><a href="#Constructor">Constructor </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Button:_init">Button:_init (x, y, width, height)</a></td>
+	<td class="summary">Constructs a new Button.</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Button:onClick">Button:onClick (button)</a></td>
+	<td class="summary">Called when this button is clicked.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Button.outerBorderColor"></a>
+    <strong>Button.outerBorderColor</strong>
+    </dt>
+    <dd>
+    The color of the outer border of this button.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Button.innerBorderColor"></a>
+    <strong>Button.innerBorderColor</strong>
+    </dt>
+    <dd>
+    The color of the inner border of this button.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Button.innerBorderHoverColor"></a>
+    <strong>Button.innerBorderHoverColor</strong>
+    </dt>
+    <dd>
+    The color of the inner border of this button when the mouse is over it.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Button.color"></a>
+    <strong>Button.color</strong>
+    </dt>
+    <dd>
+    The color of this button.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Button.hoverColor"></a>
+    <strong>Button.hoverColor</strong>
+    </dt>
+    <dd>
+    The color of this button when the mouse is over it.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2><a name="Constructor"></a>Constructor </h2>
+
+
+    <dl class="function">
+    <dt>
+    <a name = "Button:_init"></a>
+    <strong>Button:_init (x, y, width, height)</strong>
+    </dt>
+    <dd>
+    Constructs a new Button.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+         The x coordinate of the new component, relative to its parent.
+        </li>
+        <li><span class="parameter">y</span>
+         The y coordinate of the new component, relative to its parent.
+        </li>
+        <li><span class="parameter">width</span>
+         The width of the new component.
+        </li>
+        <li><span class="parameter">height</span>
+         The height of the new component.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Button:onClick"></a>
+    <strong>Button:onClick (button)</strong>
+    </dt>
+    <dd>
+    Called when this button is clicked.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">button</span>
+         The mouse button that was used.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-22 04:03:38 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

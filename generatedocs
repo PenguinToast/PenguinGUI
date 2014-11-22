@@ -1,0 +1,11 @@
+#!/bin/bash
+
+git clone git@github.com:PenguinToast/PenguinGUI.git
+cd PenguinGUI
+ldoc .
+mv doc ../doc
+cd ..
+rm -rf PenguinGUI
+git add doc
+git commit -m "Update documentation."
+git push
