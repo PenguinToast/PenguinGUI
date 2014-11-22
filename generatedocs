@@ -1,8 +1,10 @@
 #!/bin/bash
 
+rm -rf doc
 cd PenguinGUI
 git pull
 ldoc .
+mv doc ../doc
 cd ..
 git add doc
 git commit -m "Update documentation."
