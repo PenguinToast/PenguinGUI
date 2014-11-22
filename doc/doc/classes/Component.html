@@ -1,0 +1,353 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Constructor">Constructor </a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Button.html">Button</a></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+  <li><strong>Component</strong></li>
+  <li><a href="../classes/Frame.html">Frame</a></li>
+  <li><a href="../classes/Image.html">Image</a></li>
+  <li><a href="../classes/Label.html">Label</a></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
+  <li><a href="../classes/RadioButton.html">RadioButton</a></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><a href="../classes/TextField.html">TextField</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/Binding.html">Binding</a></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>Component</code></h1>
+<p>Superclass for all GUI components.</p>
+<p></p>
+
+
+<h2><a href="#Constructor">Constructor </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Component:_init">Component:_init ()</a></td>
+	<td class="summary">Constructs a component.</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Component:add">Component:add (child)</a></td>
+	<td class="summary">Adds a child component to this component.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component:remove">Component:remove (child)</a></td>
+	<td class="summary">Removes a child component.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component:pack">Component:pack (padding)</a></td>
+	<td class="summary">Resizes this component around its children.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component:step">Component:step (dt)</a></td>
+	<td class="summary">Draws and updates this component, and any children.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component:update">Component:update (dt)</a></td>
+	<td class="summary">Updates this component.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component:draw">Component:draw (dt)</a></td>
+	<td class="summary">Draws this component</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component:setParent">Component:setParent (parent)</a></td>
+	<td class="summary">Sets the parent of this component, and updates the offset of this component.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component:calculateOffset">Component:calculateOffset (direction)</a></td>
+	<td class="summary">Calculates the offset from the origin that this component should use, based
+ on its parents.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component:contains">Component:contains (position)</a></td>
+	<td class="summary">Checks if the given position is within this component.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2><a name="Constructor"></a>Constructor </h2>
+
+
+    <dl class="function">
+    <dt>
+    <a name = "Component:_init"></a>
+    <strong>Component:_init ()</strong>
+    </dt>
+    <dd>
+    Constructs a component.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Component:add"></a>
+    <strong>Component:add (child)</strong>
+    </dt>
+    <dd>
+    Adds a child component to this component.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">child</span>
+         The component to add.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component:remove"></a>
+    <strong>Component:remove (child)</strong>
+    </dt>
+    <dd>
+    Removes a child component.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">child</span>
+         The component to remove
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Whether or not the child was removed
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component:pack"></a>
+    <strong>Component:pack (padding)</strong>
+    </dt>
+    <dd>
+    Resizes this component around its children.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">padding</span>
+         (Optional) Amount of padding to put between the component's
+                children and this component's borders.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component:step"></a>
+    <strong>Component:step (dt)</strong>
+    </dt>
+    <dd>
+    Draws and updates this component, and any children.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">dt</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component:update"></a>
+    <strong>Component:update (dt)</strong>
+    </dt>
+    <dd>
+    Updates this component.
+<p> Components should override this to implement their own update functions.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">dt</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component:draw"></a>
+    <strong>Component:draw (dt)</strong>
+    </dt>
+    <dd>
+    Draws this component  Components should override this to implement their own draw functions.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">dt</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component:setParent"></a>
+    <strong>Component:setParent (parent)</strong>
+    </dt>
+    <dd>
+    Sets the parent of this component, and updates the offset of this component.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">parent</span>
+         The new parent of this component, or nil if this is to be a
+               top level component.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component:calculateOffset"></a>
+    <strong>Component:calculateOffset (direction)</strong>
+    </dt>
+    <dd>
+    Calculates the offset from the origin that this component should use, based
+ on its parents.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">direction</span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        The calculated offset.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component:contains"></a>
+    <strong>Component:contains (position)</strong>
+    </dt>
+    <dd>
+    Checks if the given position is within this component.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">position</span>
+         The position to check.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Whether or not the position is within the bounds of this component.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-22 04:05:02 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/Binding.html">Binding</a></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><strong>PtUtil</strong></li>
+</ul>
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Button.html">Button</a></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+  <li><a href="../classes/Component.html">Component</a></li>
+  <li><a href="../classes/Frame.html">Frame</a></li>
+  <li><a href="../classes/Image.html">Image</a></li>
+  <li><a href="../classes/Label.html">Label</a></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
+  <li><a href="../classes/RadioButton.html">RadioButton</a></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><a href="../classes/TextField.html">TextField</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>PtUtil</code></h1>
+<p>Utility functions.</p>
+<p></p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#library">library ()</a></td>
+	<td class="summary">Get a list of all lua scripts in the PenguinGUI library.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#drawText">drawText (text, options, fontSize, color)</a></td>
+	<td class="summary">Draw the text string, offsetting the string to account for leading whitespace.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getStringWidth">getStringWidth (text, fontSize)</a></td>
+	<td class="summary">Get the approximate pixel width of a string.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getFontScale">getFontScale (size)</a></td>
+	<td class="summary">Gets the scale of the specified font size.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getKey">getKey (key, shift, capslock)</a></td>
+	<td class="summary">Gets a string representation of the keycode.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fillRect">fillRect (rect, color)</a></td>
+	<td class="summary">Fills a rectangle.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#drawLine">drawLine (p1, p2, color, width)</a></td>
+	<td class="summary">Draws a line.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#drawRect">drawRect (rect, color, width)</a></td>
+	<td class="summary">Draws a rectangle.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ripairs">ripairs (t)</a></td>
+	<td class="summary">Does the same thing as ipairs, except backwards</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#removeObject">removeObject (t, o)</a></td>
+	<td class="summary">Removes the first occurence of an object from the given table.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#class">class (...)</a></td>
+	<td class="summary">Creates a new class with the specified superclass(es).</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "library"></a>
+    <strong>library ()</strong>
+    </dt>
+    <dd>
+    Get a list of all lua scripts in the PenguinGUI library.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A list of strings containing the paths to the PenguinGUI scripts.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "drawText"></a>
+    <strong>drawText (text, options, fontSize, color)</strong>
+    </dt>
+    <dd>
+    Draw the text string, offsetting the string to account for leading whitespace.
+<p> All parameters are identical to those of console.canvasDrawText
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">text</span>
+
+        </li>
+        <li><span class="parameter">options</span>
+
+        </li>
+        <li><span class="parameter">fontSize</span>
+
+        </li>
+        <li><span class="parameter">color</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getStringWidth"></a>
+    <strong>getStringWidth (text, fontSize)</strong>
+    </dt>
+    <dd>
+    Get the approximate pixel width of a string.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">text</span>
+         The string to get the width of.
+        </li>
+        <li><span class="parameter">fontSize</span>
+         The size of the font to get the width from.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getFontScale"></a>
+    <strong>getFontScale (size)</strong>
+    </dt>
+    <dd>
+    Gets the scale of the specified font size.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">size</span>
+         The font size to get the scale for
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getKey"></a>
+    <strong>getKey (key, shift, capslock)</strong>
+    </dt>
+    <dd>
+    Gets a string representation of the keycode.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">key</span>
+         The keycode of the key.
+        </li>
+        <li><span class="parameter">shift</span>
+         Boolean representing whether or not shift is pressed.
+        </li>
+        <li><span class="parameter">capslock</span>
+         Boolean representing whether or not capslock is on.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fillRect"></a>
+    <strong>fillRect (rect, color)</strong>
+    </dt>
+    <dd>
+    Fills a rectangle.
+<p> All parameters are identical to those of console.canvasDrawRect
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">rect</span>
+
+        </li>
+        <li><span class="parameter">color</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "drawLine"></a>
+    <strong>drawLine (p1, p2, color, width)</strong>
+    </dt>
+    <dd>
+    Draws a line.
+<p> All parameters are identical to those of console.canvasDrawLine
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">p1</span>
+
+        </li>
+        <li><span class="parameter">p2</span>
+
+        </li>
+        <li><span class="parameter">color</span>
+
+        </li>
+        <li><span class="parameter">width</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "drawRect"></a>
+    <strong>drawRect (rect, color, width)</strong>
+    </dt>
+    <dd>
+    Draws a rectangle.
+<p> All parameters are identical to those of console.canvasDrawRect
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">rect</span>
+
+        </li>
+        <li><span class="parameter">color</span>
+
+        </li>
+        <li><span class="parameter">width</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ripairs"></a>
+    <strong>ripairs (t)</strong>
+    </dt>
+    <dd>
+    Does the same thing as ipairs, except backwards
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         The table to iterate backwards over
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "removeObject"></a>
+    <strong>removeObject (t, o)</strong>
+    </dt>
+    <dd>
+    Removes the first occurence of an object from the given table.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         The table to remove from.
+        </li>
+        <li><span class="parameter">o</span>
+         The object to remove.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        The index of the removed object, or -1 if the object was not found.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "class"></a>
+    <strong>class (...)</strong>
+    </dt>
+    <dd>
+    Creates a new class with the specified superclass(es).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         The new class's superclass(es).
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-22 04:05:02 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Fields">Fields</a></li>
+<li><a href="#Constructor">Constructor </a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Button.html">Button</a></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+  <li><a href="../classes/Component.html">Component</a></li>
+  <li><a href="../classes/Frame.html">Frame</a></li>
+  <li><a href="../classes/Image.html">Image</a></li>
+  <li><a href="../classes/Label.html">Label</a></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
+  <li><a href="../classes/RadioButton.html">RadioButton</a></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><strong>TextField</strong></li>
+</ul>
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/Binding.html">Binding</a></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>TextField</code></h1>
+<p>An editable text field.</p>
+<p></p>
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">
+ -- Create a text field that prints whatever is in it when enter is pressed.
+ local textfield = TextField(0, 0, 100, 16, &quot;default text&quot;)
+ textfield.onEnter = function(textfield)
+   print(textfield.text)
+ end</pre>
+    </ul>
+
+
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#TextField.borderColor">TextField.borderColor</a></td>
+	<td class="summary">The color of this text field's border.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextField.backgroundColor">TextField.backgroundColor</a></td>
+	<td class="summary">The background color of this text field.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextField.textColor">TextField.textColor</a></td>
+	<td class="summary">The color of this text field's text.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextField.textHoverColor">TextField.textHoverColor</a></td>
+	<td class="summary">The color of this text field's text when the mouse is over it.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextField.defaultTextColor">TextField.defaultTextColor</a></td>
+	<td class="summary">The color of this text field's default text.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextField.defaultTextHoverColor">TextField.defaultTextHoverColor</a></td>
+	<td class="summary">The color of this text field's default text when the mouse is over it.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextField.cursorColor">TextField.cursorColor</a></td>
+	<td class="summary">The color of the text cursor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextField.cursorRate">TextField.cursorRate</a></td>
+	<td class="summary">The period of the cursor's blinking.</td>
+	</tr>
+</table>
+<h2><a href="#Constructor">Constructor </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#TextField:_init">TextField:_init (x, y, width, height, defaultText)</a></td>
+	<td class="summary">Constructs a new TextField.</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#TextField:setCursorPosition">TextField:setCursorPosition (pos)</a></td>
+	<td class="summary">Set the character position of the text cursor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextField:onEnter">TextField:onEnter ()</a></td>
+	<td class="summary">Called when the user presses enter in this text field.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "TextField.borderColor"></a>
+    <strong>TextField.borderColor</strong>
+    </dt>
+    <dd>
+    The color of this text field's border.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextField.backgroundColor"></a>
+    <strong>TextField.backgroundColor</strong>
+    </dt>
+    <dd>
+    The background color of this text field.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextField.textColor"></a>
+    <strong>TextField.textColor</strong>
+    </dt>
+    <dd>
+    The color of this text field's text.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextField.textHoverColor"></a>
+    <strong>TextField.textHoverColor</strong>
+    </dt>
+    <dd>
+    The color of this text field's text when the mouse is over it.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextField.defaultTextColor"></a>
+    <strong>TextField.defaultTextColor</strong>
+    </dt>
+    <dd>
+    The color of this text field's default text.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextField.defaultTextHoverColor"></a>
+    <strong>TextField.defaultTextHoverColor</strong>
+    </dt>
+    <dd>
+    The color of this text field's default text when the mouse is over it.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextField.cursorColor"></a>
+    <strong>TextField.cursorColor</strong>
+    </dt>
+    <dd>
+    The color of the text cursor.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextField.cursorRate"></a>
+    <strong>TextField.cursorRate</strong>
+    </dt>
+    <dd>
+    The period of the cursor's blinking.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2><a name="Constructor"></a>Constructor </h2>
+
+
+    <dl class="function">
+    <dt>
+    <a name = "TextField:_init"></a>
+    <strong>TextField:_init (x, y, width, height, defaultText)</strong>
+    </dt>
+    <dd>
+    Constructs a new TextField.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+         The x coordinate of the new component, relative to its parent.
+        </li>
+        <li><span class="parameter">y</span>
+         The y coordinate of the new component, relative to its parent.
+        </li>
+        <li><span class="parameter">width</span>
+         The width of the new component.
+        </li>
+        <li><span class="parameter">height</span>
+         The height of the new component.
+        </li>
+        <li><span class="parameter">defaultText</span>
+         The text to display when nothing has been entered.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "TextField:setCursorPosition"></a>
+    <strong>TextField:setCursorPosition (pos)</strong>
+    </dt>
+    <dd>
+    Set the character position of the text cursor.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">pos</span>
+         The new position for the cursor, where 0 is the beginning of the
+            field.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextField:onEnter"></a>
+    <strong>TextField:onEnter ()</strong>
+    </dt>
+    <dd>
+    Called when the user presses enter in this text field.
+
+
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-22 04:05:02 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

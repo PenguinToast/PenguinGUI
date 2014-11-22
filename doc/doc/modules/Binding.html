@@ -1,0 +1,1136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Class_Binding">Class Binding </a></li>
+<li><a href="#Class_Proxy">Class Proxy </a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><strong>Binding</strong></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Button.html">Button</a></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+  <li><a href="../classes/Component.html">Component</a></li>
+  <li><a href="../classes/Frame.html">Frame</a></li>
+  <li><a href="../classes/Image.html">Image</a></li>
+  <li><a href="../classes/Label.html">Label</a></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
+  <li><a href="../classes/RadioButton.html">RadioButton</a></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><a href="../classes/TextField.html">TextField</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>Binding</code></h1>
+<p>Adds listeners or bindings to objects.</p>
+<p></p>
+    <h3>Usage:</h3>
+    <ul>
+        <li><pre class="example"> -- Add a listener to print whenever a value is changed.
+ local sometable = { a = &quot;somevalue&quot; }
+ sometable = Binding.proxy(sometable)
+ sometable:addListener(&quot;a&quot;, function(t, k, old, new)
+   print(&quot;Key &quot; .. k .. &quot; changed from &quot; .. old .. &quot; to &quot; .. new)
+ end</pre></li>
+        <li><pre class="example"> -- Bind a value in a table to the sum of two other values.
+ local table1 = Binding.proxy({ a = 4 })
+ local table2 = Binding.proxy({ a = 5 })
+ local sumtable = Binding.proxy({})
+ sumtable:bind(&quot;sum&quot;, Binding(table1, &quot;a&quot;):add(Binding(table2, &quot;a&quot;)))
+ -- sumtable.sum == 9
+ table1.a = 6
+ -- sumtable.sum == 11</pre></li>
+    </ul>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#isValue">isValue (object)</a></td>
+	<td class="summary">Whether the table is a Binding or not.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#value">value (t, k)</a></td>
+	<td class="summary">Creates a binding bound to the given key in the given table.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#bind">bind (target, key, value)</a></td>
+	<td class="summary">Binds the key in the specified table to the 10 given value</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#unbind">unbind (target, key)</a></td>
+	<td class="summary">Removes the binding on the given key in the given target.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#proxy">proxy (instance)</a></td>
+	<td class="summary">Returns a proxy to a table that allows listeners and bindings to be attached.</td>
+	</tr>
+</table>
+<h2><a href="#Class_Binding">Class Binding </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Binding:addValueListener">Binding:addValueListener (listener)</a></td>
+	<td class="summary">Adds a listener to the value of this binding.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:removeValueListener">Binding:removeValueListener (listener)</a></td>
+	<td class="summary">Removes a listener to the value of this binding.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:addValueBinding">Binding:addValueBinding (binding)</a></td>
+	<td class="summary">Convenience method for adding a binding to "value"</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:removeValueBinding">Binding:removeValueBinding (binding)</a></td>
+	<td class="summary">Convenience method for removing a binding from "value"</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:unbind">Binding:unbind ()</a></td>
+	<td class="summary">Unbinds this binding, as well as anything bound to it.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:tostring">Binding:tostring ()</a></td>
+	<td class="summary">Creates a binding containing the string representation of this binding.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:tonumber">Binding:tonumber ()</a></td>
+	<td class="summary">Creates a binding containing the number value of this binding.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:add">Binding:add (...)</a></td>
+	<td class="summary">Creates a new binding containing the sum of this binding and others.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:sub">Binding:sub (...)</a></td>
+	<td class="summary">Creates a new binding containing the difference of this binding and others.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:mul">Binding:mul (...)</a></td>
+	<td class="summary">Creates a new binding containing the product of this binding and others.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:div">Binding:div (...)</a></td>
+	<td class="summary">Creates a new binding containing the quotient of this binding and others.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:mod">Binding:mod (...)</a></td>
+	<td class="summary">Creates a new binding containing the modulus of this binding and others.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:pow">Binding:pow (...)</a></td>
+	<td class="summary">Creates a new binding containing the exponentiation of this binding and
+ others.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:negate">Binding:negate ()</a></td>
+	<td class="summary">Creates a new binding containing the negation of this binding.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:concat">Binding:concat (...)</a></td>
+	<td class="summary">Creates a new binding containing the concatenation of this binding and
+ others.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:len">Binding:len ()</a></td>
+	<td class="summary">Creates a new binding containing the length of this binding.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:eq">Binding:eq (other)</a></td>
+	<td class="summary">Creates a new binding representing if this value is equal to another.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:ne">Binding:ne (other)</a></td>
+	<td class="summary">Creates a new binding representing if this value is not equal to another.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:lt">Binding:lt (other)</a></td>
+	<td class="summary">Creates a new binding representing if this value is less than to another.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:gt">Binding:gt (other)</a></td>
+	<td class="summary">Creates a new binding representing if this value is greater than to another.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:le">Binding:le (other)</a></td>
+	<td class="summary">Creates a new binding representing if this value is less than or equal
+ to another.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:ge">Binding:ge (other)</a></td>
+	<td class="summary">Creates a new binding representing if this value is greater than or equal
+ to another.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:AND">Binding:AND (...)</a></td>
+	<td class="summary">Creates a new binding containing this binding AND others.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:OR">Binding:OR (...)</a></td>
+	<td class="summary">Creates a new binding containing this binding OR others.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:NOT">Binding:NOT ()</a></td>
+	<td class="summary">Creates a new binding containing NOT this binding.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Binding:THEN">Binding:THEN (ifTrue, ifFalse)</a></td>
+	<td class="summary">Creates a new binding with the value of the first value if this binding is
+ true, or the second value if this binding is false.</td>
+	</tr>
+</table>
+<h2><a href="#Class_Proxy">Class Proxy </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Proxy:addListener">Proxy:addListener (key, listener)</a></td>
+	<td class="summary">Adds a listener to the specified key that is called when the key's value
+ changes.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Proxy:removeListener">Proxy:removeListener (key, listener)</a></td>
+	<td class="summary">Removes the first instance of the given listener from the given key.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Proxy:addBinding">Proxy:addBinding (key, binding)</a></td>
+	<td class="summary">Adds a binding to the specified key in this table.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Proxy:removeBinding">Proxy:removeBinding (key, binding)</a></td>
+	<td class="summary">Removes a binding from a key in this table.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "isValue"></a>
+    <strong>isValue (object)</strong>
+    </dt>
+    <dd>
+    Whether the table is a Binding or not.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">object</span>
+         The table to check.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        True if the table is a binding, false if not.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "value"></a>
+    <strong>value (t, k)</strong>
+    </dt>
+    <dd>
+    Creates a binding bound to the given key in the given table.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         The table the binding is bound to.
+        </li>
+        <li><span class="parameter">k</span>
+         The key the binding is bound to.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A binding to the key in the given table.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "bind"></a>
+    <strong>bind (target, key, value)</strong>
+    </dt>
+    <dd>
+    Binds the key in the specified table to the 10 given value
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">target</span>
+         The table where the key to be bound is.
+        </li>
+        <li><span class="parameter">key</span>
+         The key to be bound.
+        </li>
+        <li><span class="parameter">value</span>
+         The value to bind to.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "unbind"></a>
+    <strong>unbind (target, key)</strong>
+    </dt>
+    <dd>
+    Removes the binding on the given key in the given target.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">target</span>
+         The table to remove the binding from.
+        </li>
+        <li><span class="parameter">key</span>
+         The key to unbind.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "proxy"></a>
+    <strong>proxy (instance)</strong>
+    </dt>
+    <dd>
+    Returns a proxy to a table that allows listeners and bindings to be attached.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">instance</span>
+         The table to proxy.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A proxy table to the given instance.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2><a name="Class_Binding"></a>Class Binding </h2>
+
+        Contains a value that is based off whatever this binding is bound to.
+    <dl class="function">
+    <dt>
+    <a name = "Binding:addValueListener"></a>
+    <strong>Binding:addValueListener (listener)</strong>
+    </dt>
+    <dd>
+    Adds a listener to the value of this binding.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">listener</span>
+         The listener to add.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        The added listener.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:removeValueListener"></a>
+    <strong>Binding:removeValueListener (listener)</strong>
+    </dt>
+    <dd>
+    Removes a listener to the value of this binding.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">listener</span>
+         The listener to remove.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Whether a listener was removed.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:addValueBinding"></a>
+    <strong>Binding:addValueBinding (binding)</strong>
+    </dt>
+    <dd>
+    Convenience method for adding a binding to "value"
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">binding</span>
+         The binding to add.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        The added binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:removeValueBinding"></a>
+    <strong>Binding:removeValueBinding (binding)</strong>
+    </dt>
+    <dd>
+    Convenience method for removing a binding from "value"
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">binding</span>
+         The binding to remove.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Whether a binding was removed.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:unbind"></a>
+    <strong>Binding:unbind ()</strong>
+    </dt>
+    <dd>
+    Unbinds this binding, as well as anything bound to it.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:tostring"></a>
+    <strong>Binding:tostring ()</strong>
+    </dt>
+    <dd>
+    Creates a binding containing the string representation of this binding.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:tonumber"></a>
+    <strong>Binding:tonumber ()</strong>
+    </dt>
+    <dd>
+    Creates a binding containing the number value of this binding.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:add"></a>
+    <strong>Binding:add (...)</strong>
+    </dt>
+    <dd>
+    Creates a new binding containing the sum of this binding and others.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         Can be bindings, or constants (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:sub"></a>
+    <strong>Binding:sub (...)</strong>
+    </dt>
+    <dd>
+    Creates a new binding containing the difference of this binding and others.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         Can be bindings, or constants (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:mul"></a>
+    <strong>Binding:mul (...)</strong>
+    </dt>
+    <dd>
+    Creates a new binding containing the product of this binding and others.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         Can be bindings, or constants (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:div"></a>
+    <strong>Binding:div (...)</strong>
+    </dt>
+    <dd>
+    Creates a new binding containing the quotient of this binding and others.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         Can be bindings, or constants (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:mod"></a>
+    <strong>Binding:mod (...)</strong>
+    </dt>
+    <dd>
+    Creates a new binding containing the modulus of this binding and others.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         Can be bindings, or constants (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:pow"></a>
+    <strong>Binding:pow (...)</strong>
+    </dt>
+    <dd>
+    Creates a new binding containing the exponentiation of this binding and
+ others.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         Can be bindings, or constants (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:negate"></a>
+    <strong>Binding:negate ()</strong>
+    </dt>
+    <dd>
+    Creates a new binding containing the negation of this binding.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:concat"></a>
+    <strong>Binding:concat (...)</strong>
+    </dt>
+    <dd>
+    Creates a new binding containing the concatenation of this binding and
+ others.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         Can be bindings, or constants (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:len"></a>
+    <strong>Binding:len ()</strong>
+    </dt>
+    <dd>
+    Creates a new binding containing the length of this binding.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:eq"></a>
+    <strong>Binding:eq (other)</strong>
+    </dt>
+    <dd>
+    Creates a new binding representing if this value is equal to another.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">other</span>
+         Can be another binding or a constant (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:ne"></a>
+    <strong>Binding:ne (other)</strong>
+    </dt>
+    <dd>
+    Creates a new binding representing if this value is not equal to another.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">other</span>
+         Can be another binding or a constant (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:lt"></a>
+    <strong>Binding:lt (other)</strong>
+    </dt>
+    <dd>
+    Creates a new binding representing if this value is less than to another.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">other</span>
+         Can be another binding or a constant (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:gt"></a>
+    <strong>Binding:gt (other)</strong>
+    </dt>
+    <dd>
+    Creates a new binding representing if this value is greater than to another.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">other</span>
+         Can be another binding or a constant (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:le"></a>
+    <strong>Binding:le (other)</strong>
+    </dt>
+    <dd>
+    Creates a new binding representing if this value is less than or equal
+ to another.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">other</span>
+         Can be another binding or a constant (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:ge"></a>
+    <strong>Binding:ge (other)</strong>
+    </dt>
+    <dd>
+    Creates a new binding representing if this value is greater than or equal
+ to another.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">other</span>
+         Can be another binding or a constant (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:AND"></a>
+    <strong>Binding:AND (...)</strong>
+    </dt>
+    <dd>
+    Creates a new binding containing this binding AND others.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         Can be bindings, or constants (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:OR"></a>
+    <strong>Binding:OR (...)</strong>
+    </dt>
+    <dd>
+    Creates a new binding containing this binding OR others.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         Can be bindings, or constants (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:NOT"></a>
+    <strong>Binding:NOT ()</strong>
+    </dt>
+    <dd>
+    Creates a new binding containing NOT this binding.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Binding:THEN"></a>
+    <strong>Binding:THEN (ifTrue, ifFalse)</strong>
+    </dt>
+    <dd>
+    Creates a new binding with the value of the first value if this binding is
+ true, or the second value if this binding is false.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">ifTrue</span>
+         The value the new binding will be set to when this value is
+      true. Can either be another value, or a constant (number, etc.)
+        </li>
+        <li><span class="parameter">ifFalse</span>
+         The value the new binding will be set to when this value is
+      false. Can either be another value, or a constant (number, etc.)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A new binding.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2><a name="Class_Proxy"></a>Class Proxy </h2>
+
+        A proxy to allow listeners & bindings to be attached.
+    <dl class="function">
+    <dt>
+    <a name = "Proxy:addListener"></a>
+    <strong>Proxy:addListener (key, listener)</strong>
+    </dt>
+    <dd>
+    Adds a listener to the specified key that is called when the key's value
+ changes.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">key</span>
+         The key to track changes to
+        </li>
+        <li><span class="parameter">listener</span>
+         The function to call upon the value of the key changing.
+      The function should have the arguments (t, k, old, new) where:
+           t is the table in which the change happened.
+           k is the key whose value changed.
+           old is the old value of the key.
+           new is the new value of the key.
+      If the function changes the key's value, it should return the new value.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        The added listener.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Proxy:removeListener"></a>
+    <strong>Proxy:removeListener (key, listener)</strong>
+    </dt>
+    <dd>
+    Removes the first instance of the given listener from the given key.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">key</span>
+         The key the listener is attached to.
+        </li>
+        <li><span class="parameter">listener</span>
+         The listener to remove.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Whether a listener was removed.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Proxy:addBinding"></a>
+    <strong>Proxy:addBinding (key, binding)</strong>
+    </dt>
+    <dd>
+    Adds a binding to the specified key in this table.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">key</span>
+         The key to bind to.
+        </li>
+        <li><span class="parameter">binding</span>
+         The binding to attach.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        The added binding.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Proxy:removeBinding"></a>
+    <strong>Proxy:removeBinding (key, binding)</strong>
+    </dt>
+    <dd>
+    Removes a binding from a key in this table.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">key</span>
+         The key to remove a binding from.
+        </li>
+        <li><span class="parameter">binding</span>
+         The binding to remove.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Whether a binding was removed.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-22 04:05:02 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
