@@ -32,7 +32,6 @@
 
 <h2>Contents</h2>
 <ul>
-<li><a href="#Fields">Fields</a></li>
 <li><a href="#Constructor">Constructor </a></li>
 <li><a href="#Methods">Methods</a></li>
 </ul>
@@ -40,7 +39,7 @@
 
 <h2>Classes</h2>
 <ul class="$(kind=='Topics' and '' or 'nowrap'">
-  <li><strong>Button</strong></li>
+  <li><a href="../classes/Button.html">Button</a></li>
   <li><a href="../classes/CheckBox.html">CheckBox</a></li>
   <li><a href="../classes/Component.html">Component</a></li>
   <li><a href="../classes/Frame.html">Frame</a></li>
@@ -48,7 +47,7 @@
   <li><a href="../classes/Label.html">Label</a></li>
   <li><a href="../classes/Panel.html">Panel</a></li>
   <li><a href="../classes/RadioButton.html">RadioButton</a></li>
-  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><strong>TextButton</strong></li>
   <li><a href="../classes/TextField.html">TextField</a></li>
 </ul>
 <h2>Modules</h2>
@@ -62,53 +61,28 @@
 
 <div id="content">
 
-<h1>Class <code>Button</code></h1>
-<p>A clickable button.</p>
+<h1>Class <code>TextButton</code></h1>
+<p>A button that has a text label.</p>
 <p></p>
     <h3>Usage:</h3>
     <ul>
-        <pre class="example"> -- Create an empty button that prints when it is clicked
- local button = Button(0, 0, 100, 100)
- button.onClick = function(component, button)
-   print(&quot;Clicked with mouse button &quot; .. button)
- end</pre>
+        <pre class="example">
+ -- Create a text button with the text &quot;Hello&quot;
+ local button = TextButton(0, 0, 100, 16, &quot;Hello&quot;)</pre>
     </ul>
 
 
-<h2><a href="#Fields">Fields</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#Button.outerBorderColor">Button.outerBorderColor</a></td>
-	<td class="summary">The color of the outer border of this button.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#Button.innerBorderColor">Button.innerBorderColor</a></td>
-	<td class="summary">The color of the inner border of this button.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#Button.innerBorderHoverColor">Button.innerBorderHoverColor</a></td>
-	<td class="summary">The color of the inner border of this button when the mouse is over it.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#Button.color">Button.color</a></td>
-	<td class="summary">The color of this button.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#Button.hoverColor">Button.hoverColor</a></td>
-	<td class="summary">The color of this button when the mouse is over it.</td>
-	</tr>
-</table>
 <h2><a href="#Constructor">Constructor </a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#Button:_init">Button:_init (x, y, width, height)</a></td>
-	<td class="summary">Constructs a new Button.</td>
+	<td class="name" nowrap><a href="#TextButton:_init">TextButton:_init (x, y, width, height, text, fontColor)</a></td>
+	<td class="summary">Constructs a button with a text label.</td>
 	</tr>
 </table>
 <h2><a href="#Methods">Methods</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#Button:onClick">Button:onClick (button)</a></td>
+	<td class="name" nowrap><a href="#TextButton:onClick">TextButton:onClick (button)</a></td>
 	<td class="summary">Called when this button is clicked.</td>
 	</tr>
 </table>
@@ -117,90 +91,16 @@
 <br/>
 
 
-    <h2><a name="Fields"></a>Fields</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "Button.outerBorderColor"></a>
-    <strong>Button.outerBorderColor</strong>
-    </dt>
-    <dd>
-    The color of the outer border of this button.
-
-
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "Button.innerBorderColor"></a>
-    <strong>Button.innerBorderColor</strong>
-    </dt>
-    <dd>
-    The color of the inner border of this button.
-
-
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "Button.innerBorderHoverColor"></a>
-    <strong>Button.innerBorderHoverColor</strong>
-    </dt>
-    <dd>
-    The color of the inner border of this button when the mouse is over it.
-
-
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "Button.color"></a>
-    <strong>Button.color</strong>
-    </dt>
-    <dd>
-    The color of this button.
-
-
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "Button.hoverColor"></a>
-    <strong>Button.hoverColor</strong>
-    </dt>
-    <dd>
-    The color of this button when the mouse is over it.
-
-
-
-
-
-
-
-</dd>
-</dl>
     <h2><a name="Constructor"></a>Constructor </h2>
 
 
     <dl class="function">
     <dt>
-    <a name = "Button:_init"></a>
-    <strong>Button:_init (x, y, width, height)</strong>
+    <a name = "TextButton:_init"></a>
+    <strong>TextButton:_init (x, y, width, height, text, fontColor)</strong>
     </dt>
     <dd>
-    Constructs a new Button.
+    Constructs a button with a text label.
 
 
     <h3>Parameters:</h3>
@@ -217,6 +117,13 @@
         <li><span class="parameter">height</span>
          The height of the new component.
         </li>
+        <li><span class="parameter">text</span>
+         The text string to display on the button. The button's size will
+             be based on this string.
+        </li>
+        <li><span class="parameter">fontColor</span>
+         (optional) The color of the text to display, default white.
+        </li>
     </ul>
 
 
@@ -229,8 +136,8 @@
 
     <dl class="function">
     <dt>
-    <a name = "Button:onClick"></a>
-    <strong>Button:onClick (button)</strong>
+    <a name = "TextButton:onClick"></a>
+    <strong>TextButton:onClick (button)</strong>
     </dt>
     <dd>
     Called when this button is clicked.
@@ -255,7 +162,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
-<i style="float:right;">Last updated 2014-11-22 04:05:02 </i>
+<i style="float:right;">Last updated 2014-11-22 04:08:19 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

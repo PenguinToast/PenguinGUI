@@ -1,5 +1,6 @@
 #!/bin/bash
 
+rm -rf doc
 git clone -b develop --single-branch git@github.com:PenguinToast/PenguinGUI.git
 cd PenguinGUI
 ldoc .
