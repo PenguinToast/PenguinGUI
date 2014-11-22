@@ -1,16 +1,30 @@
--- A window
+--- A window.
+-- @classmod Frame
+-- @usage
+-- -- Create a window
+-- local frame = Frame(0, 0)
+-- frame.width = 100
+-- frame.height = 100
 Frame = class(Panel)
+--- The color of this frame's border.
 Frame.borderColor = "black"
+--- The thickness of this frame's border.
 Frame.borderThickness = 1
+--- The color of this frame.
 Frame.backgroundColor = "#232323"
 
--- Constructs a Frame.
+--- Constructor
+-- @section
+
+--- Constructs a Frame.
 -- 
 -- @param x The x coordinate of the new component, relative to its parent.
 -- @param y The y coordinate of the new component, relative to its parent.
 function Frame:_init(x, y)
   Panel._init(self, x, y)
 end
+
+--- @section end
 
 function Frame:update(dt)
   if self.dragging then

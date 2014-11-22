@@ -1,7 +1,14 @@
--- A image
+--- An image.
+-- @classmod Image
+-- @usage
+-- -- Create a image
+-- local image = Image(0, 0, "/path/to/image.png")
 Image = class(Component)
 
--- Constructs a new Image.
+--- Constructor
+-- @section
+
+--- Constructs a new Image.
 --
 -- @param x The x coordinate of the new component, relative to its parent.
 -- @param y The y coordinate of the new component, relative to its parent.
@@ -19,6 +26,8 @@ function Image:_init(x, y, image, scale)
   self.image = image
   self.scale = scale
 end
+
+--- @section end
 
 function Image:draw(dt)
   local startX = self.x + self.offset[1]

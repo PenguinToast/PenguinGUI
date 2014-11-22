@@ -1,17 +1,23 @@
--- Superclass for all GUI components.
+--- Superclass for all GUI components.
+-- @classmod Component
 Component = class()
 Component.x = 0
 Component.y = 0
 Component.width = 0
 Component.height = 0
 
--- Constructs a component.
+--- Constructor
+-- @section
+
+--- Constructs a component.
 function Component:_init()
   self.children = {}
   self.offset = Binding.proxy({0, 0})
 end
 
--- Adds a child component to this component.
+--- @section end
+
+--- Adds a child component to this component.
 --
 -- @param child The component to add.
 function Component:add(child)
@@ -20,7 +26,7 @@ function Component:add(child)
   child:setParent(self)
 end
 
--- Removes a child component.
+--- Removes a child component.
 --
 -- @param child The component to remove
 -- @return Whether or not the child was removed
@@ -35,7 +41,7 @@ function Component:remove(child)
   return false
 end
 
--- Resizes this component around its children.
+--- Resizes this component around its children.
 --
 -- @param padding (Optional) Amount of padding to put between the component's
 --                children and this component's borders.
@@ -51,7 +57,7 @@ function Component:pack(padding)
   self.height = height + padding
 end
 
--- Draws and updates this component, and any children.
+--- Draws and updates this component, and any children.
 function Component:step(dt)
   local hoverComponent
   if self.mouseOver ~= nil then
@@ -82,15 +88,19 @@ function Component:step(dt)
   return hoverComponent
 end
 
--- Updates this component
+--- Updates this component.
+--
+-- Components should override this to implement their own update functions.
 function Component:update(dt)
 end
 
--- Draws this component
+--- Draws this component
+--
+-- Components should override this to implement their own draw functions.
 function Component:draw(dt)
 end
 
--- Sets the parent of this component, and updates the offset of this component.
+--- Sets the parent of this component, and updates the offset of this component.
 --
 -- @param parent The new parent of this component, or nil if this is to be a
 --               top level component.
@@ -102,7 +112,7 @@ function Component:setParent(parent)
   end
 end
 
--- Calculates the offset from the origin that this component should use, based
+--- Calculates the offset from the origin that this component should use, based
 -- on its parents.
 --
 -- @return The calculated offset.
@@ -122,10 +132,9 @@ function Component:calculateOffset(direction)
   return offset
 end
 
--- Checks if the given position is within this component.
+--- Checks if the given position is within this component.
 --
 -- @param position The position to check.
---
 -- @return Whether or not the position is within the bounds of this component.
 function Component:contains(position)
   local pos = {position[1] - self.offset[1], position[2] - self.offset[2]}

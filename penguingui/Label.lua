@@ -1,4 +1,8 @@
--- A text label for displaying text.
+--- A text label for displaying text.
+-- @classmod Label
+-- @usage
+-- -- Create a label with the text "Hello"
+-- local label = Label(0, 0, "Hello")
 Label = class(Component)
 Label.listeners = {
   text = {
@@ -8,7 +12,10 @@ Label.listeners = {
   }
 }
 
--- Constructs a new Label.
+--- Constructor
+-- @section
+
+--- Constructs a new Label.
 --
 -- @param x The x coordinate of the new component, relative to its parent.
 -- @param y The y coordinate of the new component, relative to its parent.
@@ -26,6 +33,8 @@ function Label:_init(x, y, text, fontSize, fontColor)
   self.y = y
   self:recalculateBounds()
 end
+
+--- @section end
 
 -- Recalculates the bounds of the label based on its text and font size.
 function Label:recalculateBounds()

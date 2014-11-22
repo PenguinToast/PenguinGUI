@@ -1,4 +1,4 @@
---- Add listeners or bindings to objects
+--- Adds listeners or bindings to objects.
 -- @module Binding
 -- @usage -- Add a listener to print whenever a value is changed.
 -- local sometable = { a = "somevalue" }
@@ -23,7 +23,7 @@ Binding = setmetatable(
   }
 )
 
--- Proxy metatable to add listeners to a table.
+-- Proxy metatable to add listeners to a table
 Binding.proxyTable = {
   __index = function(t, k)
     local out = t._instance[k]
@@ -115,7 +115,6 @@ Binding.weakMetaTable = {
   __mode = "v"
 }
 
--- Functions available to a binding.
 Binding.valueTable = {}
 
 Binding.valueTable.__index = Binding.valueTable
@@ -125,34 +124,34 @@ Binding.valueTable.__index = Binding.valueTable
 
 --- Adds a listener to the value of this binding.
 -- @function addValueListener
---
 -- @param listener The listener to add.
+-- @return The added listener.
 function Binding.valueTable:addValueListener(listener)
-  self:addListener("value", listener)
+  return self:addListener("value", listener)
 end
 
 --- Removes a listener to the value of this binding.
 -- @function removeValueListener
--- 
 -- @param listener The listener to remove.
+-- @return Whether a listener was removed.
 function Binding.valueTable:removeValueListener(listener)
-  self:removeListener("value", listener)
+  return self:removeListener("value", listener)
 end
 
 --- Convenience method for adding a binding to "value"
 -- @function addValueBinding
---
 -- @param binding The binding to add.
+-- @return The added binding.
 function Binding.valueTable:addValueBinding(binding)
-  self:addBinding("value", binding)
+  return self:addBinding("value", binding)
 end
 
 --- Convenience method for removing a binding from "value"
 -- @function removeValueBinding
--- 
 -- @param binding The binding to remove.
+-- @return Whether a binding was removed.
 function Binding.valueTable:removeValueBinding(binding)
-  self:removeBinding("value", binding)
+  return self:removeBinding("value", binding)
 end
 
 --- Unbinds this binding, as well as anything bound to it.
@@ -258,7 +257,7 @@ function Binding.value(t, k)
   end
 end
 
---- A proxy to allow listeners & bindings to be attached
+--- A proxy to allow listeners & bindings to be attached.
 -- @type Proxy
 
 --- Adds a listener to the specified key that is called when the key's value
@@ -273,6 +272,7 @@ end
 --           old is the old value of the key.
 --           new is the new value of the key.
 --      If the function changes the key's value, it should return the new value.
+-- @return The added listener.
 function Binding.proxyTable:addListener(key, listener)
   local listeners = self.listeners
   if not listeners then
@@ -285,6 +285,7 @@ function Binding.proxyTable:addListener(key, listener)
     listeners[key] = keyListeners
   end
   table.insert(keyListeners, listener)
+  return listener
 end
 
 --- Removes the first instance of the given listener from the given key.
@@ -293,7 +294,7 @@ end
 -- @param key The key the listener is attached to.
 -- @param listener The listener to remove.
 --
--- @return A boolean for whether a listener was removed.
+-- @return Whether a listener was removed.
 function Binding.proxyTable:removeListener(key, listener)
   local keyListeners = self.listeners[key]
   return PtUtil.removeObject(keyListeners, listener) ~= -1
@@ -301,9 +302,10 @@ end
 
 --- Adds a binding to the specified key in this table.
 -- @function addBinding
---
+-- 
 -- @param key The key to bind to.
 -- @param binding The binding to attach.
+-- @return The added binding.
 function Binding.proxyTable:addBinding(key, binding)
   local bindings = self.bindings
   if not bindings then
@@ -317,13 +319,15 @@ function Binding.proxyTable:addBinding(key, binding)
   end
   table.insert(keyBindings, binding)
   binding:valueChanged(self[key], self[key])
+  return binding
 end
 
 --- Removes a binding from a key in this table.
 -- @function removeBinding
---
+-- 
 -- @param key The key to remove a binding from.
 -- @param binding The binding to remove.
+-- @return Whether a binding was removed.
 function Binding.proxyTable:removeBinding(key, binding)
   local keyBindings = self.bindings[key]
   return PtUtil.removeObject(keyBindings, binding) ~= -1

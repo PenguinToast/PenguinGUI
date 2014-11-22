@@ -1,17 +1,35 @@
--- Editable text field
+--- An editable text field.
+-- @classmod TextField
+-- @usage
+-- -- Create a text field that prints whatever is in it when enter is pressed.
+-- local textfield = TextField(0, 0, 100, 16, "default text")
+-- textfield.onEnter = function(textfield)
+--   print(textfield.text)
+-- end
 TextField = class(Component)
 TextField.vPadding = 3
 TextField.hPadding = 4
+--- The color of this text field's border.
 TextField.borderColor = "#545454"
+--- The background color of this text field.
 TextField.backgroundColor = "#000000"
+--- The color of this text field's text.
 TextField.textColor = "white"
+--- The color of this text field's text when the mouse is over it.
 TextField.textHoverColor = "#999999"
+--- The color of this text field's default text.
 TextField.defaultTextColor = "#333333"
+--- The color of this text field's default text when the mouse is over it.
 TextField.defaultTextHoverColor = "#777777"
+--- The color of the text cursor.
 TextField.cursorColor = "white"
+--- The period of the cursor's blinking.
 TextField.cursorRate = 1
 
--- Constructs a new TextField.
+--- Constructor
+-- @section
+
+--- Constructs a new TextField.
 --
 -- @param x The x coordinate of the new component, relative to its parent.
 -- @param y The y coordinate of the new component, relative to its parent.
@@ -34,6 +52,8 @@ function TextField:_init(x, y, width, height, defaultText)
   self.textClip = nil
   self.mouseOver = false
 end
+
+--- @section end
 
 function TextField:update(dt)
   if self.hasFocus then
@@ -105,7 +125,7 @@ function TextField:draw(dt)
   end
 end
 
--- Set the character position of the text cursor.
+--- Set the character position of the text cursor.
 --
 -- @param pos The new position for the cursor, where 0 is the beginning of the
 --            field.
@@ -223,3 +243,6 @@ function TextField:keyEvent(keyCode, pressed)
     end
   end
 end
+
+--- Called when the user presses enter in this text field.
+-- @function onEnter

@@ -354,19 +354,19 @@ Binding.valueTable.__index = Binding.valueTable
 
 
 function Binding.valueTable:addValueListener(listener)
-  self:addListener("value", listener)
+  return self:addListener("value", listener)
 end
 
 function Binding.valueTable:removeValueListener(listener)
-  self:removeListener("value", listener)
+  return self:removeListener("value", listener)
 end
 
 function Binding.valueTable:addValueBinding(binding)
-  self:addBinding("value", binding)
+  return self:addBinding("value", binding)
 end
 
 function Binding.valueTable:removeValueBinding(binding)
-  self:removeBinding("value", binding)
+  return self:removeBinding("value", binding)
 end
 
 function Binding.valueTable:unbind()
@@ -476,6 +476,7 @@ function Binding.proxyTable:addListener(key, listener)
     listeners[key] = keyListeners
   end
   table.insert(keyListeners, listener)
+  return listener
 end
 
 function Binding.proxyTable:removeListener(key, listener)
@@ -496,6 +497,7 @@ function Binding.proxyTable:addBinding(key, binding)
   end
   table.insert(keyBindings, binding)
   binding:valueChanged(self[key], self[key])
+  return binding
 end
 
 function Binding.proxyTable:removeBinding(key, binding)
@@ -831,6 +833,7 @@ Binding.THEN = Binding.valueTable.THEN
 -- GUI.lua
 --------------------------------------------------------------------------------
 
+
 GUI = {
   components = {},
   mouseState = {},
@@ -932,10 +935,12 @@ Component.y = 0
 Component.width = 0
 Component.height = 0
 
+
 function Component:_init()
   self.children = {}
   self.offset = Binding.proxy({0, 0})
 end
+
 
 function Component:add(child)
   local children = self.children
@@ -1041,11 +1046,13 @@ end
 
 Panel = class(Component)
 
+
 function Panel:_init(x, y)
   Component._init(self)
   self.x = x
   self.y = y
 end
+
 
 function Panel:add(child)
   Component.add(self, child)
@@ -1061,9 +1068,11 @@ Frame.borderColor = "black"
 Frame.borderThickness = 1
 Frame.backgroundColor = "#232323"
 
+
 function Frame:_init(x, y)
   Panel._init(self, x, y)
 end
+
 
 function Frame:update(dt)
   if self.dragging then
@@ -1208,6 +1217,7 @@ Label.listeners = {
   }
 }
 
+
 function Label:_init(x, y, text, fontSize, fontColor)
   Component._init(self)
   fontSize = fontSize or 10
@@ -1218,6 +1228,7 @@ function Label:_init(x, y, text, fontSize, fontColor)
   self.y = y
   self:recalculateBounds()
 end
+
 
 function Label:recalculateBounds()
   self.width = PtUtil.getStringWidth(self.text, self.fontSize)
@@ -1249,6 +1260,7 @@ TextButton.listeners = {
   }
 }
 
+
 function TextButton:_init(x, y, width, height, text, fontColor)
   Button._init(self, x, y, width, height)
   local padding = 2
@@ -1262,10 +1274,12 @@ function TextButton:_init(x, y, width, height, text, fontColor)
   self:repositionLabel()
 end
 
+
 function TextButton:repositionLabel()
   local label = self.label
   label.x = (self.width - label.width) / 2
 end
+
 
 --------------------------------------------------------------------------------
 -- TextField.lua
@@ -1283,6 +1297,7 @@ TextField.defaultTextHoverColor = "#777777"
 TextField.cursorColor = "white"
 TextField.cursorRate = 1
 
+
 function TextField:_init(x, y, width, height, defaultText)
   Component._init(self)
   self.x = x
@@ -1299,6 +1314,7 @@ function TextField:_init(x, y, width, height, defaultText)
   self.textClip = nil
   self.mouseOver = false
 end
+
 
 function TextField:update(dt)
   if self.hasFocus then
@@ -1477,11 +1493,13 @@ function TextField:keyEvent(keyCode, pressed)
   end
 end
 
+
 --------------------------------------------------------------------------------
 -- Image.lua
 --------------------------------------------------------------------------------
 
 Image = class(Component)
+
 
 function Image:_init(x, y, image, scale)
   Component._init(self)
@@ -1495,6 +1513,7 @@ function Image:_init(x, y, image, scale)
   self.image = image
   self.scale = scale
 end
+
 
 function Image:draw(dt)
   local startX = self.x + self.offset[1]
@@ -1577,9 +1596,6 @@ end
 function CheckBox:clickEvent(position, button, pressed)
   if not pressed and self.pressed then
     self.selected = not self.selected
-    if self.onSelect then
-      self:onSelect(self.selected)
-    end
   end
   self.pressed = pressed
   return true
@@ -1590,6 +1606,9 @@ end
 --------------------------------------------------------------------------------
 
 RadioButton = class(CheckBox)
+
+
+
 
 function RadioButton:drawCheck(dt)
   local startX = self.x + self.offset[1]
@@ -1619,19 +1638,9 @@ function RadioButton:select()
   end
   if selectedButton then
     selectedButton.selected = false
-    if selectedButton.onSelect then
-      selectedButton:onSelect(false)
-    end
   end
 
-  if not self.selected then
-    self.selected = true
-    if self.onSelect then
-      self:onSelect(self.selected)
-    end
-  else
-    self.selected = true
-  end
+  self.selected = not self.selected
 end
 
 function RadioButton:setParent(parent)

@@ -2,12 +2,19 @@
 -- @classmod CheckBox
 -- @usage -- Create a checkbox that prints when it is checked
 -- local checkbox = CheckBox(0, 0, 16)
--- 
+-- checkbox:addListener("selected", function(t, k, old, new)
+--   print("The checkbox was " .. (new and "checked" or "unchecked"))
+-- end
 CheckBox = class(Component)
+--- The color of the border of this checkbox.
 CheckBox.borderColor = "#545454"
+--- The color of the checkbox.
 CheckBox.backgroundColor = "black"
+--- The color of this checkbox when the mouse is over it.
 CheckBox.hoverColor = "#1C1C1C"
+--- The color of the check.
 CheckBox.checkColor = "#C51A0B"
+--- The color of this checkbox when it is pressed.
 CheckBox.pressedColor = "#343434"
 
 --- Constructor
@@ -63,6 +70,7 @@ function CheckBox:draw(dt)
 end
 
 --- Draw the checkbox
+-- @param dt The time elapsed since the last draw.
 function CheckBox:drawCheck(dt)
   local startX = self.x + self.offset[1]
   local startY = self.y + self.offset[2]
@@ -81,9 +89,6 @@ end
 function CheckBox:clickEvent(position, button, pressed)
   if not pressed and self.pressed then
     self.selected = not self.selected
-    if self.onSelect then
-      self:onSelect(self.selected)
-    end
   end
   self.pressed = pressed
   return true

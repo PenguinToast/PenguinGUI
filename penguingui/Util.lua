@@ -1,8 +1,10 @@
+--- Utility functions.
+-- @module PtUtil
 PtUtil = {}
 -- Pixel widths of the first 255 characters. This was generated in Java.
 PtUtil.charWidths = {8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 8, 8, 0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 4, 8, 12, 10, 12, 12, 4, 6, 6, 8, 8, 6, 8, 4, 12, 10, 6, 10, 10, 10, 10, 10, 10, 10, 10, 4, 4, 8, 8, 8, 10, 12, 10, 10, 8, 10, 8, 8, 10, 10, 8, 10, 10, 8, 12, 10, 10, 10, 10, 10, 10, 8, 10, 10, 12, 10, 10, 8, 6, 12, 6, 8, 10, 6, 10, 10, 8, 10, 10, 8, 10, 10, 4, 6, 10, 4, 12, 10, 10, 10, 10, 8, 10, 8, 10, 10, 12, 8, 10, 10, 8, 4, 8, 10, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}
 
--- Get a list of all lua scripts in the PenguinGUI library.
+--- Get a list of all lua scripts in the PenguinGUI library.
 --
 -- @return A list of strings containing the paths to the PenguinGUI scripts.
 function PtUtil.library()
@@ -26,7 +28,7 @@ function PtUtil.library()
   }
 end
 
--- Draw the text string, offsetting the string to account for leading whitespace.
+--- Draw the text string, offsetting the string to account for leading whitespace.
 --
 -- All parameters are identical to those of console.canvasDrawText
 function PtUtil.drawText(text, options, fontSize, color)
@@ -42,7 +44,7 @@ function PtUtil.drawText(text, options, fontSize, color)
   end
 end
 
--- Get the approximate pixel width of a string.
+--- Get the approximate pixel width of a string.
 --
 -- @param text The string to get the width of.
 -- @param fontSize The size of the font to get the width from.
@@ -56,7 +58,7 @@ function PtUtil.getStringWidth(text, fontSize)
   return out * scale
 end
 
--- Gets the scale of the specified font size.
+--- Gets the scale of the specified font size.
 --
 -- @param size The font size to get the scale for
 function PtUtil.getFontScale(size)
@@ -100,7 +102,7 @@ PtUtil.shiftKeyMap = {
   [96] = "~"
 }
 
--- Gets a string representation of the keycode.
+--- Gets a string representation of the keycode.
 --
 -- @param key The keycode of the key.
 -- @param shift Boolean representing whether or not shift is pressed.
@@ -124,7 +126,9 @@ function PtUtil.getKey(key, shift, capslock)
   end
 end
 
--- Fills a rectangle.
+--- Fills a rectangle.
+--
+-- All parameters are identical to those of console.canvasDrawRect
 function PtUtil.fillRect(rect, color)
   console.canvasDrawRect(rect, color)
 end
@@ -136,12 +140,16 @@ function PtUtil.fillPoly(poly, color)
   -- console.canvasDrawPoly(poly, color)
 end
 
--- Draws a line.
+--- Draws a line.
+--
+-- All parameters are identical to those of console.canvasDrawLine
 function PtUtil.drawLine(p1, p2, color, width)
   console.canvasDrawLine(p1, p2, color, width * 2)
 end
 
--- Draws a rectangle.
+--- Draws a rectangle.
+--
+-- All parameters are identical to those of console.canvasDrawRect
 function PtUtil.drawRect(rect, color, width)
   local minX = rect[1] + width / 2
   local minY = math.floor((rect[2] + width / 2) * 2) / 2
@@ -170,6 +178,8 @@ function PtUtil.drawRect(rect, color, width)
 end
 
 -- Draws a polygon.
+--
+-- All parameters are identical to those of console.canvasDrawPoly
 function PtUtil.drawPoly(poly, color, width)
   -- Draw lines
   for i=1,#poly - 1,1 do
@@ -179,11 +189,13 @@ function PtUtil.drawPoly(poly, color, width)
 end
 
 -- Draws an image.
+--
+-- All parameters are identical to those of console.canvasDrawImage
 function PtUtil.drawImage(image, position, scale)
   console.canvasDrawImage(image, position, scale)
 end
 
--- Does the same thing as ipairs, except backwards
+--- Does the same thing as ipairs, except backwards
 --
 -- @param t The table to iterate backwards over
 function ripairs(t)
@@ -196,11 +208,10 @@ function ripairs(t)
   return ripairs_it, t, #t+1
 end
 
--- Removes the first occurence of an object from the given table.
+--- Removes the first occurence of an object from the given table.
 --
 -- @param t The table to remove from.
 -- @param o The object to remove.
---
 -- @return The index of the removed object, or -1 if the object was not found.
 function PtUtil.removeObject(t, o)
   for i,obj in ipairs(t) do
@@ -212,7 +223,8 @@ function PtUtil.removeObject(t, o)
   return -1
 end
 
--- Creates a new class with the specified superclass(es)
+--- Creates a new class with the specified superclass(es).
+-- @param ... The new class's superclass(es).
 function class(...)
   -- "cls" is the new class
   local cls, bases = {}, {...}

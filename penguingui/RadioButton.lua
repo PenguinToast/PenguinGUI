@@ -1,5 +1,33 @@
--- A radio button
+--- A radio button
+--
+-- Extends @{CheckBox}, so the fields RadioButton uses for drawing are the same
+-- as those of @{CheckBox}.
+-- @classmod RadioButton
+-- @usage
+-- -- Create a group of buttons that print when they are selected.
+-- local group = Panel(0, 0)
+-- local numButtons = 10
+-- for i = 1, numButtons, 1 do
+--   local button = RadioButton(i * 20, 0, 16)
+--   button:addListener("selected", function(t, k, old, new)
+--     if new then
+--       print("Button " .. i .. " was selected")
+--     end
+--   end)
+--   group:add(button)
+-- end
 RadioButton = class(CheckBox)
+
+--- Constructor
+-- @section
+
+--- Constructs a new RadioButton.
+-- @function _init
+-- @param x The x coordinate of the new component, relative to its parent.
+-- @param y The y coordinate of the new component, relative to its parent.
+-- @param size The width and height of the new component.
+
+--- @section end
 
 function RadioButton:drawCheck(dt)
   -- Draw squares since no efficient way to fill circles yet.
@@ -31,19 +59,9 @@ function RadioButton:select()
   end
   if selectedButton then
     selectedButton.selected = false
-    if selectedButton.onSelect then
-      selectedButton:onSelect(false)
-    end
   end
 
-  if not self.selected then
-    self.selected = true
-    if self.onSelect then
-      self:onSelect(self.selected)
-    end
-  else
-    self.selected = true
-  end
+  self.selected = not self.selected
 end
 
 function RadioButton:setParent(parent)

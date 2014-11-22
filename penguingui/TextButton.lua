@@ -1,4 +1,8 @@
--- A button that has a text label.
+--- A button that has a text label.
+-- @classmod TextButton
+-- @usage
+-- -- Create a text button with the text "Hello"
+-- local button = TextButton(0, 0, 100, 16, "Hello")
 TextButton = class(Button)
 TextButton.listeners = {
   text = {
@@ -10,7 +14,10 @@ TextButton.listeners = {
   }
 }
 
--- Constructs a button with a text label.
+--- Constructor
+-- @section
+
+--- Constructs a button with a text label.
 --
 -- @param x The x coordinate of the new component, relative to its parent.
 -- @param y The y coordinate of the new component, relative to its parent.
@@ -32,8 +39,15 @@ function TextButton:_init(x, y, width, height, text, fontColor)
   self:repositionLabel()
 end
 
+--- @section end
+
 -- Centers the text label
 function TextButton:repositionLabel()
   local label = self.label
   label.x = (self.width - label.width) / 2
 end
+
+--- Called when this button is clicked.
+-- @function onClick
+--
+-- @param button The mouse button that was used.
