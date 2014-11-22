@@ -2,8 +2,9 @@
 
 rm -rf doc
 cd PenguinGUI
+git fetch
 git pull
-ldoc .
+ldoc . --tempate=..
 mv doc ../doc
 cd ..
 git add doc
