@@ -1,12 +1,9 @@
 #!/bin/bash
 
-rm -rf doc
-git clone -b develop --single-branch git@github.com:PenguinToast/PenguinGUI.git
 cd PenguinGUI
+git pull
 ldoc .
-mv doc ../doc
 cd ..
-rm -rf PenguinGUI
 git add doc
 git commit -m "Update documentation."
 git push
