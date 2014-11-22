@@ -3,6 +3,10 @@ PenguinGUI
 
 OO GUI library for Starbound lua canvases
 
+API Docs
+==========
+API documentation is available here: http://penguintoast.github.io/PenguinGUI/doc/index.html
+
 Usage
 ==========
 See [penguingui/testobject/](penguingui/testobject/) and http://penguintoast.github.io/PenguinGUI for example usage
