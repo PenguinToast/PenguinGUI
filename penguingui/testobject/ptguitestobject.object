@@ -57,7 +57,7 @@
       }
     },
     "scripts" : ["/penguingui/testobject/ptguitestconsole.lua"],
-    "scriptDelta" : 5,
+    "scriptDelta" : 1,
     "scriptCanvas" : "scriptCanvas"
   }
 }
