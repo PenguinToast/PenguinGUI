@@ -1678,12 +1678,14 @@ function profilerApi.logData()
   local len = 8
   local cnt = 5
   for k,v in pairs(profilerApi.hooks) do
-    if v.t > 0 then
-      table.insert(arr, k)
-      local l = string.len(k)
-      if l > len then len = l end
-      l = profilerApi.get10pow(profilerApi.hooks[k].c)
-      if l > cnt then cnt = l end
+    if type(v) == "table" then
+      if v.t > 0 then
+        table.insert(arr, k)
+        local l = string.len(k)
+        if l > len then len = l end
+        l = profilerApi.get10pow(profilerApi.hooks[k].c)
+        if l > cnt then cnt = l end
+      end
     end
   end
   table.sort(arr, profilerApi.sortHelp)
@@ -1709,7 +1711,9 @@ function profilerApi.sortHelp(e1, e2)
 end
 
 function profilerApi.canHook(fn)
-  local un = { "pairs", "ipairs", "type", "next", "assert", "error", "print", "setmetatable", "select", "rawset", "rawlen", "pcall" }
+  local un = { "pairs", "ipairs", "ripairs", "type", "next", "assert", "error",
+               "print", "setmetatable", "select", "rawset", "rawlen", "pcall",
+               "unpack" }
   for i,v in ipairs(un) do
     if v == fn then return false end
   end
@@ -1725,6 +1729,7 @@ function profilerApi.hookAll(tn, to)
     end
   end
   table.insert(profilerApi.hookedTables, to)
+
   for k,v in pairs(to) do
     if type(v) == "function" then
       if (tn ~= "") or profilerApi.canHook(k) then
@@ -1746,15 +1751,15 @@ function profilerApi.hook(to, tn, fo, fn)
   to[fn] = function(...) return profilerApi.hooked(full, ...) end
 end
 
-function profilerApi.hooked(n, ...)
-  local hook = profilerApi.hooks[n]
+function profilerApi.hooked(fn, ...)
+  local hook = profilerApi.hooks[fn]
   hook.s = profilerApi.getTime()
-  local ret = hook.f(...)
+  local ret = {hook.f(...)}
   hook.e = profilerApi.getTime() - hook.s
   hook.t = hook.t + hook.e
   hook.c = hook.c + 1
   hook.a = hook.t / hook.c
-  return ret
+  return unpack(ret)
 end
 
 --------------------------------------------------------------------------------
