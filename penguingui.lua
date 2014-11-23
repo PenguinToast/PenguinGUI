@@ -935,6 +935,10 @@ Component.y = 0
 Component.width = 0
 Component.height = 0
 
+Component.mouseOver = nil
+
+Component.hasFocus = nil
+
 
 function Component:_init()
   self.children = {}
@@ -1014,7 +1018,7 @@ function Component:setParent(parent)
   end
 end
 
-function Component:calculateOffset(direction)
+function Component:calculateOffset()
   local offset = self.offset
   
   local parent = self.parent
@@ -1039,6 +1043,8 @@ function Component:contains(position)
   end
   return false
 end
+
+
 
 --------------------------------------------------------------------------------
 -- Panel.lua
