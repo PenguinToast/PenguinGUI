@@ -87,9 +87,11 @@ function CheckBox:drawCheck(dt)
 end
 
 function CheckBox:clickEvent(position, button, pressed)
-  if not pressed and self.pressed then
-    self.selected = not self.selected
+  if button <= 3 then
+    if not pressed and self.pressed then
+      self.selected = not self.selected
+    end
+    self.pressed = pressed
+    return true
   end
-  self.pressed = pressed
-  return true
 end

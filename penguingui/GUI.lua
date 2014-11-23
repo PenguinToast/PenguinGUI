@@ -118,11 +118,15 @@ end
 function GUI.keyEvent(key, pressed)
   GUI.keyState[key] = pressed
   local component = GUI.focusedComponent
-  if component then
+  while component do
     local keyEvent = component.keyEvent
     if keyEvent then
-      keyEvent(component, key, pressed)
+      if keyEvent(component, key, pressed) then
+        -- Key was consumed
+        return
+      end
     end
+    component = component.parent
   end
 end
 

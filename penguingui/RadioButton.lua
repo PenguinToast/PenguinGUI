@@ -61,18 +61,34 @@ function RadioButton:select()
     selectedButton.selected = false
   end
 
-  self.selected = not self.selected
+  if not self.selected then
+    self.selected = true
+  end
 end
 
 function RadioButton:setParent(parent)
   Component.setParent(self, parent)
-  self:select()
+  local siblings
+  if self.parent == nil then
+    siblings = GUI.components
+  else
+    siblings = self.parent.children
+  end
+
+  for _,sibling in ipairs(siblings) do
+    if sibling ~= self and sibling.is_a[RadioButton] and sibling.selected then
+      return
+    end
+  end
+  self.selected = true
 end
 
 function RadioButton:clickEvent(position, button, pressed)
-  if not pressed and self.pressed then
-    self:select()
+  if button <= 3 then
+    if not pressed and self.pressed then
+      self:select()
+    end
+    self.pressed = pressed
+    return true
   end
-  self.pressed = pressed
-  return true
 end

@@ -50,6 +50,7 @@ function TextRadioButton:_init(x, y, width, height, text)
   self.label = label
   self:add(label)
 
+  self.text = text
   self:repositionLabel()
 end
 

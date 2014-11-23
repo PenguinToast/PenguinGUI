@@ -5,15 +5,17 @@ function init()
   testbutton.onClick = testButtonClick
   GUI.add(testbutton)
 
-  for i=1,5,1 do
-    local testCheck = RadioButton(10, 30 + 15 * i, 10)
-    GUI.add(testCheck)
-  end
-  local checkPanel = Panel(30, 30)
-  GUI.add(checkPanel)
-  for i=1,5,1 do
-    local testCheck = RadioButton(0, 15 * i, 10)
-    checkPanel:add(testCheck)
+  local list = List(30, 30, 100, 100, 12)
+  GUI.add(list)
+  for i=1,20,1 do
+    local item = list:emplaceItem("Item " .. i)
+    local listener = 
+      function(t, k, old, new)
+        if new then
+          world.logInfo("%s has been selected.", t.text)
+        end
+      end
+    item:addListener("selected", listener)
   end
 end
 

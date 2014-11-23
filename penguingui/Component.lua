@@ -62,6 +62,16 @@ Component.hasFocus = nil
 function Component:_init()
   self.children = {}
   self.offset = Binding.proxy({0, 0})
+  if self.listeners then
+    local listeners = {}
+    for key,keyListeners in pairs(self.listeners) do
+      listeners[key] = {}
+      for i,keyListener in ipairs(keyListeners) do
+        listeners[key][i] = keyListener
+      end
+    end
+    self.listeners = listeners
+  end
 end
 
 --- @section end
@@ -202,8 +212,11 @@ end
 -- @param position The position of the mouse where the click happened.
 -- @param button The mouse button used.
 -- @param pressed Whether the mouse was pressed or released.
+-- @return If true, consumes the mouse event, blocking it from any underlying
+--       components.
 
 --- Called when the user presses or releases a key when this component has focus.
 -- @function keyEvent
 -- @param keyCode The key code that was pressed or released.
 -- @param pressed Whether the key was pressed or released.
+-- @return If true, consumes the key event, blocking it from any parents.

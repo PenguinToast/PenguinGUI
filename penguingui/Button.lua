@@ -93,11 +93,13 @@ function Button:setPressed(pressed)
 end
 
 function Button:clickEvent(position, button, pressed)
-  if self.onClick and not pressed and self.pressed then
-    self:onClick(button)
-  end
-  self:setPressed(pressed)
-  return true
+  if button <= 3 then
+    if self.onClick and not pressed and self.pressed then
+      self:onClick(button)
+    end
+    self:setPressed(pressed)
+    return true
+  end 
 end
 
 --- Called when this button is clicked.

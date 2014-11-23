@@ -24,6 +24,7 @@ function PtUtil.library()
     "/penguingui/CheckBox.lua",
     "/penguingui/RadioButton.lua",
     "/penguingui/TextRadioButton.lua",
+    "/penguingui/List.lua",
     "/lib/profilerapi.lua",
     "/lib/inspect.lua"
   }

@@ -181,21 +181,23 @@ function TextField:calculateTextClip()
 end
 
 function TextField:clickEvent(position, button, pressed)
-  local xPos = position[1] - self.x - self.offset[1] - self.hPadding
+  if button <= 3 then
+    local xPos = position[1] - self.x - self.offset[1] - self.hPadding
 
-  local text = self.text
-  local totalWidth = 0
-  for i=self.textOffset + 1,#text,1 do
-    local charWidth = PtUtil.getStringWidth(text:sub(i, i), self.fontSize)
-    if xPos < (totalWidth + charWidth * 0.6) then
-      self:setCursorPosition(i - 1)
-      return
+    local text = self.text
+    local totalWidth = 0
+    for i=self.textOffset + 1,#text,1 do
+      local charWidth = PtUtil.getStringWidth(text:sub(i, i), self.fontSize)
+      if xPos < (totalWidth + charWidth * 0.6) then
+        self:setCursorPosition(i - 1)
+        return
+      end
+      totalWidth = totalWidth + charWidth
     end
-    totalWidth = totalWidth + charWidth
-  end
-  self:setCursorPosition(#text)
+    self:setCursorPosition(#text)
 
-  return true
+    return true
+  end
 end
 
 function TextField:keyEvent(keyCode, pressed)
@@ -242,6 +244,7 @@ function TextField:keyEvent(keyCode, pressed)
       self:setCursorPosition(#text)
     end
   end
+  return true
 end
 
 --- Called when the user presses enter in this text field.
