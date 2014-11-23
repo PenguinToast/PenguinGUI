@@ -24,6 +24,8 @@ function PtUtil.library()
     "/penguingui/Image.lua",
     "/penguingui/CheckBox.lua",
     "/penguingui/RadioButton.lua",
+    "/penguingui/TextRadioButton.lua",
+    "/penguingui/List.lua",
     "/lib/profilerapi.lua",
     "/lib/inspect.lua"
   }
@@ -1646,12 +1648,26 @@ function RadioButton:select()
     selectedButton.selected = false
   end
 
-  self.selected = not self.selected
+  if not self.selected then
+    self.selected = true
+  end
 end
 
 function RadioButton:setParent(parent)
   Component.setParent(self, parent)
-  self:select()
+  local siblings
+  if self.parent == nil then
+    siblings = GUI.components
+  else
+    siblings = self.parent.children
+  end
+
+  for _,sibling in ipairs(siblings) do
+    if sibling ~= self and sibling.is_a[RadioButton] and sibling.selected then
+      return
+    end
+  end
+  self.selected = true
 end
 
 function RadioButton:clickEvent(position, button, pressed)
@@ -1660,4 +1676,106 @@ function RadioButton:clickEvent(position, button, pressed)
   end
   self.pressed = pressed
   return true
+end
+
+--------------------------------------------------------------------------------
+-- TextRadioButton.lua
+--------------------------------------------------------------------------------
+
+TextRadioButton = class(RadioButton)
+TextRadioButton.hoverColor = "#1F1F1F"
+TextRadioButton.pressedColor = "#454545"
+TextRadioButton.checkColor = "#343434"
+TextRadioButton.listeners = {
+  text = {
+    function(t, k, old, new)
+      local label = t.label
+      label.text = new
+      t:repositionLabel()
+    end
+  }
+}
+
+
+function TextRadioButton:_init(x, y, width, height, text)
+  RadioButton._init(self, x, y, 0)
+  self.width = width
+  self.height = height
+  
+  local padding = 2
+  local fontSize = height - padding * 2
+  local label = Label(0, padding, text, fontSize, fontColor)
+  
+  self.padding = padding
+  self.label = label
+  self:add(label)
+
+  self:repositionLabel()
+end
+
+
+function TextRadioButton:drawCheck(dt)
+  local startX = self.x + self.offset[1]
+  local startY = self.y + self.offset[2]
+  local w = self.width
+  local h = self.height
+  local checkRect = {startX + 1, startY + 1,
+                     startX + w - 1, startY + h - 1}
+  PtUtil.fillRect(checkRect, self.checkColor)
+end
+
+function TextRadioButton:repositionLabel()
+  local label = self.label
+  label.x = (self.width - label.width) / 2
+end
+
+--------------------------------------------------------------------------------
+-- List.lua
+--------------------------------------------------------------------------------
+
+List = class(Component)
+List.borderSize = 1
+List.itemPadding = 3
+
+
+function List:_init(x, y, width, height, itemSize, itemFactory)
+  Component._init(self)
+  self.x = x
+  self.y = y
+  self.width = width
+  self.height = height
+  self.itemSize = itemSize
+  self.itemFactory = itemFactory or
+    function(size, text)
+      if self.horizontal then
+        return TextRadioButton(0, 0, size, height
+                                 - (self.borderSize * 2
+                                      + self.itemPadding * 2), text)
+      else
+        return TextRadioButton(0, 0, width - (self.borderSize * 2
+                                                + self.itemPadding * 2),
+                               size, text)
+      end
+    end
+end
+
+
+function List:update(dt)
+
+end
+
+function List:draw(dt)
+
+end
+
+function List:emplaceItem(...)
+  return self:addItem(self.itemFactory(self.itemSize, ...))
+end
+
+function List:addItem(item)
+  if not self.horizontal then -- Add to bottom
+
+  else -- Add to left
+    
+  end
 end
