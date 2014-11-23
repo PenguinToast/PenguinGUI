@@ -1,6 +1,5 @@
 #!/bin/bash
 
-rm -rf doc
 cd PenguinGUI
 git fetch
 git pull
