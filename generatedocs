@@ -4,9 +4,8 @@ rm -rf doc
 cd PenguinGUI
 git fetch
 git pull
-ldoc . --template=..
-mv doc ../doc
 cd ..
+ldoc .
 git add doc
 git commit -m "Update documentation."
 git push

@@ -63,7 +63,7 @@
 
         <section id="main_content">
           <h1>Usage</h1>
-API Documentation can be found here: </br>
+API Documentation and examples can be found here: </br>
 <a href="doc/index.html" id="docs" class="button"><span>API Documentation</span></a></br></br></br>
 Basic stuff needed for the GUI to work
 </br>
@@ -80,6 +80,7 @@ function canvasKeyEvent(key, isKeyDown)
   GUI.keyEvent(key, isKeyDown)
 end</code></pre>
 </br>
+You can do cool stuff with bindings: <a href="doc/modules/Binding.html">Usage</a></br></br>
 For people unfamilar with lua,
 <pre><code class="lua">sometable:somefunction(args)</code></pre>
 is equivalent to
@@ -94,36 +95,18 @@ To add a component under another component:
 <div class="accordion">
   <h3>Image</h3>
   <div>
-    <em>An image.</em></br></br>
-    <h4>Constructor</h4>
-    <pre><code>local image = Image(x, y, imagePath)</code></pre>
-    </br>
-    <h4>Example</h4>
-    Creates a red 'x' image
 <pre><code>local image = Image(3, 3, "/interface/cockpit/xdown.png")
 </code></pre>
 <img src="http://imgur.com/Kyuhg46.png">
   </div>
   <h3>Label</h3>
   <div>
-    <em>A text label.</em></br></br>
-    <h4>Constructor</h4>
-    <pre><code>local label = Label(x, y, text, optionFontSize, optionalColor)</code></pre>
-    </br>
-    <h4>Example</h4>
-    Creates a label with the text "Hello"
 <pre><code>local label = Label(10, 10, "Hello")
 </code></pre>
 <img src="http://imgur.com/n9KhO0l.png">
   </div>
   <h3>Button</h3>
   <div>
-    <em>A clickable button.</em></br></br>
-    <h4>Constructor</h4>
-    <pre><code>local button = Button(x, y, width, height)</code></pre>
-    </br>
-    <h4>Example</h4>
-    Creates a button with a red x that closes the canvas on click
 <pre><code>local button = Button(10, 10, 0, 0)
 button:add(Image(3, 3, 9, 11, "/interface/cockpit/xdown.png"))
 button:pack(3)
@@ -135,13 +118,6 @@ end
   </div>
   <h3>TextButton</h3>
   <div>
-    <em>A button with a text label on it.</em></br></br>
-    <h4>Constructor</h4>
-    <pre><code>local button = TextButton(x, y, width, height, text)</code></pre>
-    </br>
-    <h4>Example</h4>
-    Creates a button at (10, 10) of width 100 and height 16, labeled Button that
-    sets its text to "hi" on click
 <pre><code>local testbutton = TextButton(10, 10, 100, 16, "Button")
 testbutton.onClick = function(button)
   testbutton.text = "hi"
@@ -151,13 +127,6 @@ end
   </div>
   <h3>TextField</h3>
   <div>
-    <em>A editable text field.</em></br></br>
-    <h4>Constructor</h4>
-    <pre><code>local field = TextField(x, y, width, height, optionalDefaultText)</code></pre>
-    </br>
-    <h4>Example</h4>
-Create a text field with default text "text" that sets its default text to
-    whatever's in it when the user hits enter
 <pre><code>local testfield = TextField(10, 10, 100, 16, "text")
 testfield.onEnter = function(field)
   field.defaultText = field.text    
@@ -167,12 +136,6 @@ end
   </div>
   <h3>Frame</h3>
   <div>
-    <em>A movable window.</em></br></br>
-    <h4>Constructor</h4>
-    <pre><code>local frame = Frame(x, y)</code></pre>
-    </br>
-    <h4>Example</h4>
-    Creates a window with a button that closes it
 <pre><code>local frame = Frame(10, 10)
 local button = TextButton(10, 10, 100, 16, "Close")
 button.onClick = function(button)
@@ -185,12 +148,6 @@ frame:pack(10)
   </div>
   <h3>Panel</h3>
   <div>
-    <em>A group of components.</em></br></br>
-    <h4>Constructor</h4>
-    <pre><code>local panel = Panel(x, y)</code></pre>
-    </br>
-    <h4>Example</h4>
-    Group several RadioButtons together
 <pre><code>local panel = Panel(10, 10)
 panel:add(RadioButton(0, 0, 16))
 panel:add(RadioButton(0, 20, 16))
@@ -199,14 +156,8 @@ panel:add(RadioButton(0, 20, 16))
   </div>
   <h3>CheckBox</h3>
   <div>
-    <em>A toggleable checkbox.</em></br></br>
-    <h4>Constructor</h4>
-    <pre><code>local checkbox = CheckBox(x, y, size)</code></pre>
-    </br>
-    <h4>Example</h4>
-    Creates a checkbox that prints "selected" when it is selected
 <pre><code>local checkbox = CheckBox(10, 10, 16)
-checkbox.onSelect = function(checkbox, selected)
+checkbox:addListener("selected", function(t, k, prev, selected)
   if selected then
     world.logInfo("selected")
   end
@@ -216,12 +167,6 @@ end
   </div>
   <h3>RadioButton</h3>
   <div>
-    <em>A group of buttons where only one may be selected at a time.</em></br></br>
-    <h4>Constructor</h4>
-    <pre><code>local radiobutton = RadioButton(x, y, size)</code></pre>
-    </br>
-    <h4>Example</h4>
-    Creates a group of RadioButtons
 <pre><code>local panel = Panel(10, 10)
 panel:add(RadioButton(0, 0, 16))
 panel:add(RadioButton(0, 20, 16))
