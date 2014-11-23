@@ -1,0 +1,349 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-56315532-1', 'auto');
+      ga('require', 'displayfeatures');
+      ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Source</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../source/binding.lua.html">binding.lua</a></li>
+  <li><a href="../source/bindingfunctions.lua.html">bindingfunctions.lua</a></li>
+  <li><a href="../source/button.lua.html">button.lua</a></li>
+  <li><a href="../source/checkbox.lua.html">checkbox.lua</a></li>
+  <li><a href="../source/component.lua.html">component.lua</a></li>
+  <li><a href="../source/frame.lua.html">frame.lua</a></li>
+  <li><a href="../source/gui.lua.html">gui.lua</a></li>
+  <li><a href="../source/image.lua.html">image.lua</a></li>
+  <li><a href="../source/label.lua.html">label.lua</a></li>
+  <li><a href="../source/panel.lua.html">panel.lua</a></li>
+  <li><a href="../source/radiobutton.lua.html">radiobutton.lua</a></li>
+  <li><a href="../source/textbutton.lua.html">textbutton.lua</a></li>
+  <li><strong>textfield.lua</strong></li>
+  <li><a href="../source/util.lua.html">util.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/Binding.html">Binding</a></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Button.html">Button</a></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+  <li><a href="../classes/Component.html">Component</a></li>
+  <li><a href="../classes/Frame.html">Frame</a></li>
+  <li><a href="../classes/Image.html">Image</a></li>
+  <li><a href="../classes/Label.html">Label</a></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
+  <li><a href="../classes/RadioButton.html">RadioButton</a></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><a href="../classes/TextField.html">TextField</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>textfield.lua</h2>
+<pre>
+<span class="comment">--- An editable text field.
+</span><span class="comment">-- @classmod TextField
+</span><span class="comment">-- @usage
+</span><span class="comment">-- -- Create a text field that prints whatever is in it when enter is pressed.
+</span><span class="comment">-- local textfield = TextField(0, 0, 100, 16, "default text")
+</span><span class="comment">-- textfield.onEnter = function(textfield)
+</span><span class="comment">--   print(textfield.text)
+</span><span class="comment">-- end
+</span>TextField = class(Component)
+TextField.vPadding = <span class="number">3</span>
+TextField.hPadding = <span class="number">4</span>
+<a id="13"></a><span class="comment">--- The color of this text field's border.
+</span>TextField.borderColor = <span class="string">"#545454"</span>
+<a id="15"></a><span class="comment">--- The background color of this text field.
+</span>TextField.backgroundColor = <span class="string">"#000000"</span>
+<a id="17"></a><span class="comment">--- The color of this text field's text.
+</span>TextField.textColor = <span class="string">"white"</span>
+<a id="19"></a><span class="comment">--- The color of this text field's text when the mouse is over it.
+</span>TextField.textHoverColor = <span class="string">"#999999"</span>
+<a id="21"></a><span class="comment">--- The color of this text field's default text.
+</span>TextField.defaultTextColor = <span class="string">"#333333"</span>
+<a id="23"></a><span class="comment">--- The color of this text field's default text when the mouse is over it.
+</span>TextField.defaultTextHoverColor = <span class="string">"#777777"</span>
+<a id="25"></a><span class="comment">--- The color of the text cursor.
+</span>TextField.cursorColor = <span class="string">"white"</span>
+<a id="27"></a><span class="comment">--- The period of the cursor's blinking.
+</span>TextField.cursorRate = <span class="number">1</span>
+
+<span class="comment">--- Constructor
+</span><span class="comment">-- @section
+</span>
+<span class="comment">--- Constructs a new TextField.
+</span><span class="comment">--
+</span><span class="comment">-- @param x The x coordinate of the new component, relative to its parent.
+</span><span class="comment">-- @param y The y coordinate of the new component, relative to its parent.
+</span><span class="comment">-- @param width The width of the new component.
+</span><span class="comment">-- @param height The height of the new component.
+</span><a id="39"></a><span class="comment">-- @param defaultText The text to display when nothing has been entered.
+</span><span class="keyword">function</span> TextField:_init(x, y, width, height, defaultText)
+  Component._init(self)
+  self.x = x
+  self.y = y
+  self.width = width
+  self.height = height
+  self.fontSize = height - self.vPadding * <span class="number">2</span>
+  self.cursorPosition = <span class="number">0</span>
+  self.cursorX = <span class="number">0</span>
+  self.cursorTimer = self.cursorRate
+  self.text = <span class="string">""</span>
+  self.defaultText = defaultText
+  self.textOffset = <span class="number">0</span>
+  self.textClip = <span class="keyword">nil</span>
+  self.mouseOver = <span class="keyword">false</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- @section end
+</span>
+<span class="keyword">function</span> TextField:update(dt)
+  <span class="keyword">if</span> self.hasFocus <span class="keyword">then</span>
+    <span class="keyword">local</span> timer = self.cursorTimer
+    <span class="keyword">local</span> rate = self.cursorRate
+    timer = timer - dt
+    <span class="keyword">if</span> timer &lt; <span class="number">0</span> <span class="keyword">then</span>
+      timer = rate
+    <span class="keyword">end</span>
+    self.cursorTimer = timer
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> TextField:draw(dt)
+  <span class="keyword">local</span> startX = self.x + self.offset[<span class="number">1</span>]
+  <span class="keyword">local</span> startY = self.y + self.offset[<span class="number">2</span>]
+  <span class="keyword">local</span> w = self.width
+  <span class="keyword">local</span> h = self.height
+
+  <span class="comment">-- Draw border and background
+</span>  <span class="keyword">local</span> borderRect = {
+    startX, startY, startX + w, startY + h
+  }
+  <span class="keyword">local</span> backgroundRect = {
+    startX + <span class="number">1</span>, startY + <span class="number">1</span>, startX + w - <span class="number">1</span>, startY + h - <span class="number">1</span>
+  }
+  PtUtil.fillRect(borderRect, self.borderColor)
+  PtUtil.fillRect(backgroundRect, self.backgroundColor)
+
+  <span class="keyword">local</span> text = self.text
+  <span class="comment">-- Decide if the default text should be displayed
+</span>  <span class="keyword">local</span> default = (text == <span class="string">""</span>) <span class="keyword">and</span> (self.defaultText ~= <span class="keyword">nil</span>)
+
+  <span class="keyword">local</span> textColor
+  <span class="comment">-- Choose the color to draw the text with
+</span>  <span class="keyword">if</span> self.mouseOver <span class="keyword">then</span>
+    textColor = default <span class="keyword">and</span> self.defaultTextHoverColor <span class="keyword">or</span> self.textHoverColor
+  <span class="keyword">else</span>
+    textColor = default <span class="keyword">and</span> self.defaultTextColor <span class="keyword">or</span> self.textColor
+  <span class="keyword">end</span>
+
+  <span class="keyword">local</span> cursorPosition = self.cursorPosition
+  text = default <span class="keyword">and</span> self.defaultText
+    <span class="keyword">or</span> text:sub(self.textOffset + <span class="number">1</span>, self.textOffset
+                  + (self.textClip <span class="keyword">or</span> #text))
+
+  <span class="comment">-- Draw the text
+</span>  PtUtil.drawText(text, {
+                    position = {
+                      startX + self.hPadding,
+                      startY + self.vPadding
+                    },
+                    verticalAnchor = <span class="string">"bottom"</span>
+                        }, self.fontSize, textColor)
+
+  <span class="comment">-- Text cursor
+</span>  <span class="keyword">if</span> self.hasFocus <span class="keyword">then</span>
+    <span class="keyword">local</span> timer = self.cursorTimer
+    <span class="keyword">local</span> rate = self.cursorRate
+
+    <span class="keyword">if</span> timer &gt; rate / <span class="number">2</span> <span class="keyword">then</span> <span class="comment">-- Draw cursor
+</span>      <span class="keyword">local</span> cursorX = startX + self.cursorX + self.hPadding
+      <span class="keyword">local</span> cursorY = startY + self.vPadding
+      PtUtil.drawLine({cursorX, cursorY},
+        {cursorX, cursorY + h - self.vPadding * <span class="number">2</span>},
+        self.cursorColor,
+        <span class="number">1</span>)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Set the character position of the text cursor.
+</span><span class="comment">--
+</span><span class="comment">-- @param pos The new position for the cursor, where 0 is the beginning of the
+</span><a id="132"></a><span class="comment">--            field.
+</span><span class="keyword">function</span> TextField:setCursorPosition(pos)
+  self.cursorPosition = pos
+
+  <span class="keyword">if</span> pos &lt; self.textOffset <span class="keyword">then</span>
+    self.textOffset = pos
+  <span class="keyword">end</span>
+  self:calculateTextClip()
+  <span class="keyword">local</span> textClip = self.textClip
+  <span class="keyword">while</span> (textClip) <span class="keyword">and</span> (pos &gt; self.textOffset + textClip) <span class="keyword">do</span>
+    self.textOffset = self.textOffset + <span class="number">1</span>
+    self:calculateTextClip()
+    textClip = self.textClip
+  <span class="keyword">end</span>
+  <span class="keyword">while</span> self.textOffset &gt; <span class="number">0</span> <span class="keyword">and</span> <span class="keyword">not</span> textClip <span class="keyword">do</span>
+    self.textOffset = self.textOffset - <span class="number">1</span>
+    self:calculateTextClip()
+    textClip = self.textClip
+    <span class="keyword">if</span> textClip <span class="keyword">then</span>
+      self.textOffset = self.textOffset + <span class="number">1</span>
+      self:calculateTextClip()
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  <span class="comment">-- world.logInfo("cursor: %s, textOffset: %s, textClip: %s", pos, self.textOffset, self.textClip)
+</span>
+  <span class="keyword">local</span> text = self.text
+  <span class="keyword">local</span> cursorX = <span class="number">0</span>
+  <span class="keyword">for</span> i=self.textOffset + <span class="number">1</span>,pos,<span class="number">1</span> <span class="keyword">do</span>
+    <span class="keyword">local</span> charWidth = PtUtil.getStringWidth(text:sub(i, i), self.fontSize)
+    cursorX = cursorX + charWidth
+  <span class="keyword">end</span>
+  self.cursorX = cursorX
+  self.cursorTimer = self.cursorRate
+<span class="keyword">end</span>
+
+<span class="comment">-- Calculates the text clip, i.e. how many characters to display.
+</span><span class="keyword">function</span> TextField:calculateTextClip()
+  <span class="keyword">local</span> maxX = self.width - self.hPadding * <span class="number">2</span>
+  <span class="keyword">local</span> text = self.text
+  <span class="keyword">local</span> totalWidth = <span class="number">0</span>
+  <span class="keyword">local</span> startI = self.textOffset + <span class="number">1</span>
+  <span class="keyword">for</span> i=startI,#text,<span class="number">1</span> <span class="keyword">do</span>
+    totalWidth = totalWidth
+      + PtUtil.getStringWidth(text:sub(i, i), self.fontSize)
+    <span class="keyword">if</span> totalWidth &gt; maxX <span class="keyword">then</span>
+      self.textClip = i - startI
+      <span class="keyword">return</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  self.textClip = <span class="keyword">nil</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> TextField:clickEvent(position, button, pressed)
+  <span class="keyword">local</span> xPos = position[<span class="number">1</span>] - self.x - self.offset[<span class="number">1</span>] - self.hPadding
+
+  <span class="keyword">local</span> text = self.text
+  <span class="keyword">local</span> totalWidth = <span class="number">0</span>
+  <span class="keyword">for</span> i=self.textOffset + <span class="number">1</span>,#text,<span class="number">1</span> <span class="keyword">do</span>
+    <span class="keyword">local</span> charWidth = PtUtil.getStringWidth(text:sub(i, i), self.fontSize)
+    <span class="keyword">if</span> xPos &lt; (totalWidth + charWidth * <span class="number">0.6</span>) <span class="keyword">then</span>
+      self:setCursorPosition(i - <span class="number">1</span>)
+      <span class="keyword">return</span>
+    <span class="keyword">end</span>
+    totalWidth = totalWidth + charWidth
+  <span class="keyword">end</span>
+  self:setCursorPosition(#text)
+
+  <span class="keyword">return</span> <span class="keyword">true</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> TextField:keyEvent(keyCode, pressed)
+  <span class="comment">-- Ignore key releases and any keys pressed while ctrl or alt is held
+</span>  <span class="keyword">local</span> keyState = GUI.keyState
+  <span class="keyword">if</span> <span class="keyword">not</span> pressed
+    <span class="keyword">or</span> keyState[<span class="number">305</span>] <span class="keyword">or</span> keyState[<span class="number">306</span>]
+    <span class="keyword">or</span> keyState[<span class="number">307</span>] <span class="keyword">or</span> keyState[<span class="number">308</span>]
+  <span class="keyword">then</span>
+    <span class="keyword">return</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">local</span> shift = keyState[<span class="number">303</span>] <span class="keyword">or</span> keyState[<span class="number">304</span>]
+  <span class="keyword">local</span> caps = keyState[<span class="number">301</span>]
+  <span class="keyword">local</span> key = PtUtil.getKey(keyCode, shift, caps)
+
+  <span class="keyword">local</span> text = self.text
+  <span class="keyword">local</span> cursorPos = self.cursorPosition
+
+  <span class="keyword">if</span> #key == <span class="number">1</span> <span class="keyword">then</span> <span class="comment">-- Type a character
+</span>    self.text = text:sub(<span class="number">1</span>, cursorPos) .. key .. text:sub(cursorPos + <span class="number">1</span>)
+    self:setCursorPosition(cursorPos + <span class="number">1</span>)
+  <span class="keyword">else</span> <span class="comment">-- Special character
+</span>    <span class="keyword">if</span> key == <span class="string">"backspace"</span> <span class="keyword">then</span>
+      <span class="keyword">if</span> cursorPos &gt; <span class="number">0</span> <span class="keyword">then</span>
+        self.text = text:sub(<span class="number">1</span>, cursorPos - <span class="number">1</span>) .. text:sub(cursorPos + <span class="number">1</span>)
+        self:setCursorPosition(cursorPos - <span class="number">1</span>)
+      <span class="keyword">end</span>
+    <span class="keyword">elseif</span> key == <span class="string">"enter"</span> <span class="keyword">then</span>
+      <span class="keyword">if</span> self.onEnter <span class="keyword">then</span>
+        self:onEnter()
+      <span class="keyword">end</span>
+    <span class="keyword">elseif</span> key == <span class="string">"delete"</span> <span class="keyword">then</span>
+      <span class="keyword">if</span> cursorPos &lt; #text <span class="keyword">then</span>
+        self.text = text:sub(<span class="number">1</span>, cursorPos) .. text:sub(cursorPos + <span class="number">2</span>)
+      <span class="keyword">end</span>
+    <span class="keyword">elseif</span> key == <span class="string">"right"</span> <span class="keyword">then</span>
+      self:setCursorPosition(<span class="global">math</span>.min(cursorPos + <span class="number">1</span>, #text))
+    <span class="keyword">elseif</span> key == <span class="string">"left"</span> <span class="keyword">then</span>
+      self:setCursorPosition(<span class="global">math</span>.max(<span class="number">0</span>, cursorPos - <span class="number">1</span>))
+    <span class="keyword">elseif</span> key == <span class="string">"home"</span> <span class="keyword">then</span>
+      self:setCursorPosition(<span class="number">0</span>)
+    <span class="keyword">elseif</span> key == <span class="string">"end"</span> <span class="keyword">then</span>
+      self:setCursorPosition(#text)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Called when the user presses enter in this text field.
+</span><a id="249"></a><span class="comment">-- @function onEnter
+</span></pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-23 04:51:10 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

@@ -80,28 +80,8 @@
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#library">library ()</a></td>
-	<td class="summary">Get a list of all lua scripts in the PenguinGUI library.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#drawText">drawText (text, options, fontSize, color)</a></td>
-	<td class="summary">Draw the text string, offsetting the string to account for leading whitespace.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#getStringWidth">getStringWidth (text, fontSize)</a></td>
-	<td class="summary">Get the approximate pixel width of a string.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#getFontScale">getFontScale (size)</a></td>
-	<td class="summary">Gets the scale of the specified font size.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#getKey">getKey (key, shift, capslock)</a></td>
-	<td class="summary">Gets a string representation of the keycode.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#fillRect">fillRect (rect, color)</a></td>
-	<td class="summary">Fills a rectangle.</td>
+	<td class="name" nowrap><a href="#class">class (...)</a></td>
+	<td class="summary">Creates a new class with the specified superclass(es).</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#drawLine">drawLine (p1, p2, color, width)</a></td>
@@ -112,16 +92,36 @@
 	<td class="summary">Draws a rectangle.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#ripairs">ripairs (t)</a></td>
-	<td class="summary">Does the same thing as ipairs, except backwards</td>
+	<td class="name" nowrap><a href="#drawText">drawText (text, options, fontSize, color)</a></td>
+	<td class="summary">Draw the text string, offsetting the string to account for leading whitespace.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fillRect">fillRect (rect, color)</a></td>
+	<td class="summary">Fills a rectangle.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getFontScale">getFontScale (size)</a></td>
+	<td class="summary">Gets the scale of the specified font size.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getKey">getKey (key, shift, capslock)</a></td>
+	<td class="summary">Gets a string representation of the keycode.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getStringWidth">getStringWidth (text, fontSize)</a></td>
+	<td class="summary">Get the approximate pixel width of a string.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#library">library ()</a></td>
+	<td class="summary">Get a list of all lua scripts in the PenguinGUI library.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#removeObject">removeObject (t, o)</a></td>
 	<td class="summary">Removes the first occurence of an object from the given table.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#class">class (...)</a></td>
-	<td class="summary">Creates a new class with the specified superclass(es).</td>
+	<td class="name" nowrap><a href="#ripairs">ripairs (t)</a></td>
+	<td class="summary">Does the same thing as ipairs, except backwards</td>
 	</tr>
 </table>
 
@@ -133,139 +133,17 @@
 
     <dl class="function">
     <dt>
-    <a name = "library"></a>
-    <strong>library ()</strong>
+    <a name = "class"></a>
+    <strong>class (...)</strong>
     </dt>
     <dd>
-    Get a list of all lua scripts in the PenguinGUI library.
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        A list of strings containing the paths to the PenguinGUI scripts.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "drawText"></a>
-    <strong>drawText (text, options, fontSize, color)</strong>
-    </dt>
-    <dd>
-    Draw the text string, offsetting the string to account for leading whitespace.
-<p> All parameters are identical to those of console.canvasDrawText
+    Creates a new class with the specified superclass(es).
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">text</span>
-
-        </li>
-        <li><span class="parameter">options</span>
-
-        </li>
-        <li><span class="parameter">fontSize</span>
-
-        </li>
-        <li><span class="parameter">color</span>
-
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "getStringWidth"></a>
-    <strong>getStringWidth (text, fontSize)</strong>
-    </dt>
-    <dd>
-    Get the approximate pixel width of a string.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">text</span>
-         The string to get the width of.
-        </li>
-        <li><span class="parameter">fontSize</span>
-         The size of the font to get the width from.
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "getFontScale"></a>
-    <strong>getFontScale (size)</strong>
-    </dt>
-    <dd>
-    Gets the scale of the specified font size.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">size</span>
-         The font size to get the scale for
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "getKey"></a>
-    <strong>getKey (key, shift, capslock)</strong>
-    </dt>
-    <dd>
-    Gets a string representation of the keycode.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">key</span>
-         The keycode of the key.
-        </li>
-        <li><span class="parameter">shift</span>
-         Boolean representing whether or not shift is pressed.
-        </li>
-        <li><span class="parameter">capslock</span>
-         Boolean representing whether or not capslock is on.
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "fillRect"></a>
-    <strong>fillRect (rect, color)</strong>
-    </dt>
-    <dd>
-    Fills a rectangle.
-<p> All parameters are identical to those of console.canvasDrawRect
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">rect</span>
-
-        </li>
-        <li><span class="parameter">color</span>
-
+        <li><span class="parameter">...</span>
+         The new class's superclass(es).
         </li>
     </ul>
 
@@ -332,20 +210,142 @@
 
 </dd>
     <dt>
-    <a name = "ripairs"></a>
-    <strong>ripairs (t)</strong>
+    <a name = "drawText"></a>
+    <strong>drawText (text, options, fontSize, color)</strong>
     </dt>
     <dd>
-    Does the same thing as ipairs, except backwards
+    Draw the text string, offsetting the string to account for leading whitespace.
+<p> All parameters are identical to those of console.canvasDrawText
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">t</span>
-         The table to iterate backwards over
+        <li><span class="parameter">text</span>
+
+        </li>
+        <li><span class="parameter">options</span>
+
+        </li>
+        <li><span class="parameter">fontSize</span>
+
+        </li>
+        <li><span class="parameter">color</span>
+
         </li>
     </ul>
 
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fillRect"></a>
+    <strong>fillRect (rect, color)</strong>
+    </dt>
+    <dd>
+    Fills a rectangle.
+<p> All parameters are identical to those of console.canvasDrawRect
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">rect</span>
+
+        </li>
+        <li><span class="parameter">color</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getFontScale"></a>
+    <strong>getFontScale (size)</strong>
+    </dt>
+    <dd>
+    Gets the scale of the specified font size.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">size</span>
+         The font size to get the scale for
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getKey"></a>
+    <strong>getKey (key, shift, capslock)</strong>
+    </dt>
+    <dd>
+    Gets a string representation of the keycode.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">key</span>
+         The keycode of the key.
+        </li>
+        <li><span class="parameter">shift</span>
+         Boolean representing whether or not shift is pressed.
+        </li>
+        <li><span class="parameter">capslock</span>
+         Boolean representing whether or not capslock is on.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getStringWidth"></a>
+    <strong>getStringWidth (text, fontSize)</strong>
+    </dt>
+    <dd>
+    Get the approximate pixel width of a string.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">text</span>
+         The string to get the width of.
+        </li>
+        <li><span class="parameter">fontSize</span>
+         The size of the font to get the width from.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "library"></a>
+    <strong>library ()</strong>
+    </dt>
+    <dd>
+    Get a list of all lua scripts in the PenguinGUI library.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        A list of strings containing the paths to the PenguinGUI scripts.
+    </ol>
 
 
 
@@ -380,17 +380,17 @@
 
 </dd>
     <dt>
-    <a name = "class"></a>
-    <strong>class (...)</strong>
+    <a name = "ripairs"></a>
+    <strong>ripairs (t)</strong>
     </dt>
     <dd>
-    Creates a new class with the specified superclass(es).
+    Does the same thing as ipairs, except backwards
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">...</span>
-         The new class's superclass(es).
+        <li><span class="parameter">t</span>
+         The table to iterate backwards over
         </li>
     </ul>
 
@@ -406,7 +406,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
-<i style="float:right;">Last updated 2014-11-23 02:45:12 </i>
+<i style="float:right;">Last updated 2014-11-23 05:18:58 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

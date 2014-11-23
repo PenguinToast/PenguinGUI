@@ -44,6 +44,7 @@
 
 <h2>Contents</h2>
 <ul>
+<li><a href="#Fields">Fields</a></li>
 <li><a href="#Constructor">Constructor </a></li>
 <li><a href="#Methods">Methods</a></li>
 </ul>
@@ -76,8 +77,75 @@
 <h1>Class <code>Component</code></h1>
 <p>Superclass for all GUI components.</p>
 <p></p>
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">
+ -- Creating a custom component:
+ CustomComponent = class(Component) -- Your new component needs to extend Component
+ -- Set any variables that have a default value
+ CustomComponent.somefield = &quot;somedefault&quot;
+
+ -- Constructor for your component
+ function CustomComponent:_init(args)
+   Component._init(self) -- This line must be the first line of your constructor
+   -- Do other initialization stuff
+   self.someotherfield = &quot;somevalue&quot;
+   -- If you want your component to block the mouse (i.e. know when the mouse
+   -- is over it, you must set mouseOver to not nil
+   self.mouseOver = false
+ end
+
+ -- Put all your component logic in update
+ function CustomComponent:update(dt)
+   -- Do some logic
+ end
+
+ -- Put all your component rendering in draw
+ function CustomComponent:draw(dt)
+   -- Do some drawing
+ end
+
+ -- If you want your component to be notified of click events, create a
+ -- clickEvent method.
+ function CustomComponent:clickEvent(position, button, pressed)
+   -- Process click
+ end
+
+ -- If you want your component to be notified of key events, create a keyEvent
+ -- method.
+ function CustomComponent:keyEvent(keyCode, pressed)
+   -- Process key
+ end</pre>
+    </ul>
 
 
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Component.hasFocus">Component.hasFocus</a></td>
+	<td class="summary">Whether this component has keyboard focus.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component.height">Component.height</a></td>
+	<td class="summary">The height of this component.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component.mouseOver">Component.mouseOver</a></td>
+	<td class="summary">Whether the mouse is hovering over this component.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component.width">Component.width</a></td>
+	<td class="summary">The width of this component.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component.x">Component.x</a></td>
+	<td class="summary">The x location of this component, relative to its parent.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component.y">Component.y</a></td>
+	<td class="summary">The y location of this component, relative to its parent.</td>
+	</tr>
+</table>
 <h2><a href="#Constructor">Constructor </a></h2>
 <table class="function_list">
 	<tr>
@@ -92,37 +160,41 @@
 	<td class="summary">Adds a child component to this component.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Component:remove">Component:remove (child)</a></td>
-	<td class="summary">Removes a child component.</td>
+	<td class="name" nowrap><a href="#Component:calculateOffset">Component:calculateOffset ()</a></td>
+	<td class="summary">Calculates the offset from the origin that this component should use, based
+ on its parents.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Component:pack">Component:pack (padding)</a></td>
-	<td class="summary">Resizes this component around its children.</td>
+	<td class="name" nowrap><a href="#Component:clickEvent">Component:clickEvent (position, button, pressed)</a></td>
+	<td class="summary">Called when the mouse is pressed or released over this component.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Component:step">Component:step (dt)</a></td>
-	<td class="summary">Draws and updates this component, and any children.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#Component:update">Component:update (dt)</a></td>
-	<td class="summary">Updates this component.</td>
+	<td class="name" nowrap><a href="#Component:contains">Component:contains (position)</a></td>
+	<td class="summary">Checks if the given position is within this component.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Component:draw">Component:draw (dt)</a></td>
 	<td class="summary">Draws this component</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#Component:keyEvent">Component:keyEvent (keyCode, pressed)</a></td>
+	<td class="summary">Called when the user presses or releases a key when this component has focus.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component:pack">Component:pack ([padding])</a></td>
+	<td class="summary">Resizes this component around its children.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Component:remove">Component:remove (child)</a></td>
+	<td class="summary">Removes a child component.</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#Component:setParent">Component:setParent (parent)</a></td>
 	<td class="summary">Sets the parent of this component, and updates the offset of this component.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Component:calculateOffset">Component:calculateOffset (direction)</a></td>
-	<td class="summary">Calculates the offset from the origin that this component should use, based
- on its parents.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#Component:contains">Component:contains (position)</a></td>
-	<td class="summary">Checks if the given position is within this component.</td>
+	<td class="name" nowrap><a href="#Component:update">Component:update (dt)</a></td>
+	<td class="summary">Updates this component.</td>
 	</tr>
 </table>
 
@@ -130,6 +202,96 @@
 <br/>
 
 
+    <h2><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Component.hasFocus"></a>
+    <strong>Component.hasFocus</strong>
+    </dt>
+    <dd>
+    Whether this component has keyboard focus.
+ <a href="../classes/Component.html#Component.mouseOver">mouseOver</a> needs to be not nil for this to be set.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component.height"></a>
+    <strong>Component.height</strong>
+    </dt>
+    <dd>
+    The height of this component.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component.mouseOver"></a>
+    <strong>Component.mouseOver</strong>
+    </dt>
+    <dd>
+    Whether the mouse is hovering over this component.
+ Set this to not nil to allow this to be set.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component.width"></a>
+    <strong>Component.width</strong>
+    </dt>
+    <dd>
+    The width of this component.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component.x"></a>
+    <strong>Component.x</strong>
+    </dt>
+    <dd>
+    The x location of this component, relative to its parent.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component.y"></a>
+    <strong>Component.y</strong>
+    </dt>
+    <dd>
+    The y location of this component, relative to its parent.
+
+
+
+
+
+
+
+</dd>
+</dl>
     <h2><a name="Constructor"></a>Constructor </h2>
 
 
@@ -173,154 +335,46 @@
 
 </dd>
     <dt>
-    <a name = "Component:remove"></a>
-    <strong>Component:remove (child)</strong>
-    </dt>
-    <dd>
-    Removes a child component.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">child</span>
-         The component to remove
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        Whether or not the child was removed
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "Component:pack"></a>
-    <strong>Component:pack (padding)</strong>
-    </dt>
-    <dd>
-    Resizes this component around its children.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">padding</span>
-         (Optional) Amount of padding to put between the component's
-                children and this component's borders.
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "Component:step"></a>
-    <strong>Component:step (dt)</strong>
-    </dt>
-    <dd>
-    Draws and updates this component, and any children.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">dt</span>
-
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "Component:update"></a>
-    <strong>Component:update (dt)</strong>
-    </dt>
-    <dd>
-    Updates this component.
-<p> Components should override this to implement their own update functions.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">dt</span>
-
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "Component:draw"></a>
-    <strong>Component:draw (dt)</strong>
-    </dt>
-    <dd>
-    Draws this component  Components should override this to implement their own draw functions.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">dt</span>
-
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "Component:setParent"></a>
-    <strong>Component:setParent (parent)</strong>
-    </dt>
-    <dd>
-    Sets the parent of this component, and updates the offset of this component.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">parent</span>
-         The new parent of this component, or nil if this is to be a
-               top level component.
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
     <a name = "Component:calculateOffset"></a>
-    <strong>Component:calculateOffset (direction)</strong>
+    <strong>Component:calculateOffset ()</strong>
     </dt>
     <dd>
     Calculates the offset from the origin that this component should use, based
  on its parents.
 
 
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">direction</span>
-
-        </li>
-    </ul>
 
     <h3>Returns:</h3>
     <ol>
 
         The calculated offset.
     </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component:clickEvent"></a>
+    <strong>Component:clickEvent (position, button, pressed)</strong>
+    </dt>
+    <dd>
+    Called when the mouse is pressed or released over this component.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">position</span>
+         The position of the mouse where the click happened.
+        </li>
+        <li><span class="parameter">button</span>
+         The mouse button used.
+        </li>
+        <li><span class="parameter">pressed</span>
+         Whether the mouse was pressed or released.
+        </li>
+    </ul>
+
 
 
 
@@ -351,6 +405,138 @@
 
 
 </dd>
+    <dt>
+    <a name = "Component:draw"></a>
+    <strong>Component:draw (dt)</strong>
+    </dt>
+    <dd>
+    Draws this component  Components should override this to implement their own draw functions.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">dt</span>
+         The time elapsed since the last update, in seconds.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component:keyEvent"></a>
+    <strong>Component:keyEvent (keyCode, pressed)</strong>
+    </dt>
+    <dd>
+    Called when the user presses or releases a key when this component has focus.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">keyCode</span>
+         The key code that was pressed or released.
+        </li>
+        <li><span class="parameter">pressed</span>
+         Whether the key was pressed or released.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component:pack"></a>
+    <strong>Component:pack ([padding])</strong>
+    </dt>
+    <dd>
+    Resizes this component around its children.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">padding</span>
+         Amount of padding to put between the component's
+                children and this component's borders.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component:remove"></a>
+    <strong>Component:remove (child)</strong>
+    </dt>
+    <dd>
+    Removes a child component.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">child</span>
+         The component to remove
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Whether or not the child was removed
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component:setParent"></a>
+    <strong>Component:setParent (parent)</strong>
+    </dt>
+    <dd>
+    Sets the parent of this component, and updates the offset of this component.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">parent</span>
+         The new parent of this component, or nil if this is to be a
+               top level component.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Component:update"></a>
+    <strong>Component:update (dt)</strong>
+    </dt>
+    <dd>
+    Updates this component.
+<p> Components should override this to implement their own update functions.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">dt</span>
+         The time elapsed since the last update, in seconds.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
 </dl>
 
 
@@ -358,7 +544,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
-<i style="float:right;">Last updated 2014-11-23 02:45:12 </i>
+<i style="float:right;">Last updated 2014-11-23 05:18:58 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

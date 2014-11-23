@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-56315532-1', 'auto');
+      ga('require', 'displayfeatures');
+      ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Source</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../source/test.lua.html">test.lua</a></li>
+  <li><a href="../source/inspect.lua.html">inspect.lua</a></li>
+  <li><strong>profilerapi.lua</strong></li>
+  <li><a href="../source/binding.lua.html">binding.lua</a></li>
+  <li><a href="../source/bindingfunctions.lua.html">bindingfunctions.lua</a></li>
+  <li><a href="../source/button.lua.html">button.lua</a></li>
+  <li><a href="../source/checkbox.lua.html">checkbox.lua</a></li>
+  <li><a href="../source/component.lua.html">component.lua</a></li>
+  <li><a href="../source/frame.lua.html">frame.lua</a></li>
+  <li><a href="../source/gui.lua.html">gui.lua</a></li>
+  <li><a href="../source/image.lua.html">image.lua</a></li>
+  <li><a href="../source/label.lua.html">label.lua</a></li>
+  <li><a href="../source/panel.lua.html">panel.lua</a></li>
+  <li><a href="../source/radiobutton.lua.html">radiobutton.lua</a></li>
+  <li><a href="../source/textbutton.lua.html">textbutton.lua</a></li>
+  <li><a href="../source/textfield.lua.html">textfield.lua</a></li>
+  <li><a href="../source/util.lua.html">util.lua</a></li>
+  <li><a href="../source/ptguitestconsole.lua.html">ptguitestconsole.lua</a></li>
+  <li><a href="../source/ptguitestobject.lua.html">ptguitestobject.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/Binding.html">Binding</a></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Button.html">Button</a></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+  <li><a href="../classes/Component.html">Component</a></li>
+  <li><a href="../classes/Frame.html">Frame</a></li>
+  <li><a href="../classes/Image.html">Image</a></li>
+  <li><a href="../classes/Label.html">Label</a></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
+  <li><a href="../classes/RadioButton.html">RadioButton</a></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><a href="../classes/TextField.html">TextField</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>profilerapi.lua</h2>
+<pre>
+<span class="comment">-- Credit to XspeedPL for writing this (I think)
+</span>profilerApi = {
+  hookedTables = {}
+}
+
+<span class="comment">-- Initializes the Profiler and hooks all functions
+</span><span class="keyword">function</span> profilerApi.init()
+  <span class="keyword">if</span> profilerApi.isInit <span class="keyword">then</span> <span class="keyword">return</span> <span class="keyword">end</span>
+  profilerApi.hooks = {}
+  profilerApi.start = profilerApi.getTime()
+  profilerApi.hookAll(<span class="string">""</span>, _ENV)
+  profilerApi.isInit = <span class="keyword">true</span>
+<span class="keyword">end</span>
+
+<span class="comment">-- Prints all collected data into the log ordered by total time descending
+</span><span class="keyword">function</span> profilerApi.logData()
+  <span class="keyword">local</span> time = profilerApi.getTime() - profilerApi.start
+  <span class="keyword">local</span> arr = {}
+  <span class="keyword">local</span> len = <span class="number">8</span>
+  <span class="keyword">local</span> cnt = <span class="number">5</span>
+  <span class="keyword">for</span> k,v <span class="keyword">in</span> <span class="global">pairs</span>(profilerApi.hooks) <span class="keyword">do</span>
+    <span class="keyword">if</span> <span class="global">type</span>(v) == <span class="string">"table"</span> <span class="keyword">then</span>
+      <span class="keyword">if</span> v.t &gt; <span class="number">0</span> <span class="keyword">then</span>
+        <span class="global">table</span>.insert(arr, k)
+        <span class="keyword">local</span> l = <span class="global">string</span>.len(k)
+        <span class="keyword">if</span> l &gt; len <span class="keyword">then</span> len = l <span class="keyword">end</span>
+        l = profilerApi.get10pow(profilerApi.hooks[k].c)
+        <span class="keyword">if</span> l &gt; cnt <span class="keyword">then</span> cnt = l <span class="keyword">end</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  <span class="global">table</span>.sort(arr, profilerApi.sortHelp)
+  world.logInfo(<span class="string">"Profiler log for console (total profiling time: "</span> .. <span class="global">string</span>.format(<span class="string">"%.2f"</span>, time) .. <span class="string">")"</span>)
+  world.logInfo(<span class="global">string</span>.format(<span class="string">"%"</span> .. len .. <span class="string">"s |        total time | %"</span> .. cnt .. <span class="string">"s |      average time |         last time"</span>, <span class="string">"function"</span>, <span class="string">"count"</span>))
+  <span class="keyword">for</span> i,k <span class="keyword">in</span> <span class="global">ipairs</span>(arr) <span class="keyword">do</span>
+    <span class="keyword">local</span> hook = profilerApi.hooks[k]
+    world.logInfo(<span class="global">string</span>.format(<span class="string">"%"</span> .. len .. <span class="string">"s | %.15f | %"</span> .. cnt .. <span class="string">"i | %.15f | %.15f"</span>, k, hook.t, hook.c, hook.a, hook.e))
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> profilerApi.get10pow(n)
+  <span class="keyword">local</span> ret = <span class="number">1</span>
+  <span class="keyword">while</span> n &gt;= <span class="number">10</span> <span class="keyword">do</span>
+    ret = ret + <span class="number">1</span>
+    n = n / <span class="number">10</span>
+  <span class="keyword">end</span>
+  <span class="keyword">return</span> ret
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> profilerApi.sortHelp(e1, e2)
+  <span class="keyword">return</span> profilerApi.hooks[e1].t &gt; profilerApi.hooks[e2].t
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> profilerApi.canHook(fn)
+  <span class="keyword">local</span> un = { <span class="string">"pairs"</span>, <span class="string">"ipairs"</span>, <span class="string">"ripairs"</span>, <span class="string">"type"</span>, <span class="string">"next"</span>, <span class="string">"assert"</span>, <span class="string">"error"</span>,
+               <span class="string">"print"</span>, <span class="string">"setmetatable"</span>, <span class="string">"select"</span>, <span class="string">"rawset"</span>, <span class="string">"rawlen"</span>, <span class="string">"pcall"</span>,
+               <span class="string">"unpack"</span> }
+  <span class="keyword">for</span> i,v <span class="keyword">in</span> <span class="global">ipairs</span>(un) <span class="keyword">do</span>
+    <span class="keyword">if</span> v == fn <span class="keyword">then</span> <span class="keyword">return</span> <span class="keyword">false</span> <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  <span class="keyword">return</span> <span class="keyword">true</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> profilerApi.hookAll(tn, to)
+  <span class="keyword">if</span> (tn == <span class="string">"profilerApi."</span>) <span class="keyword">or</span> (tn == <span class="string">"table."</span>) <span class="keyword">or</span> (tn == <span class="string">"coroutine."</span>) <span class="keyword">or</span> (tn == <span class="string">"os."</span>) <span class="keyword">then</span> <span class="keyword">return</span> <span class="keyword">end</span>
+  <span class="keyword">local</span> hookedTables = profilerApi.hookedTables
+  <span class="keyword">for</span> k,v <span class="keyword">in</span> <span class="global">pairs</span>(hookedTables) <span class="keyword">do</span>
+    <span class="keyword">if</span> to == v <span class="keyword">then</span>
+      <span class="keyword">return</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  <span class="global">table</span>.insert(profilerApi.hookedTables, to)
+
+  <span class="keyword">for</span> k,v <span class="keyword">in</span> <span class="global">pairs</span>(to) <span class="keyword">do</span>
+    <span class="keyword">if</span> <span class="global">type</span>(v) == <span class="string">"function"</span> <span class="keyword">then</span>
+      <span class="keyword">if</span> (tn ~= <span class="string">""</span>) <span class="keyword">or</span> profilerApi.canHook(k) <span class="keyword">then</span>
+        profilerApi.hook(to, tn, v, k)
+      <span class="keyword">end</span>
+    <span class="keyword">elseif</span> <span class="global">type</span>(v) == <span class="string">"table"</span> <span class="keyword">then</span>
+      profilerApi.hookAll(tn .. k .. <span class="string">"."</span>, v)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> profilerApi.getTime()
+  <span class="keyword">return</span> <span class="global">os</span>.clock()
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> profilerApi.hook(to, tn, fo, fn)
+  <span class="keyword">local</span> full = tn .. fn
+  profilerApi.hooks[full] = { s = -<span class="number">1</span>, f = fo, e = -<span class="number">1</span>, t = <span class="number">0</span>, a = <span class="number">0</span>, c = <span class="number">0</span> }
+  to[fn] = <span class="keyword">function</span>(...) <span class="keyword">return</span> profilerApi.hooked(full, ...) <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> profilerApi.hooked(fn, ...)
+  <span class="keyword">local</span> hook = profilerApi.hooks[fn]
+  hook.s = profilerApi.getTime()
+  <span class="keyword">local</span> ret = {hook.f(...)}
+  hook.e = profilerApi.getTime() - hook.s
+  hook.t = hook.t + hook.e
+  hook.c = hook.c + <span class="number">1</span>
+  hook.a = hook.t / hook.c
+  <span class="keyword">return</span> <span class="global">unpack</span>(ret)
+<span class="keyword">end</span></pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-23 04:44:31 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

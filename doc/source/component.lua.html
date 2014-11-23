@@ -1,0 +1,248 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-56315532-1', 'auto');
+      ga('require', 'displayfeatures');
+      ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Source</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../source/binding.lua.html">binding.lua</a></li>
+  <li><a href="../source/bindingfunctions.lua.html">bindingfunctions.lua</a></li>
+  <li><a href="../source/button.lua.html">button.lua</a></li>
+  <li><a href="../source/checkbox.lua.html">checkbox.lua</a></li>
+  <li><strong>component.lua</strong></li>
+  <li><a href="../source/frame.lua.html">frame.lua</a></li>
+  <li><a href="../source/gui.lua.html">gui.lua</a></li>
+  <li><a href="../source/image.lua.html">image.lua</a></li>
+  <li><a href="../source/label.lua.html">label.lua</a></li>
+  <li><a href="../source/panel.lua.html">panel.lua</a></li>
+  <li><a href="../source/radiobutton.lua.html">radiobutton.lua</a></li>
+  <li><a href="../source/textbutton.lua.html">textbutton.lua</a></li>
+  <li><a href="../source/textfield.lua.html">textfield.lua</a></li>
+  <li><a href="../source/util.lua.html">util.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/Binding.html">Binding</a></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Button.html">Button</a></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+  <li><a href="../classes/Component.html">Component</a></li>
+  <li><a href="../classes/Frame.html">Frame</a></li>
+  <li><a href="../classes/Image.html">Image</a></li>
+  <li><a href="../classes/Label.html">Label</a></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
+  <li><a href="../classes/RadioButton.html">RadioButton</a></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><a href="../classes/TextField.html">TextField</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>component.lua</h2>
+<pre>
+<span class="comment">--- Superclass for all GUI components.
+</span><span class="comment">-- @classmod Component
+</span>Component = class()
+Component.x = <span class="number">0</span>
+Component.y = <span class="number">0</span>
+Component.width = <span class="number">0</span>
+Component.height = <span class="number">0</span>
+
+<span class="comment">--- Constructor
+</span><span class="comment">-- @section
+</span>
+<a id="13"></a><span class="comment">--- Constructs a component.
+</span><span class="keyword">function</span> Component:_init()
+  self.children = {}
+  self.offset = Binding.proxy({<span class="number">0</span>, <span class="number">0</span>})
+<span class="keyword">end</span>
+
+<span class="comment">--- @section end
+</span>
+<span class="comment">--- Adds a child component to this component.
+</span><span class="comment">--
+</span><a id="23"></a><span class="comment">-- @param child The component to add.
+</span><span class="keyword">function</span> Component:add(child)
+  <span class="keyword">local</span> children = self.children
+  children[#children + <span class="number">1</span>] = child
+  child:setParent(self)
+<span class="keyword">end</span>
+
+<span class="comment">--- Removes a child component.
+</span><span class="comment">--
+</span><span class="comment">-- @param child The component to remove
+</span><a id="33"></a><span class="comment">-- @return Whether or not the child was removed
+</span><span class="keyword">function</span> Component:remove(child)
+  <span class="keyword">local</span> children = self.children
+  <span class="keyword">for</span> index,comp <span class="keyword">in</span> ripairs(children) <span class="keyword">do</span>
+    <span class="keyword">if</span> (comp == child) <span class="keyword">then</span>
+      <span class="global">table</span>.remove(children, index)
+      <span class="keyword">return</span> <span class="keyword">true</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  <span class="keyword">return</span> <span class="keyword">false</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Resizes this component around its children.
+</span><span class="comment">--
+</span><span class="comment">-- @param padding (Optional) Amount of padding to put between the component's
+</span><a id="48"></a><span class="comment">--                children and this component's borders.
+</span><span class="keyword">function</span> Component:pack(padding)
+  <span class="keyword">local</span> width = <span class="number">0</span>
+  <span class="keyword">local</span> height = <span class="number">0</span>
+  <span class="keyword">for</span> _,child <span class="keyword">in</span> <span class="global">ipairs</span>(self.children) <span class="keyword">do</span>
+    width = <span class="global">math</span>.max(width, child.x + child.width)
+    height = <span class="global">math</span>.max(height, child.y + child.height)
+  <span class="keyword">end</span>
+  padding = padding <span class="keyword">or</span> <span class="number">0</span>
+  self.width = width + padding
+  self.height = height + padding
+<span class="keyword">end</span>
+
+<a id="61"></a><span class="comment">--- Draws and updates this component, and any children.
+</span><span class="keyword">function</span> Component:step(dt)
+  <span class="keyword">local</span> hoverComponent
+  <span class="keyword">if</span> self.mouseOver ~= <span class="keyword">nil</span> <span class="keyword">then</span>
+    <span class="keyword">if</span> self:contains(GUI.mousePosition) <span class="keyword">then</span>
+      hoverComponent = self
+    <span class="keyword">else</span>
+      self.mouseOver = <span class="keyword">false</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  self:update(dt)
+
+  <span class="keyword">local</span> layout = self.layout
+  <span class="keyword">if</span> layout <span class="keyword">then</span>
+    self:calculateOffset()
+    self.layout = <span class="keyword">false</span>
+  <span class="keyword">end</span>
+  self:draw(dt)
+
+  <span class="keyword">for</span> _,child <span class="keyword">in</span> <span class="global">ipairs</span>(self.children) <span class="keyword">do</span>
+    <span class="keyword">if</span> layout <span class="keyword">then</span>
+      child.layout = <span class="keyword">true</span>
+    <span class="keyword">end</span>
+    <span class="keyword">if</span> child.visible ~= <span class="keyword">false</span> <span class="keyword">then</span>
+      hoverComponent = child:step(dt) <span class="keyword">or</span> hoverComponent
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  <span class="keyword">return</span> hoverComponent
+<span class="keyword">end</span>
+
+<span class="comment">--- Updates this component.
+</span><span class="comment">--
+</span><a id="94"></a><span class="comment">-- Components should override this to implement their own update functions.
+</span><span class="keyword">function</span> Component:update(dt)
+<span class="keyword">end</span>
+
+<span class="comment">--- Draws this component
+</span><span class="comment">--
+</span><a id="100"></a><span class="comment">-- Components should override this to implement their own draw functions.
+</span><span class="keyword">function</span> Component:draw(dt)
+<span class="keyword">end</span>
+
+<span class="comment">--- Sets the parent of this component, and updates the offset of this component.
+</span><span class="comment">--
+</span><span class="comment">-- @param parent The new parent of this component, or nil if this is to be a
+</span><a id="107"></a><span class="comment">--               top level component.
+</span><span class="keyword">function</span> Component:setParent(parent)
+  self.parent = parent
+  <span class="comment">-- self:calculateOffset()
+</span>  <span class="keyword">if</span> parent <span class="keyword">then</span>
+    parent.layout = <span class="keyword">true</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Calculates the offset from the origin that this component should use, based
+</span><span class="comment">-- on its parents.
+</span><span class="comment">--
+</span><a id="119"></a><span class="comment">-- @return The calculated offset.
+</span><span class="keyword">function</span> Component:calculateOffset(direction)
+  <span class="keyword">local</span> offset = self.offset
+
+  <span class="keyword">local</span> parent = self.parent
+  <span class="keyword">if</span> parent <span class="keyword">then</span>
+    <span class="comment">-- parent:calculateOffset()
+</span>    offset[<span class="number">1</span>] = parent.offset[<span class="number">1</span>] + parent.x
+    offset[<span class="number">2</span>] = parent.offset[<span class="number">2</span>] + parent.y
+  <span class="keyword">else</span>
+    offset[<span class="number">1</span>] = <span class="number">0</span>
+    offset[<span class="number">2</span>] = <span class="number">0</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">return</span> offset
+<span class="keyword">end</span>
+
+<span class="comment">--- Checks if the given position is within this component.
+</span><span class="comment">--
+</span><span class="comment">-- @param position The position to check.
+</span><a id="139"></a><span class="comment">-- @return Whether or not the position is within the bounds of this component.
+</span><span class="keyword">function</span> Component:contains(position)
+  <span class="keyword">local</span> pos = {position[<span class="number">1</span>] - self.offset[<span class="number">1</span>], position[<span class="number">2</span>] - self.offset[<span class="number">2</span>]}
+
+  <span class="keyword">if</span> pos[<span class="number">1</span>] &gt;= self.x <span class="keyword">and</span> pos[<span class="number">1</span>] &lt;= self.x + self.width
+    <span class="keyword">and</span> pos[<span class="number">2</span>] &gt;= self.y <span class="keyword">and</span> pos[<span class="number">2</span>] &lt;= self.y + self.height
+  <span class="keyword">then</span>
+    <span class="keyword">return</span> <span class="keyword">true</span>
+  <span class="keyword">end</span>
+  <span class="keyword">return</span> <span class="keyword">false</span>
+<span class="keyword">end</span></pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-23 04:51:10 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

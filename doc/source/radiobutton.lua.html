@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-56315532-1', 'auto');
+      ga('require', 'displayfeatures');
+      ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Source</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../source/binding.lua.html">binding.lua</a></li>
+  <li><a href="../source/bindingfunctions.lua.html">bindingfunctions.lua</a></li>
+  <li><a href="../source/button.lua.html">button.lua</a></li>
+  <li><a href="../source/checkbox.lua.html">checkbox.lua</a></li>
+  <li><a href="../source/component.lua.html">component.lua</a></li>
+  <li><a href="../source/frame.lua.html">frame.lua</a></li>
+  <li><a href="../source/gui.lua.html">gui.lua</a></li>
+  <li><a href="../source/image.lua.html">image.lua</a></li>
+  <li><a href="../source/label.lua.html">label.lua</a></li>
+  <li><a href="../source/panel.lua.html">panel.lua</a></li>
+  <li><strong>radiobutton.lua</strong></li>
+  <li><a href="../source/textbutton.lua.html">textbutton.lua</a></li>
+  <li><a href="../source/textfield.lua.html">textfield.lua</a></li>
+  <li><a href="../source/util.lua.html">util.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/Binding.html">Binding</a></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Button.html">Button</a></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+  <li><a href="../classes/Component.html">Component</a></li>
+  <li><a href="../classes/Frame.html">Frame</a></li>
+  <li><a href="../classes/Image.html">Image</a></li>
+  <li><a href="../classes/Label.html">Label</a></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
+  <li><a href="../classes/RadioButton.html">RadioButton</a></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><a href="../classes/TextField.html">TextField</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>radiobutton.lua</h2>
+<pre>
+<span class="comment">--- A radio button
+</span><span class="comment">--
+</span><span class="comment">-- Extends <a href="../classes/CheckBox.html#">CheckBox</a>, so the fields RadioButton uses for drawing are the same
+</span><span class="comment">-- as those of <a href="../classes/CheckBox.html#">CheckBox</a>.
+</span><span class="comment">-- @classmod RadioButton
+</span><span class="comment">-- @usage
+</span><span class="comment">-- -- Create a group of buttons that print when they are selected.
+</span><span class="comment">-- local group = Panel(0, 0)
+</span><span class="comment">-- local numButtons = 10
+</span><span class="comment">-- for i = 1, numButtons, 1 do
+</span><span class="comment">--   local button = RadioButton(i * 20, 0, 16)
+</span><span class="comment">--   button:addListener("selected", function(t, k, old, new)
+</span><span class="comment">--     if new then
+</span><span class="comment">--       print("Button " .. i .. " was selected")
+</span><span class="comment">--     end
+</span><span class="comment">--   end)
+</span><span class="comment">--   group:add(button)
+</span><span class="comment">-- end
+</span>RadioButton = class(CheckBox)
+
+<span class="comment">--- Constructor
+</span><span class="comment">-- @section
+</span>
+<span class="comment">--- Constructs a new RadioButton.
+</span><span class="comment">-- @function _init
+</span><span class="comment">-- @param x The x coordinate of the new component, relative to its parent.
+</span><span class="comment">-- @param y The y coordinate of the new component, relative to its parent.
+</span><span class="comment">-- @param size The width and height of the new component.
+</span><a id="30"></a>
+<span class="comment">--- @section end
+</span>
+<span class="keyword">function</span> RadioButton:drawCheck(dt)
+  <span class="comment">-- Draw squares since no efficient way to fill circles yet.
+</span>  <span class="keyword">local</span> startX = self.x + self.offset[<span class="number">1</span>]
+  <span class="keyword">local</span> startY = self.y + self.offset[<span class="number">2</span>]
+  <span class="keyword">local</span> w = self.width
+  <span class="keyword">local</span> h = self.height
+  <span class="keyword">local</span> checkRect = {startX + w / <span class="number">4</span>, startY + h / <span class="number">4</span>,
+                     startX + <span class="number">3</span> * w / <span class="number">4</span>, startY + <span class="number">3</span> * h / <span class="number">4</span>}
+  PtUtil.fillRect(checkRect, self.checkColor)
+<span class="keyword">end</span>
+
+<span class="comment">-- Select this RadioButton
+</span><span class="keyword">function</span> RadioButton:<span class="global">select</span>()
+  <span class="keyword">local</span> siblings
+  <span class="keyword">if</span> self.parent == <span class="keyword">nil</span> <span class="keyword">then</span>
+    siblings = GUI.components
+  <span class="keyword">else</span>
+    siblings = self.parent.children
+  <span class="keyword">end</span>
+
+  <span class="keyword">local</span> selectedButton
+  <span class="keyword">for</span> _,sibling <span class="keyword">in</span> <span class="global">ipairs</span>(siblings) <span class="keyword">do</span>
+    <span class="keyword">if</span> sibling ~= self <span class="keyword">and</span> sibling.is_a[RadioButton]
+      <span class="keyword">and</span> sibling.selected
+    <span class="keyword">then</span>
+      selectedButton = sibling
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  <span class="keyword">if</span> selectedButton <span class="keyword">then</span>
+    selectedButton.selected = <span class="keyword">false</span>
+  <span class="keyword">end</span>
+
+  self.selected = <span class="keyword">not</span> self.selected
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> RadioButton:setParent(parent)
+  Component.setParent(self, parent)
+  self:<span class="global">select</span>()
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> RadioButton:clickEvent(position, button, pressed)
+  <span class="keyword">if</span> <span class="keyword">not</span> pressed <span class="keyword">and</span> self.pressed <span class="keyword">then</span>
+    self:<span class="global">select</span>()
+  <span class="keyword">end</span>
+  self.pressed = pressed
+  <span class="keyword">return</span> <span class="keyword">true</span>
+<span class="keyword">end</span></pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-23 04:51:10 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

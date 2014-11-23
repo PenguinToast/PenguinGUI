@@ -1,0 +1,504 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-56315532-1', 'auto');
+      ga('require', 'displayfeatures');
+      ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Source</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><strong>binding.lua</strong></li>
+  <li><a href="../source/bindingfunctions.lua.html">bindingfunctions.lua</a></li>
+  <li><a href="../source/button.lua.html">button.lua</a></li>
+  <li><a href="../source/checkbox.lua.html">checkbox.lua</a></li>
+  <li><a href="../source/component.lua.html">component.lua</a></li>
+  <li><a href="../source/frame.lua.html">frame.lua</a></li>
+  <li><a href="../source/gui.lua.html">gui.lua</a></li>
+  <li><a href="../source/image.lua.html">image.lua</a></li>
+  <li><a href="../source/label.lua.html">label.lua</a></li>
+  <li><a href="../source/panel.lua.html">panel.lua</a></li>
+  <li><a href="../source/radiobutton.lua.html">radiobutton.lua</a></li>
+  <li><a href="../source/textbutton.lua.html">textbutton.lua</a></li>
+  <li><a href="../source/textfield.lua.html">textfield.lua</a></li>
+  <li><a href="../source/util.lua.html">util.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/Binding.html">Binding</a></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Button.html">Button</a></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+  <li><a href="../classes/Component.html">Component</a></li>
+  <li><a href="../classes/Frame.html">Frame</a></li>
+  <li><a href="../classes/Image.html">Image</a></li>
+  <li><a href="../classes/Label.html">Label</a></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
+  <li><a href="../classes/RadioButton.html">RadioButton</a></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><a href="../classes/TextField.html">TextField</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>binding.lua</h2>
+<pre>
+<span class="comment">--- Adds listeners or bindings to objects.
+</span><span class="comment">-- @module Binding
+</span><span class="comment">-- @usage -- Add a listener to print whenever a value is changed.
+</span><span class="comment">-- local sometable = { a = "somevalue" }
+</span><span class="comment">-- sometable = Binding.proxy(sometable)
+</span><span class="comment">-- sometable:addListener("a", function(t, k, old, new)
+</span><span class="comment">--   print("Key " .. k .. " changed from " .. old .. " to " .. new)
+</span><span class="comment">-- end
+</span><span class="comment">-- @usage -- Bind a value in a table to the sum of two other values.
+</span><span class="comment">-- local table1 = Binding.proxy({ a = 4 })
+</span><span class="comment">-- local table2 = Binding.proxy({ a = 5 })
+</span><span class="comment">-- local sumtable = Binding.proxy({})
+</span><span class="comment">-- sumtable:bind("sum", Binding(table1, "a"):add(Binding(table2, "a")))
+</span><span class="comment">-- -- sumtable.sum == 9
+</span><span class="comment">-- table1.a = 6
+</span><span class="comment">-- -- sumtable.sum == 11
+</span>Binding = <span class="global">setmetatable</span>(
+  {},
+  {
+    __call = <span class="keyword">function</span>(t, ...)
+      <span class="keyword">return</span> t.value(...)
+    <span class="keyword">end</span>
+  }
+)
+
+<span class="comment">-- Proxy metatable to add listeners to a table
+</span>Binding.proxyTable = {
+  __index = <span class="keyword">function</span>(t, k)
+    <span class="keyword">local</span> out = t._instance[k]
+    <span class="keyword">if</span> out ~= <span class="keyword">nil</span> <span class="keyword">then</span>
+      <span class="keyword">return</span> out
+    <span class="keyword">else</span>
+      <span class="keyword">return</span> Binding.proxyTable[k]
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>,
+  __newindex = <span class="keyword">function</span>(t, k, v)
+    <span class="keyword">local</span> instance = t._instance
+    <span class="keyword">local</span> old = instance[k]
+    <span class="keyword">local</span> new = v
+    instance[k] = new
+    <span class="keyword">if</span> old ~= v <span class="keyword">then</span>
+      <span class="keyword">local</span> listeners = instance.listeners
+      <span class="keyword">if</span> listeners <span class="keyword">and</span> listeners[k] <span class="keyword">then</span>
+        <span class="keyword">local</span> keyListeners = listeners[k]
+        <span class="keyword">for</span> _,keyListener <span class="keyword">in</span> <span class="global">ipairs</span>(keyListeners) <span class="keyword">do</span>
+          new = keyListener(instance, k, old, new) <span class="keyword">or</span> new
+        <span class="keyword">end</span>
+      <span class="keyword">end</span>
+      <span class="keyword">local</span> bindings = instance.bindings
+      <span class="keyword">if</span> bindings <span class="keyword">and</span> bindings[k] <span class="keyword">then</span>
+        <span class="keyword">local</span> keyBindings = bindings[k]
+        <span class="keyword">for</span> _,keyBinding <span class="keyword">in</span> <span class="global">ipairs</span>(keyBindings) <span class="keyword">do</span>
+          keyBinding:valueChanged(old, new)
+        <span class="keyword">end</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>,
+  __pairs = <span class="keyword">function</span>(t)
+    <span class="keyword">return</span> <span class="global">pairs</span>(t._instance)
+  <span class="keyword">end</span>,
+  __ipairs = <span class="keyword">function</span>(t)
+    <span class="keyword">return</span> <span class="global">ipairs</span>(t._instance)
+  <span class="keyword">end</span>,
+  __add = <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a._instance + (<span class="global">type</span>(b) == <span class="string">"table"</span> <span class="keyword">and</span> b._instance <span class="keyword">or</span> b)
+  <span class="keyword">end</span>,
+  __sub = <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a._instance - (<span class="global">type</span>(b) == <span class="string">"table"</span> <span class="keyword">and</span> b._instance <span class="keyword">or</span> b)
+  <span class="keyword">end</span>,
+  __mul = <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a._instance * (<span class="global">type</span>(b) == <span class="string">"table"</span> <span class="keyword">and</span> b._instance <span class="keyword">or</span> b)
+  <span class="keyword">end</span>,
+  __div = <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a._instance / (<span class="global">type</span>(b) == <span class="string">"table"</span> <span class="keyword">and</span> b._instance <span class="keyword">or</span> b)
+  <span class="keyword">end</span>,
+  __mod = <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a._instance % (<span class="global">type</span>(b) == <span class="string">"table"</span> <span class="keyword">and</span> b._instance <span class="keyword">or</span> b)
+  <span class="keyword">end</span>,
+  __pow = <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a._instance ^ (<span class="global">type</span>(b) == <span class="string">"table"</span> <span class="keyword">and</span> b._instance <span class="keyword">or</span> b)
+  <span class="keyword">end</span>,
+  __unm = <span class="keyword">function</span>(a)
+    <span class="keyword">return</span> -a._instance
+  <span class="keyword">end</span>,
+  __concat = <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a._instance .. (<span class="global">type</span>(b) == <span class="string">"table"</span> <span class="keyword">and</span> b._instance <span class="keyword">or</span> b)
+  <span class="keyword">end</span>,
+  __len = <span class="keyword">function</span>(a)
+    <span class="keyword">return</span> #a._instance
+  <span class="keyword">end</span>,
+  __eq = <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a._instance == b._instance
+  <span class="keyword">end</span>,
+  __lt = <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a._instance &lt; b._instance
+  <span class="keyword">end</span>,
+  __le = <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a._instance &lt;= b._instance
+  <span class="keyword">end</span>,
+  __call = <span class="keyword">function</span>(t, ...)
+    <span class="keyword">return</span> t._instance(...)
+  <span class="keyword">end</span>
+}
+
+<span class="comment">--- Whether the table is a Binding or not.
+</span><span class="comment">--
+</span><span class="comment">-- @param object The table to check.
+</span><a id="109"></a><span class="comment">-- @return True if the table is a binding, false if not.
+</span><span class="keyword">function</span> Binding.isValue(object)
+  <span class="keyword">return</span> <span class="global">type</span>(object) == <span class="string">"table"</span>
+    <span class="keyword">and</span> <span class="global">getmetatable</span>(object._instance) == Binding.valueTable
+<span class="keyword">end</span>
+
+Binding.weakMetaTable = {
+  __mode = <span class="string">"v"</span>
+}
+
+Binding.valueTable = {}
+
+Binding.valueTable.__index = Binding.valueTable
+
+<span class="comment">--- Contains a value that is based off whatever this binding is bound to.
+</span><span class="comment">-- @type Binding
+</span>
+<span class="comment">--- Adds a listener to the value of this binding.
+</span><span class="comment">-- @function addValueListener
+</span><span class="comment">-- @param listener The listener to add.
+</span><a id="129"></a><span class="comment">-- @return The added listener.
+</span><span class="keyword">function</span> Binding.valueTable:addValueListener(listener)
+  <span class="keyword">return</span> self:addListener(<span class="string">"value"</span>, listener)
+<span class="keyword">end</span>
+
+<span class="comment">--- Removes a listener to the value of this binding.
+</span><span class="comment">-- @function removeValueListener
+</span><span class="comment">-- @param listener The listener to remove.
+</span><a id="137"></a><span class="comment">-- @return Whether a listener was removed.
+</span><span class="keyword">function</span> Binding.valueTable:removeValueListener(listener)
+  <span class="keyword">return</span> self:removeListener(<span class="string">"value"</span>, listener)
+<span class="keyword">end</span>
+
+<span class="comment">--- Convenience method for adding a binding to "value"
+</span><span class="comment">-- @function addValueBinding
+</span><span class="comment">-- @param binding The binding to add.
+</span><a id="145"></a><span class="comment">-- @return The added binding.
+</span><span class="keyword">function</span> Binding.valueTable:addValueBinding(binding)
+  <span class="keyword">return</span> self:addBinding(<span class="string">"value"</span>, binding)
+<span class="keyword">end</span>
+
+<span class="comment">--- Convenience method for removing a binding from "value"
+</span><span class="comment">-- @function removeValueBinding
+</span><span class="comment">-- @param binding The binding to remove.
+</span><a id="153"></a><span class="comment">-- @return Whether a binding was removed.
+</span><span class="keyword">function</span> Binding.valueTable:removeValueBinding(binding)
+  <span class="keyword">return</span> self:removeBinding(<span class="string">"value"</span>, binding)
+<span class="keyword">end</span>
+
+<span class="comment">--- Unbinds this binding, as well as anything bound to it.
+</span><a id="159"></a><span class="comment">-- @function unbind
+</span><span class="keyword">function</span> Binding.valueTable:unbind()
+  <span class="keyword">local</span> bindings = self.bindings
+  <span class="keyword">if</span> bindings <span class="keyword">and</span> bindings.value <span class="keyword">then</span>
+    <span class="keyword">local</span> valueBindings = bindings.value
+    <span class="keyword">for</span> _,binding <span class="keyword">in</span> <span class="global">ipairs</span>(valueBindings) <span class="keyword">do</span>
+      binding:unbind()
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  <span class="keyword">local</span> boundto = self.boundto
+  <span class="keyword">for</span> _,bound <span class="keyword">in</span> <span class="global">ipairs</span>(boundto) <span class="keyword">do</span>
+    <span class="keyword">for</span> _,boundTable <span class="keyword">in</span> <span class="global">pairs</span>(bound.bindings) <span class="keyword">do</span>
+      PtUtil.removeObject(boundTable, self)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  self.boundto = <span class="keyword">nil</span>
+  <span class="keyword">local</span> bindTargets = self.bindTargets
+  <span class="keyword">if</span> bindTargets <span class="keyword">then</span>
+    <span class="keyword">for</span> bindTarget,_ <span class="keyword">in</span> <span class="global">pairs</span>(bindTargets) <span class="keyword">do</span>
+      <span class="keyword">local</span> bindTargetBoundto = bindTarget.boundto
+      <span class="keyword">for</span> key,binding <span class="keyword">in</span> <span class="global">pairs</span>(bindTargetBoundto) <span class="keyword">do</span>
+        <span class="keyword">if</span> binding == self <span class="keyword">then</span>
+          bindTargetBoundto[key] = <span class="keyword">nil</span>
+        <span class="keyword">end</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- @type end
+</span>
+<span class="keyword">function</span> Binding.unbindChain(binding)
+  Binding.valueTable.unbind(binding)
+  <span class="keyword">local</span> bindingTable = binding.bindingTable
+  <span class="keyword">for</span> i=<span class="number">1</span>, #bindingTable - <span class="number">1</span>, <span class="number">1</span> <span class="keyword">do</span>
+    bindingTable[i]:unbind()
+    bindingTable[i] = <span class="keyword">nil</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Creates a binding bound to the given key in the given table.
+</span><span class="comment">--
+</span><span class="comment">-- @param t The table the binding is bound to.
+</span><span class="comment">-- @param k The key the binding is bound to.
+</span><a id="203"></a><span class="comment">-- @return A binding to the key in the given table.
+</span><span class="keyword">function</span> Binding.value(t, k)
+  <span class="keyword">local</span> out = Binding.proxy(<span class="global">setmetatable</span>({}, Binding.valueTable))
+  <span class="keyword">if</span> <span class="global">type</span>(k) == <span class="string">"string"</span> <span class="keyword">then</span> <span class="comment">-- Single key
+</span>    out.value = t[k]
+    out.valueChanged = <span class="keyword">function</span>(binding, old, new)
+      binding.value = new
+    <span class="keyword">end</span>
+    t:addBinding(k, out)
+    out.boundto = {t}
+    <span class="keyword">return</span> out
+  <span class="keyword">else</span> <span class="comment">-- Table of keys
+</span>    <span class="keyword">local</span> numKeys = #k
+    <span class="keyword">local</span> currTable = t
+    <span class="keyword">local</span> bindingTable = {}
+    <span class="keyword">for</span> i=<span class="number">1</span>, numKeys - <span class="number">1</span>, <span class="number">1</span> <span class="keyword">do</span>
+      <span class="keyword">local</span> currBinding = Binding.proxy(<span class="global">setmetatable</span>({}, Binding.valueTable))
+      <span class="keyword">local</span> currKey = k[i]
+      <span class="keyword">local</span> index = i
+
+      currBinding.valueChanged = <span class="keyword">function</span>(binding, old, new)
+        <span class="keyword">if</span> old == new <span class="keyword">then</span> <span class="keyword">return</span> <span class="keyword">end</span>
+        <span class="comment">-- Transplant bindings from old tables to new tables
+</span>        <span class="keyword">local</span> oldTable = old
+        <span class="keyword">local</span> newTable = new
+        <span class="keyword">local</span> subKey
+        <span class="keyword">local</span> transplant
+        <span class="keyword">for</span> j=index + <span class="number">1</span>, numKeys, <span class="number">1</span> <span class="keyword">do</span>
+          subKey = k[j]
+          transplant = bindingTable[j]
+          transplant.boundto[<span class="number">1</span>] = newTable
+          oldTable:removeBinding(subKey, transplant)
+          newTable:addBinding(subKey, transplant)
+
+          <span class="keyword">if</span> j &lt; numKeys <span class="keyword">then</span>
+            oldTable = oldTable[subKey]
+            newTable = newTable[subKey]
+          <span class="keyword">end</span>
+        <span class="keyword">end</span>
+      <span class="keyword">end</span>
+      currBinding.boundto = {currTable}
+      currTable:addBinding(currKey, currBinding)
+      bindingTable[index] = currBinding
+
+      currTable = t[currKey]
+    <span class="keyword">end</span>
+    out.valueChanged = <span class="keyword">function</span>(binding, old, new)
+      binding.value = new
+    <span class="keyword">end</span>
+    out.bindingTable = bindingTable
+    out.boundto = {currTable}
+    out.unbind = Binding.unbindChain
+    currTable:addBinding(k[numKeys], out)
+    bindingTable[numKeys] = out
+    <span class="keyword">return</span> out
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- A proxy to allow listeners &amp; bindings to be attached.
+</span><span class="comment">-- @type Proxy
+</span>
+<span class="comment">--- Adds a listener to the specified key that is called when the key's value
+</span><span class="comment">-- changes.
+</span><span class="comment">-- @function addListener
+</span><span class="comment">--
+</span><span class="comment">-- @param key The key to track changes to
+</span><span class="comment">-- @param listener The function to call upon the value of the key changing.
+</span><span class="comment">--      The function should have the arguments (t, k, old, new) where:
+</span><span class="comment">--           t is the table in which the change happened.
+</span><span class="comment">--           k is the key whose value changed.
+</span><span class="comment">--           old is the old value of the key.
+</span><span class="comment">--           new is the new value of the key.
+</span><span class="comment">--      If the function changes the key's value, it should return the new value.
+</span><a id="276"></a><span class="comment">-- @return The added listener.
+</span><span class="keyword">function</span> Binding.proxyTable:addListener(key, listener)
+  <span class="keyword">local</span> listeners = self.listeners
+  <span class="keyword">if</span> <span class="keyword">not</span> listeners <span class="keyword">then</span>
+    listeners = {}
+    self.listeners = listeners
+  <span class="keyword">end</span>
+  <span class="keyword">local</span> keyListeners = listeners[key]
+  <span class="keyword">if</span> <span class="keyword">not</span> keyListeners <span class="keyword">then</span>
+    keyListeners = {}
+    listeners[key] = keyListeners
+  <span class="keyword">end</span>
+  <span class="global">table</span>.insert(keyListeners, listener)
+  <span class="keyword">return</span> listener
+<span class="keyword">end</span>
+
+<span class="comment">--- Removes the first instance of the given listener from the given key.
+</span><span class="comment">-- @function removeListener
+</span><span class="comment">--
+</span><span class="comment">-- @param key The key the listener is attached to.
+</span><span class="comment">-- @param listener The listener to remove.
+</span><span class="comment">--
+</span><a id="298"></a><span class="comment">-- @return Whether a listener was removed.
+</span><span class="keyword">function</span> Binding.proxyTable:removeListener(key, listener)
+  <span class="keyword">local</span> keyListeners = self.listeners[key]
+  <span class="keyword">return</span> PtUtil.removeObject(keyListeners, listener) ~= -<span class="number">1</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Adds a binding to the specified key in this table.
+</span><span class="comment">-- @function addBinding
+</span><span class="comment">--
+</span><span class="comment">-- @param key The key to bind to.
+</span><span class="comment">-- @param binding The binding to attach.
+</span><a id="309"></a><span class="comment">-- @return The added binding.
+</span><span class="keyword">function</span> Binding.proxyTable:addBinding(key, binding)
+  <span class="keyword">local</span> bindings = self.bindings
+  <span class="keyword">if</span> <span class="keyword">not</span> bindings <span class="keyword">then</span>
+    bindings = {}
+    self.bindings = bindings
+  <span class="keyword">end</span>
+  <span class="keyword">local</span> keyBindings = bindings[key]
+  <span class="keyword">if</span> <span class="keyword">not</span> keyBindings <span class="keyword">then</span>
+    keyBindings = <span class="global">setmetatable</span>({}, Binding.weakMetaTable)
+    bindings[key] = keyBindings
+  <span class="keyword">end</span>
+  <span class="global">table</span>.insert(keyBindings, binding)
+  binding:valueChanged(self[key], self[key])
+  <span class="keyword">return</span> binding
+<span class="keyword">end</span>
+
+<span class="comment">--- Removes a binding from a key in this table.
+</span><span class="comment">-- @function removeBinding
+</span><span class="comment">--
+</span><span class="comment">-- @param key The key to remove a binding from.
+</span><span class="comment">-- @param binding The binding to remove.
+</span><a id="331"></a><span class="comment">-- @return Whether a binding was removed.
+</span><span class="keyword">function</span> Binding.proxyTable:removeBinding(key, binding)
+  <span class="keyword">local</span> keyBindings = self.bindings[key]
+  <span class="keyword">return</span> PtUtil.removeObject(keyBindings, binding) ~= -<span class="number">1</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- @type end
+</span>
+<span class="comment">--- Binds the key in the specified table to the 10 given value
+</span><span class="comment">--
+</span><span class="comment">-- @param target The table where the key to be bound is.
+</span><span class="comment">-- @param key The key to be bound.
+</span><a id="343"></a><span class="comment">-- @param value The value to bind to.
+</span><span class="keyword">function</span> Binding.bind(target, key, value)
+  <span class="keyword">local</span> listener = <span class="keyword">function</span>(t, k, old, new)
+    target[key] = new
+  <span class="keyword">end</span>
+  value:addValueListener(listener)
+
+  <span class="comment">-- Put reference to this binding into the target table to keep this binding
+</span>  <span class="comment">-- alive.
+</span>  <span class="keyword">local</span> boundto = target.boundto
+  <span class="keyword">if</span> <span class="keyword">not</span> boundto <span class="keyword">then</span>
+    boundto = {}
+    target.boundto = boundto
+  <span class="keyword">end</span>
+  <span class="keyword">local</span> boundtoKey = boundto[key]
+  <span class="global">assert</span>(<span class="keyword">not</span> boundtoKey, key .. <span class="string">" is already bound to another value"</span>)
+  boundto[key] = value
+
+  <span class="keyword">local</span> bindTargets = value.bindTargets
+
+  <span class="comment">-- Keep references to the table this binding is bound to, so we can clean
+</span>  <span class="comment">-- up if this binding is unbound.
+</span>  <span class="keyword">if</span> <span class="keyword">not</span> bindTargets <span class="keyword">then</span>
+    bindTargets = {}
+    value.bindTargets = bindTargets
+  <span class="keyword">end</span>
+  <span class="keyword">local</span> bindKeyTargets = bindTargets[target]
+  <span class="keyword">if</span> <span class="keyword">not</span> bindKeyTargets <span class="keyword">then</span>
+    bindKeyTargets = {}
+    bindTargets[target] = bindKeyTargets
+  <span class="keyword">end</span>
+  bindKeyTargets[key] = listener
+
+  target[key] = value.value
+<span class="keyword">end</span>
+
+Binding.proxyTable.bind = Binding.bind
+
+<span class="comment">--- Removes the binding on the given key in the given target.
+</span><span class="comment">--
+</span><span class="comment">-- @param target The table to remove the binding from.
+</span><a id="384"></a><span class="comment">-- @param key The key to unbind.
+</span><span class="keyword">function</span> Binding.unbind(target, key)
+  <span class="keyword">local</span> binding = target.boundto[key]
+  <span class="keyword">if</span> binding <span class="keyword">then</span>
+    binding:removeValueListener(binding.bindTargets[target][key])
+    binding.bindTargets[target][key] = <span class="keyword">nil</span>
+    target.boundto[key] = <span class="keyword">nil</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+Binding.proxyTable.unbind = Binding.unbind
+
+<span class="comment">--- Returns a proxy to a table that allows listeners and bindings to be attached.
+</span><span class="comment">--
+</span><span class="comment">-- @param instance The table to proxy.
+</span><a id="399"></a><span class="comment">-- @return A proxy table to the given instance.
+</span><span class="keyword">function</span> Binding.proxy(instance)
+  <span class="keyword">return</span> <span class="global">setmetatable</span>(
+    {_instance = instance},
+    Binding.proxyTable
+  )
+<span class="keyword">end</span></pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-23 04:51:10 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

@@ -91,20 +91,20 @@
 <h2><a href="#Fields">Fields</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#TextField.borderColor">TextField.borderColor</a></td>
-	<td class="summary">The color of this text field's border.</td>
-	</tr>
-	<tr>
 	<td class="name" nowrap><a href="#TextField.backgroundColor">TextField.backgroundColor</a></td>
 	<td class="summary">The background color of this text field.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#TextField.textColor">TextField.textColor</a></td>
-	<td class="summary">The color of this text field's text.</td>
+	<td class="name" nowrap><a href="#TextField.borderColor">TextField.borderColor</a></td>
+	<td class="summary">The color of this text field's border.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#TextField.textHoverColor">TextField.textHoverColor</a></td>
-	<td class="summary">The color of this text field's text when the mouse is over it.</td>
+	<td class="name" nowrap><a href="#TextField.cursorColor">TextField.cursorColor</a></td>
+	<td class="summary">The color of the text cursor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextField.cursorRate">TextField.cursorRate</a></td>
+	<td class="summary">The period of the cursor's blinking.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#TextField.defaultTextColor">TextField.defaultTextColor</a></td>
@@ -115,12 +115,12 @@
 	<td class="summary">The color of this text field's default text when the mouse is over it.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#TextField.cursorColor">TextField.cursorColor</a></td>
-	<td class="summary">The color of the text cursor.</td>
+	<td class="name" nowrap><a href="#TextField.textColor">TextField.textColor</a></td>
+	<td class="summary">The color of this text field's text.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#TextField.cursorRate">TextField.cursorRate</a></td>
-	<td class="summary">The period of the cursor's blinking.</td>
+	<td class="name" nowrap><a href="#TextField.textHoverColor">TextField.textHoverColor</a></td>
+	<td class="summary">The color of this text field's text when the mouse is over it.</td>
 	</tr>
 </table>
 <h2><a href="#Constructor">Constructor </a></h2>
@@ -133,12 +133,12 @@
 <h2><a href="#Methods">Methods</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#TextField:setCursorPosition">TextField:setCursorPosition (pos)</a></td>
-	<td class="summary">Set the character position of the text cursor.</td>
-	</tr>
-	<tr>
 	<td class="name" nowrap><a href="#TextField:onEnter">TextField:onEnter ()</a></td>
 	<td class="summary">Called when the user presses enter in this text field.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TextField:setCursorPosition">TextField:setCursorPosition (pos)</a></td>
+	<td class="summary">Set the character position of the text cursor.</td>
 	</tr>
 </table>
 
@@ -149,20 +149,6 @@
     <h2><a name="Fields"></a>Fields</h2>
 
     <dl class="function">
-    <dt>
-    <a name = "TextField.borderColor"></a>
-    <strong>TextField.borderColor</strong>
-    </dt>
-    <dd>
-    The color of this text field's border.
-
-
-
-
-
-
-
-</dd>
     <dt>
     <a name = "TextField.backgroundColor"></a>
     <strong>TextField.backgroundColor</strong>
@@ -178,11 +164,11 @@
 
 </dd>
     <dt>
-    <a name = "TextField.textColor"></a>
-    <strong>TextField.textColor</strong>
+    <a name = "TextField.borderColor"></a>
+    <strong>TextField.borderColor</strong>
     </dt>
     <dd>
-    The color of this text field's text.
+    The color of this text field's border.
 
 
 
@@ -192,11 +178,25 @@
 
 </dd>
     <dt>
-    <a name = "TextField.textHoverColor"></a>
-    <strong>TextField.textHoverColor</strong>
+    <a name = "TextField.cursorColor"></a>
+    <strong>TextField.cursorColor</strong>
     </dt>
     <dd>
-    The color of this text field's text when the mouse is over it.
+    The color of the text cursor.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TextField.cursorRate"></a>
+    <strong>TextField.cursorRate</strong>
+    </dt>
+    <dd>
+    The period of the cursor's blinking.
 
 
 
@@ -234,11 +234,11 @@
 
 </dd>
     <dt>
-    <a name = "TextField.cursorColor"></a>
-    <strong>TextField.cursorColor</strong>
+    <a name = "TextField.textColor"></a>
+    <strong>TextField.textColor</strong>
     </dt>
     <dd>
-    The color of the text cursor.
+    The color of this text field's text.
 
 
 
@@ -248,11 +248,11 @@
 
 </dd>
     <dt>
-    <a name = "TextField.cursorRate"></a>
-    <strong>TextField.cursorRate</strong>
+    <a name = "TextField.textHoverColor"></a>
+    <strong>TextField.textHoverColor</strong>
     </dt>
     <dd>
-    The period of the cursor's blinking.
+    The color of this text field's text when the mouse is over it.
 
 
 
@@ -303,6 +303,20 @@
 
     <dl class="function">
     <dt>
+    <a name = "TextField:onEnter"></a>
+    <strong>TextField:onEnter ()</strong>
+    </dt>
+    <dd>
+    Called when the user presses enter in this text field.
+
+
+
+
+
+
+
+</dd>
+    <dt>
     <a name = "TextField:setCursorPosition"></a>
     <strong>TextField:setCursorPosition (pos)</strong>
     </dt>
@@ -323,20 +337,6 @@
 
 
 </dd>
-    <dt>
-    <a name = "TextField:onEnter"></a>
-    <strong>TextField:onEnter ()</strong>
-    </dt>
-    <dd>
-    Called when the user presses enter in this text field.
-
-
-
-
-
-
-
-</dd>
 </dl>
 
 
@@ -344,7 +344,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
-<i style="float:right;">Last updated 2014-11-23 02:45:12 </i>
+<i style="float:right;">Last updated 2014-11-23 05:18:58 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

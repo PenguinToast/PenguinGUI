@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-56315532-1', 'auto');
+      ga('require', 'displayfeatures');
+      ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Source</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../source/binding.lua.html">binding.lua</a></li>
+  <li><a href="../source/bindingfunctions.lua.html">bindingfunctions.lua</a></li>
+  <li><strong>button.lua</strong></li>
+  <li><a href="../source/checkbox.lua.html">checkbox.lua</a></li>
+  <li><a href="../source/component.lua.html">component.lua</a></li>
+  <li><a href="../source/frame.lua.html">frame.lua</a></li>
+  <li><a href="../source/gui.lua.html">gui.lua</a></li>
+  <li><a href="../source/image.lua.html">image.lua</a></li>
+  <li><a href="../source/label.lua.html">label.lua</a></li>
+  <li><a href="../source/panel.lua.html">panel.lua</a></li>
+  <li><a href="../source/radiobutton.lua.html">radiobutton.lua</a></li>
+  <li><a href="../source/textbutton.lua.html">textbutton.lua</a></li>
+  <li><a href="../source/textfield.lua.html">textfield.lua</a></li>
+  <li><a href="../source/util.lua.html">util.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/Binding.html">Binding</a></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Button.html">Button</a></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+  <li><a href="../classes/Component.html">Component</a></li>
+  <li><a href="../classes/Frame.html">Frame</a></li>
+  <li><a href="../classes/Image.html">Image</a></li>
+  <li><a href="../classes/Label.html">Label</a></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
+  <li><a href="../classes/RadioButton.html">RadioButton</a></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><a href="../classes/TextField.html">TextField</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>button.lua</h2>
+<pre>
+<span class="comment">--- A clickable button.
+</span><span class="comment">-- @classmod Button
+</span><span class="comment">-- @usage -- Create an empty button that prints when it is clicked
+</span><span class="comment">-- local button = Button(0, 0, 100, 100)
+</span><span class="comment">-- button.onClick = function(component, button)
+</span><span class="comment">--   print("Clicked with mouse button " .. button)
+</span><span class="comment">-- end
+</span>Button = class(Component)
+<a id="10"></a><span class="comment">--- The color of the outer border of this button.
+</span>Button.outerBorderColor = <span class="string">"black"</span>
+<a id="12"></a><span class="comment">--- The color of the inner border of this button.
+</span>Button.innerBorderColor = <span class="string">"#545454"</span>
+<a id="14"></a><span class="comment">--- The color of the inner border of this button when the mouse is over it.
+</span>Button.innerBorderHoverColor = <span class="string">"#939393"</span>
+<a id="16"></a><span class="comment">--- The color of this button.
+</span>Button.color = <span class="string">"#262626"</span>
+<a id="18"></a><span class="comment">--- The color of this button when the mouse is over it.
+</span>Button.hoverColor = <span class="string">"#545454"</span>
+
+<span class="comment">--- Constructor
+</span><span class="comment">-- @section
+</span>
+<span class="comment">--- Constructs a new Button.
+</span><span class="comment">--
+</span><span class="comment">-- @param x The x coordinate of the new component, relative to its parent.
+</span><span class="comment">-- @param y The y coordinate of the new component, relative to its parent.
+</span><span class="comment">-- @param width The width of the new component.
+</span><a id="29"></a><span class="comment">-- @param height The height of the new component.
+</span><span class="keyword">function</span> Button:_init(x, y, width, height)
+  Component._init(self)
+  self.mouseOver = <span class="keyword">false</span>
+
+  self.x = x
+  self.y = y
+  self.width = width
+  self.height = height
+<span class="keyword">end</span>
+
+<span class="comment">--- @section end
+</span>
+<span class="keyword">function</span> Button:update(dt)
+  <span class="keyword">if</span> self.pressed <span class="keyword">and</span> <span class="keyword">not</span> self.mouseOver <span class="keyword">then</span>
+    self:setPressed(<span class="keyword">false</span>)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> Button:draw(dt)
+  <span class="keyword">local</span> startX = self.x + self.offset[<span class="number">1</span>]
+  <span class="keyword">local</span> startY = self.y + self.offset[<span class="number">2</span>]
+  <span class="keyword">local</span> w = self.width
+  <span class="keyword">local</span> h = self.height
+
+  <span class="keyword">local</span> borderPoly = {
+    {startX + <span class="number">1</span>, startY + <span class="number">0.5</span>},
+    {startX + w - <span class="number">1</span>, startY + <span class="number">0.5</span>},
+    {startX + w - <span class="number">0.5</span>, startY + <span class="number">1</span>},
+    {startX + w - <span class="number">0.5</span>, startY + h - <span class="number">1</span>},
+    {startX + w - <span class="number">1</span>, startY + h - <span class="number">0.5</span>},
+    {startX + <span class="number">1</span>, startY + h - <span class="number">0.5</span>},
+    {startX + <span class="number">0.5</span>, startY + h - <span class="number">1</span>},
+    {startX + <span class="number">0.5</span>, startY + <span class="number">1</span>},
+  }
+  <span class="keyword">local</span> innerBorderRect = {
+    startX + <span class="number">1</span>, startY + <span class="number">1</span>, startX + w - <span class="number">1</span>, startY + h - <span class="number">1</span>
+  }
+  <span class="keyword">local</span> rectOffset = <span class="number">1.5</span>
+  <span class="keyword">local</span> rect = {
+    startX + rectOffset, startY + rectOffset, startX + w - rectOffset, startY + h - rectOffset
+  }
+
+  PtUtil.drawPoly(borderPoly, self.outerBorderColor, <span class="number">1</span>)
+  <span class="keyword">if</span> self.mouseOver <span class="keyword">then</span>
+    PtUtil.drawRect(innerBorderRect, self.innerBorderHoverColor, <span class="number">0.5</span>)
+    PtUtil.fillRect(rect, self.hoverColor)
+  <span class="keyword">else</span>
+    PtUtil.drawRect(innerBorderRect, self.innerBorderColor, <span class="number">0.5</span>)
+    PtUtil.fillRect(rect, self.color)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> Button:setPressed(pressed)
+  <span class="keyword">if</span> pressed <span class="keyword">and</span> <span class="keyword">not</span> self.pressed <span class="keyword">then</span>
+    self.x = self.x + <span class="number">1</span>
+    self.y = self.y - <span class="number">1</span>
+    self.layout = <span class="keyword">true</span>
+  <span class="keyword">end</span>
+  <span class="keyword">if</span> <span class="keyword">not</span> pressed <span class="keyword">and</span> self.pressed <span class="keyword">then</span>
+    self.x = self.x - <span class="number">1</span>
+    self.y = self.y + <span class="number">1</span>
+    self.layout = <span class="keyword">true</span>
+  <span class="keyword">end</span>
+  self.pressed = pressed
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> Button:clickEvent(position, button, pressed)
+  <span class="keyword">if</span> self.onClick <span class="keyword">and</span> <span class="keyword">not</span> pressed <span class="keyword">and</span> self.pressed <span class="keyword">then</span>
+    self:onClick(button)
+  <span class="keyword">end</span>
+  self:setPressed(pressed)
+  <span class="keyword">return</span> <span class="keyword">true</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Called when this button is clicked.
+</span><span class="comment">-- @function onClick
+</span><span class="comment">--
+</span><a id="107"></a><span class="comment">-- @param button The mouse button that was used.
+</span></pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-23 04:51:10 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

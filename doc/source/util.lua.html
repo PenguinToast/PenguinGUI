@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-56315532-1', 'auto');
+      ga('require', 'displayfeatures');
+      ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Source</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../source/binding.lua.html">binding.lua</a></li>
+  <li><a href="../source/bindingfunctions.lua.html">bindingfunctions.lua</a></li>
+  <li><a href="../source/button.lua.html">button.lua</a></li>
+  <li><a href="../source/checkbox.lua.html">checkbox.lua</a></li>
+  <li><a href="../source/component.lua.html">component.lua</a></li>
+  <li><a href="../source/frame.lua.html">frame.lua</a></li>
+  <li><a href="../source/gui.lua.html">gui.lua</a></li>
+  <li><a href="../source/image.lua.html">image.lua</a></li>
+  <li><a href="../source/label.lua.html">label.lua</a></li>
+  <li><a href="../source/panel.lua.html">panel.lua</a></li>
+  <li><a href="../source/radiobutton.lua.html">radiobutton.lua</a></li>
+  <li><a href="../source/textbutton.lua.html">textbutton.lua</a></li>
+  <li><a href="../source/textfield.lua.html">textfield.lua</a></li>
+  <li><strong>util.lua</strong></li>
+</ul>
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/Binding.html">Binding</a></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Button.html">Button</a></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+  <li><a href="../classes/Component.html">Component</a></li>
+  <li><a href="../classes/Frame.html">Frame</a></li>
+  <li><a href="../classes/Image.html">Image</a></li>
+  <li><a href="../classes/Label.html">Label</a></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
+  <li><a href="../classes/RadioButton.html">RadioButton</a></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><a href="../classes/TextField.html">TextField</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>util.lua</h2>
+<pre>
+<span class="comment">--- Utility functions.
+</span><span class="comment">-- @module PtUtil
+</span>PtUtil = {}
+<span class="comment">-- Pixel widths of the first 255 characters. This was generated in Java.
+</span>PtUtil.charWidths = {<span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">0</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">12</span>, <span class="number">10</span>, <span class="number">12</span>, <span class="number">12</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">6</span>, <span class="number">8</span>, <span class="number">4</span>, <span class="number">12</span>, <span class="number">10</span>, <span class="number">6</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">10</span>, <span class="number">12</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">8</span>, <span class="number">10</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">8</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">8</span>, <span class="number">12</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">8</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">12</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">8</span>, <span class="number">6</span>, <span class="number">12</span>, <span class="number">6</span>, <span class="number">8</span>, <span class="number">10</span>, <span class="number">6</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">8</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">8</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">10</span>, <span class="number">4</span>, <span class="number">12</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">8</span>, <span class="number">10</span>, <span class="number">8</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">12</span>, <span class="number">8</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">8</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">10</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>}
+
+<span class="comment">--- Get a list of all lua scripts in the PenguinGUI library.
+</span><span class="comment">--
+</span><a id="10"></a><span class="comment">-- @return A list of strings containing the paths to the PenguinGUI scripts.
+</span><span class="keyword">function</span> PtUtil.library()
+  <span class="keyword">return</span> {
+    <span class="string">"/penguingui/Util.lua"</span>,
+    <span class="string">"/penguingui/Binding.lua"</span>,
+    <span class="string">"/penguingui/BindingFunctions.lua"</span>,
+    <span class="string">"/penguingui/GUI.lua"</span>,
+    <span class="string">"/penguingui/Component.lua"</span>,
+    <span class="string">"/penguingui/Panel.lua"</span>,
+    <span class="string">"/penguingui/Frame.lua"</span>,
+    <span class="string">"/penguingui/Button.lua"</span>,
+    <span class="string">"/penguingui/Label.lua"</span>,
+    <span class="string">"/penguingui/TextButton.lua"</span>,
+    <span class="string">"/penguingui/TextField.lua"</span>,
+    <span class="string">"/penguingui/Image.lua"</span>,
+    <span class="string">"/penguingui/CheckBox.lua"</span>,
+    <span class="string">"/penguingui/RadioButton.lua"</span>,
+    <span class="string">"/lib/profilerapi.lua"</span>,
+    <span class="string">"/lib/inspect.lua"</span>
+  }
+<span class="keyword">end</span>
+
+<span class="comment">--- Draw the text string, offsetting the string to account for leading whitespace.
+</span><span class="comment">--
+</span><a id="34"></a><span class="comment">-- All parameters are identical to those of console.canvasDrawText
+</span><span class="keyword">function</span> PtUtil.drawText(text, options, fontSize, color)
+  <span class="keyword">if</span> text:byte() == <span class="number">32</span> <span class="keyword">then</span> <span class="comment">-- If it starts with a space, offset the string
+</span>    fontSize = fontSize <span class="keyword">or</span> <span class="number">16</span>
+    <span class="keyword">local</span> xOffset = PtUtil.getStringWidth(<span class="string">" "</span>, fontSize)
+    <span class="keyword">local</span> oldX = options.position[<span class="number">1</span>]
+    options.position[<span class="number">1</span>] = oldX + xOffset
+    console.canvasDrawText(text, options, fontSize, color)
+    options.position[<span class="number">1</span>] = oldX
+  <span class="keyword">else</span>
+    console.canvasDrawText(text, options, fontSize, color)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Get the approximate pixel width of a string.
+</span><span class="comment">--
+</span><span class="comment">-- @param text The string to get the width of.
+</span><a id="51"></a><span class="comment">-- @param fontSize The size of the font to get the width from.
+</span><span class="keyword">function</span> PtUtil.getStringWidth(text, fontSize)
+  <span class="keyword">local</span> widths = PtUtil.charWidths
+  <span class="keyword">local</span> scale = PtUtil.getFontScale(fontSize)
+  <span class="keyword">local</span> out = <span class="number">0</span>
+  <span class="keyword">for</span> i=<span class="number">1</span>,#text,<span class="number">1</span> <span class="keyword">do</span>
+    out = out + widths[<span class="global">string</span>.byte(text, i)]
+  <span class="keyword">end</span>
+  <span class="keyword">return</span> out * scale
+<span class="keyword">end</span>
+
+<span class="comment">--- Gets the scale of the specified font size.
+</span><span class="comment">--
+</span><a id="64"></a><span class="comment">-- @param size The font size to get the scale for
+</span><span class="keyword">function</span> PtUtil.getFontScale(size)
+  <span class="keyword">return</span> (size - <span class="number">16</span>) * <span class="number">0.0625</span> + <span class="number">1</span>
+<span class="keyword">end</span>
+
+PtUtil.specialKeyMap = {
+  [<span class="number">8</span>] = <span class="string">"backspace"</span>,
+  [<span class="number">13</span>] = <span class="string">"enter"</span>,
+  [<span class="number">127</span>] = <span class="string">"delete"</span>,
+  [<span class="number">275</span>] = <span class="string">"right"</span>,
+  [<span class="number">276</span>] = <span class="string">"left"</span>,
+  [<span class="number">278</span>] = <span class="string">"home"</span>,
+  [<span class="number">279</span>] = <span class="string">"end"</span>,
+  [<span class="number">301</span>] = <span class="string">"capslock"</span>,
+  [<span class="number">303</span>] = <span class="string">"shift"</span>,
+  [<span class="number">304</span>] = <span class="string">"shift"</span>
+}
+
+PtUtil.shiftKeyMap = {
+  [<span class="number">39</span>] = <span class="string">"\""</span>,
+  [<span class="number">44</span>] = <span class="string">"&lt;"</span>,
+  [<span class="number">45</span>] = <span class="string">"_"</span>,
+  [<span class="number">46</span>] = <span class="string">"&gt;"</span>,
+  [<span class="number">47</span>] = <span class="string">"?"</span>,
+  [<span class="number">48</span>] = <span class="string">")"</span>,
+  [<span class="number">49</span>] = <span class="string">"!"</span>,
+  [<span class="number">50</span>] = <span class="string">"@"</span>,
+  [<span class="number">51</span>] = <span class="string">"#"</span>,
+  [<span class="number">52</span>] = <span class="string">"$"</span>,
+  [<span class="number">53</span>] = <span class="string">"%"</span>,
+  [<span class="number">54</span>] = <span class="string">"^"</span>,
+  [<span class="number">55</span>] = <span class="string">"&amp;"</span>,
+  [<span class="number">56</span>] = <span class="string">"*"</span>,
+  [<span class="number">57</span>] = <span class="string">"("</span>,
+  [<span class="number">59</span>] = <span class="string">":"</span>,
+  [<span class="number">61</span>] = <span class="string">"+"</span>,
+  [<span class="number">91</span>] = <span class="string">"{"</span>,
+  [<span class="number">92</span>] = <span class="string">"|"</span>,
+  [<span class="number">93</span>] = <span class="string">"}"</span>,
+  [<span class="number">96</span>] = <span class="string">"~"</span>
+}
+
+<span class="comment">--- Gets a string representation of the keycode.
+</span><span class="comment">--
+</span><span class="comment">-- @param key The keycode of the key.
+</span><span class="comment">-- @param shift Boolean representing whether or not shift is pressed.
+</span><a id="110"></a><span class="comment">-- @param capslock Boolean representing whether or not capslock is on.
+</span><span class="keyword">function</span> PtUtil.getKey(key, shift, capslock)
+  <span class="keyword">if</span> (capslock <span class="keyword">and</span> <span class="keyword">not</span> shift) <span class="keyword">or</span> (shift <span class="keyword">and</span> <span class="keyword">not</span> capslock) <span class="keyword">then</span>
+    <span class="keyword">if</span> key &gt;= <span class="number">97</span> <span class="keyword">and</span> key &lt;= <span class="number">122</span> <span class="keyword">then</span>
+      <span class="keyword">return</span> <span class="global">string</span>.upper(<span class="global">string</span>.char(key))
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  <span class="keyword">if</span> shift <span class="keyword">and</span> PtUtil.shiftKeyMap[key] <span class="keyword">then</span>
+    <span class="keyword">return</span> PtUtil.shiftKeyMap[key]
+  <span class="keyword">else</span>
+    <span class="keyword">if</span> key &gt;= <span class="number">32</span> <span class="keyword">and</span> key &lt;= <span class="number">122</span> <span class="keyword">then</span>
+      <span class="keyword">return</span> <span class="global">string</span>.char(key)
+    <span class="keyword">elseif</span> PtUtil.specialKeyMap[key] <span class="keyword">then</span>
+      <span class="keyword">return</span> PtUtil.specialKeyMap[key]
+    <span class="keyword">else</span>
+      <span class="keyword">return</span> <span class="string">"unknown"</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Fills a rectangle.
+</span><span class="comment">--
+</span><a id="132"></a><span class="comment">-- All parameters are identical to those of console.canvasDrawRect
+</span><span class="keyword">function</span> PtUtil.fillRect(rect, color)
+  console.canvasDrawRect(rect, color)
+<span class="keyword">end</span>
+
+<span class="comment">-- TODO - There is no way to fill a polygon yet.
+</span><span class="comment">-- Fills a polygon.
+</span><span class="keyword">function</span> PtUtil.fillPoly(poly, color)
+  console.logInfo(<span class="string">"fillPoly is not functional yet"</span>)
+  <span class="comment">-- console.canvasDrawPoly(poly, color)
+</span><span class="keyword">end</span>
+
+<span class="comment">--- Draws a line.
+</span><span class="comment">--
+</span><a id="146"></a><span class="comment">-- All parameters are identical to those of console.canvasDrawLine
+</span><span class="keyword">function</span> PtUtil.drawLine(p1, p2, color, width)
+  console.canvasDrawLine(p1, p2, color, width * <span class="number">2</span>)
+<span class="keyword">end</span>
+
+<span class="comment">--- Draws a rectangle.
+</span><span class="comment">--
+</span><a id="153"></a><span class="comment">-- All parameters are identical to those of console.canvasDrawRect
+</span><span class="keyword">function</span> PtUtil.drawRect(rect, color, width)
+  <span class="keyword">local</span> minX = rect[<span class="number">1</span>] + width / <span class="number">2</span>
+  <span class="keyword">local</span> minY = <span class="global">math</span>.floor((rect[<span class="number">2</span>] + width / <span class="number">2</span>) * <span class="number">2</span>) / <span class="number">2</span>
+  <span class="keyword">local</span> maxX = rect[<span class="number">3</span>] - width / <span class="number">2</span>
+  <span class="keyword">local</span> maxY = <span class="global">math</span>.floor((rect[<span class="number">4</span>] - width / <span class="number">2</span>) * <span class="number">2</span>) / <span class="number">2</span>
+  PtUtil.drawLine(
+    {minX - width / <span class="number">2</span>, minY},
+    {maxX + width / <span class="number">2</span>, minY},
+    color, width
+  )
+  PtUtil.drawLine(
+    {maxX, minY},
+    {maxX, maxY},
+    color, width
+  )
+  PtUtil.drawLine(
+    {minX - width / <span class="number">2</span>, maxY},
+    {maxX + width / <span class="number">2</span>, maxY},
+    color, width
+  )
+  PtUtil.drawLine(
+    {minX, minY},
+    {minX, maxY},
+    color, width
+  )
+<span class="keyword">end</span>
+
+<span class="comment">-- Draws a polygon.
+</span><span class="comment">--
+</span><span class="comment">-- All parameters are identical to those of console.canvasDrawPoly
+</span><span class="keyword">function</span> PtUtil.drawPoly(poly, color, width)
+  <span class="comment">-- Draw lines
+</span>  <span class="keyword">for</span> i=<span class="number">1</span>,#poly - <span class="number">1</span>,<span class="number">1</span> <span class="keyword">do</span>
+    PtUtil.drawLine(poly[i], poly[i + <span class="number">1</span>], color, width)
+  <span class="keyword">end</span>
+  PtUtil.drawLine(poly[#poly], poly[<span class="number">1</span>], color, width)
+<span class="keyword">end</span>
+
+<span class="comment">-- Draws an image.
+</span><span class="comment">--
+</span><span class="comment">-- All parameters are identical to those of console.canvasDrawImage
+</span><span class="keyword">function</span> PtUtil.drawImage(image, position, scale)
+  console.canvasDrawImage(image, position, scale)
+<span class="keyword">end</span>
+
+<span class="comment">--- Does the same thing as ipairs, except backwards
+</span><span class="comment">--
+</span><a id="201"></a><span class="comment">-- @param t The table to iterate backwards over
+</span><span class="keyword">function</span> ripairs(t)
+  <span class="keyword">local</span> <span class="keyword">function</span> ripairs_it(t,i)
+    i=i-<span class="number">1</span>
+    <span class="keyword">local</span> v=t[i]
+    <span class="keyword">if</span> v==<span class="keyword">nil</span> <span class="keyword">then</span> <span class="keyword">return</span> v <span class="keyword">end</span>
+    <span class="keyword">return</span> i,v
+  <span class="keyword">end</span>
+  <span class="keyword">return</span> ripairs_it, t, #t+<span class="number">1</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Removes the first occurence of an object from the given table.
+</span><span class="comment">--
+</span><span class="comment">-- @param t The table to remove from.
+</span><span class="comment">-- @param o The object to remove.
+</span><a id="216"></a><span class="comment">-- @return The index of the removed object, or -1 if the object was not found.
+</span><span class="keyword">function</span> PtUtil.removeObject(t, o)
+  <span class="keyword">for</span> i,obj <span class="keyword">in</span> <span class="global">ipairs</span>(t) <span class="keyword">do</span>
+    <span class="keyword">if</span> obj == o <span class="keyword">then</span>
+      <span class="global">table</span>.remove(t, i)
+      <span class="keyword">return</span> i
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  <span class="keyword">return</span> -<span class="number">1</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Creates a new class with the specified superclass(es).
+</span><a id="228"></a><span class="comment">-- @param ... The new class's superclass(es).
+</span><span class="keyword">function</span> class(...)
+  <span class="comment">-- "cls" is the new class
+</span>  <span class="keyword">local</span> cls, bases = {}, {...}
+
+  <span class="comment">-- copy base class contents into the new class
+</span>  <span class="keyword">for</span> i, base <span class="keyword">in</span> <span class="global">ipairs</span>(bases) <span class="keyword">do</span>
+    <span class="keyword">for</span> k, v <span class="keyword">in</span> <span class="global">pairs</span>(base) <span class="keyword">do</span>
+      cls[k] = v
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="comment">-- set the class's __index, and start filling an "is_a" table that contains this class and all of its bases
+</span>  <span class="comment">-- so you can do an "instance of" check using my_instance.is_a[MyClass]
+</span>  cls.__index, cls.is_a = cls, {[cls] = <span class="keyword">true</span>}
+  <span class="keyword">for</span> i, base <span class="keyword">in</span> <span class="global">ipairs</span>(bases) <span class="keyword">do</span>
+    <span class="keyword">for</span> c <span class="keyword">in</span> <span class="global">pairs</span>(base.is_a) <span class="keyword">do</span>
+      cls.is_a[c] = <span class="keyword">true</span>
+    <span class="keyword">end</span>
+    cls.is_a[base] = <span class="keyword">true</span>
+  <span class="keyword">end</span>
+  <span class="comment">-- the class's __call metamethod
+</span>  <span class="global">setmetatable</span>(
+    cls,
+    {
+      __call = <span class="keyword">function</span> (c, ...)
+        <span class="keyword">local</span> instance = <span class="global">setmetatable</span>({}, c)
+        instance = Binding.proxy(instance)
+
+        <span class="comment">-- run the init method if it's there
+</span>        <span class="keyword">local</span> init = instance._init
+        <span class="keyword">if</span> init <span class="keyword">then</span> init(instance, ...) <span class="keyword">end</span>
+        <span class="keyword">return</span> instance
+      <span class="keyword">end</span>
+    }
+  )
+  <span class="comment">-- return the new class table, that's ready to fill with methods
+</span>  <span class="keyword">return</span> cls
+<span class="keyword">end</span>
+
+<span class="comment">-- Dumps value as a string closely resemling Lua code that could be used to
+</span><span class="comment">-- recreate it (with the exception of functions, threads and recursive tables).
+</span><span class="comment">-- Credit to MrMagical.
+</span><span class="comment">--
+</span><span class="comment">-- Basic usage: dump(value)
+</span><span class="comment">--
+</span><span class="comment">-- @param value The value to be dumped.
+</span><span class="comment">-- @param indent (optional) String used for indenting the dumped value.
+</span><span class="comment">-- @param seen (optional) Table of already processed tables which will be
+</span><span class="comment">--                        dumped as "{...}" to prevent infinite recursion.
+</span><span class="keyword">function</span> dump(value, indent, seen)
+  <span class="keyword">if</span> <span class="global">type</span>(value) ~= <span class="string">"table"</span> <span class="keyword">then</span>
+    <span class="keyword">if</span> <span class="global">type</span>(value) == <span class="string">"string"</span> <span class="keyword">then</span>
+      <span class="keyword">return</span> <span class="global">string</span>.format(<span class="string">'%q'</span>, value)
+    <span class="keyword">else</span>
+      <span class="keyword">return</span> <span class="global">tostring</span>(value)
+    <span class="keyword">end</span>
+  <span class="keyword">else</span>
+    <span class="keyword">if</span> <span class="global">type</span>(seen) ~= <span class="string">"table"</span> <span class="keyword">then</span>
+      seen = {}
+    <span class="keyword">elseif</span> seen[value] <span class="keyword">then</span>
+      <span class="keyword">return</span> <span class="string">"{...}"</span>
+    <span class="keyword">end</span>
+    seen[value] = <span class="keyword">true</span>
+    indent = indent <span class="keyword">or</span> <span class="string">""</span>
+    <span class="keyword">if</span> <span class="global">next</span>(value) == <span class="keyword">nil</span> <span class="keyword">then</span>
+      <span class="keyword">return</span> <span class="string">"{}"</span>
+    <span class="keyword">end</span>
+    <span class="keyword">local</span> str = <span class="string">"{"</span>
+    <span class="keyword">local</span> first = <span class="keyword">true</span>
+    <span class="keyword">for</span> k,v <span class="keyword">in</span> <span class="global">pairs</span>(value) <span class="keyword">do</span>
+      <span class="keyword">if</span> first <span class="keyword">then</span>
+        first = <span class="keyword">false</span>
+      <span class="keyword">else</span>
+        str = str..<span class="string">","</span>
+      <span class="keyword">end</span>
+      str = str..<span class="string">"\n"</span>..indent..<span class="string">"  "</span>..<span class="string">"["</span>..dump(k, <span class="string">""</span>, seen)
+        ..<span class="string">"] = "</span>..dump(v, indent..<span class="string">"  "</span>, seen)
+    <span class="keyword">end</span>
+    str = str..<span class="string">"\n"</span>..indent..<span class="string">"}"</span>
+    <span class="keyword">return</span> str
+  <span class="keyword">end</span>
+<span class="keyword">end</span></pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-23 04:51:10 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

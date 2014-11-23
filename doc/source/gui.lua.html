@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-56315532-1', 'auto');
+      ga('require', 'displayfeatures');
+      ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Source</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../source/binding.lua.html">binding.lua</a></li>
+  <li><a href="../source/bindingfunctions.lua.html">bindingfunctions.lua</a></li>
+  <li><a href="../source/button.lua.html">button.lua</a></li>
+  <li><a href="../source/checkbox.lua.html">checkbox.lua</a></li>
+  <li><a href="../source/component.lua.html">component.lua</a></li>
+  <li><a href="../source/frame.lua.html">frame.lua</a></li>
+  <li><strong>gui.lua</strong></li>
+  <li><a href="../source/image.lua.html">image.lua</a></li>
+  <li><a href="../source/label.lua.html">label.lua</a></li>
+  <li><a href="../source/panel.lua.html">panel.lua</a></li>
+  <li><a href="../source/radiobutton.lua.html">radiobutton.lua</a></li>
+  <li><a href="../source/textbutton.lua.html">textbutton.lua</a></li>
+  <li><a href="../source/textfield.lua.html">textfield.lua</a></li>
+  <li><a href="../source/util.lua.html">util.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/Binding.html">Binding</a></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Button.html">Button</a></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+  <li><a href="../classes/Component.html">Component</a></li>
+  <li><a href="../classes/Frame.html">Frame</a></li>
+  <li><a href="../classes/Image.html">Image</a></li>
+  <li><a href="../classes/Label.html">Label</a></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
+  <li><a href="../classes/RadioButton.html">RadioButton</a></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><a href="../classes/TextField.html">TextField</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>gui.lua</h2>
+<pre>
+<span class="comment">--- Base handler for all the GUI stuff.
+</span><span class="comment">-- @module GUI
+</span><span class="comment">-- @usage -- A simple script that creates a button that closes the console.
+</span><span class="comment">-- function init()
+</span><span class="comment">--   local button = TextButton(0, 0, 100, 16, "Close")
+</span><span class="comment">--   button.onClick = function(mouseButton)
+</span><span class="comment">--     console.dismiss()
+</span><span class="comment">--   end
+</span><span class="comment">--   GUI.add(button)
+</span><span class="comment">-- end
+</span><span class="comment">--
+</span><span class="comment">-- function update(dt)
+</span><span class="comment">--   GUI.step(dt)
+</span><span class="comment">-- end
+</span><span class="comment">--
+</span><span class="comment">-- function canvasClickEvent(position, button, pressed)
+</span><span class="comment">--   GUI.clickEvent(position, button, pressed)
+</span><span class="comment">-- end
+</span><span class="comment">--
+</span><span class="comment">-- function canvasKeyEvent(key, isKeyDown)
+</span><span class="comment">--   GUI.keyEvent(key, isKeyDown)
+</span><span class="comment">-- end
+</span>
+<span class="comment">--- GUI Table
+</span><span class="comment">-- @field components Top-level components to be managed.
+</span><span class="comment">-- @field mouseState The state of each of the mouse buttons.
+</span><span class="comment">-- @field keyState The state of each keyboard key.
+</span><span class="comment">-- @field mousePosition The current position of the mouse.
+</span><a id="30"></a><span class="comment">-- @table GUI
+</span>GUI = {
+  components = {},
+  mouseState = {},
+  keyState = {},
+  mousePosition = {<span class="number">0</span>, <span class="number">0</span>}
+}
+
+<span class="comment">--- Add a new top-level component to be handled by PenguinGUI.
+</span><a id="39"></a><span class="comment">-- @param component The top-level component to be added.
+</span><span class="keyword">function</span> GUI.add(component)
+  GUI.components[#GUI.components + <span class="number">1</span>] = component
+  component:setParent(<span class="keyword">nil</span>)
+<span class="keyword">end</span>
+
+<span class="comment">--- Removes a component to be handled.
+</span><span class="comment">--
+</span><span class="comment">-- @param component The component to be removed.
+</span><a id="48"></a><span class="comment">-- @return Whether the component was removed.
+</span><span class="keyword">function</span> GUI.remove(component)
+  <span class="keyword">for</span> index,comp <span class="keyword">in</span> ripairs(GUI.components) <span class="keyword">do</span>
+    <span class="keyword">if</span> (comp == component) <span class="keyword">then</span>
+      <span class="global">table</span>.remove(GUI.components, index)
+      <span class="keyword">return</span> <span class="keyword">true</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  <span class="keyword">return</span> <span class="keyword">false</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Sets the keyboard focus of the GUI to the specified component.
+</span><a id="60"></a><span class="comment">-- @param component The component to receive keyboard focus.
+</span><span class="keyword">function</span> GUI.setFocusedComponent(component)
+  <span class="keyword">local</span> focusedComponent = GUI.focusedComponent
+  <span class="keyword">if</span> focusedComponent <span class="keyword">then</span>
+    focusedComponent.hasFocus = <span class="keyword">false</span>
+  <span class="keyword">end</span>
+  GUI.focusedComponent = component
+  component.hasFocus = <span class="keyword">true</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Must be called in canvasClickEvent to handle mouse events.
+</span><span class="comment">--
+</span><span class="comment">-- @param position The position of the click.
+</span><span class="comment">-- @param button The mouse button of the click.
+</span><a id="74"></a><span class="comment">-- @param pressed Whether the event is pressed or released.
+</span><span class="keyword">function</span> GUI.clickEvent(position, button, pressed)
+  GUI.mouseState[button] = pressed
+  <span class="keyword">local</span> components = GUI.components
+  <span class="keyword">local</span> topFound = <span class="keyword">false</span>
+  <span class="keyword">for</span> index,component <span class="keyword">in</span> ripairs(components) <span class="keyword">do</span>
+    <span class="comment">-- Focus top-level components
+</span>    <span class="keyword">if</span> <span class="keyword">not</span> topFound <span class="keyword">then</span>
+      <span class="keyword">if</span> component:contains(position) <span class="keyword">then</span>
+        <span class="global">table</span>.remove(components, index)
+        components[#components + <span class="number">1</span>] = component
+        topFound = <span class="keyword">true</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    <span class="keyword">if</span> GUI.clickEventHelper(component, position, button, pressed) <span class="keyword">then</span>
+      <span class="comment">-- The click was consumed
+</span>      <span class="keyword">break</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> GUI.clickEventHelper(component, position, button, pressed)
+  <span class="keyword">local</span> children = component.children
+  <span class="keyword">for</span> _,child <span class="keyword">in</span> ripairs(children) <span class="keyword">do</span>
+    <span class="keyword">if</span> GUI.clickEventHelper(child, position, button, pressed) <span class="keyword">then</span>
+      <span class="comment">-- The click was consumed
+</span>      <span class="keyword">return</span> <span class="keyword">true</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  <span class="comment">-- Only check bounds if the component has a clickEvent
+</span>  <span class="keyword">if</span> component.clickEvent <span class="keyword">then</span>
+    <span class="keyword">if</span> component:contains(position) <span class="keyword">then</span>
+      GUI.setFocusedComponent(component)
+      <span class="keyword">if</span> component:clickEvent(position, button, pressed) <span class="keyword">then</span>
+        <span class="comment">-- The click was consumed
+</span>        <span class="keyword">return</span> <span class="keyword">true</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Must be called in canvasKeyEvent to handle keyboard events.
+</span><span class="comment">--
+</span><span class="comment">-- @param key The keycode of the key that spawned the event.
+</span><a id="118"></a><span class="comment">-- @param pressed Whether the key was pressed or released.
+</span><span class="keyword">function</span> GUI.keyEvent(key, pressed)
+  GUI.keyState[key] = pressed
+  <span class="keyword">local</span> component = GUI.focusedComponent
+  <span class="keyword">if</span> component <span class="keyword">then</span>
+    <span class="keyword">local</span> keyEvent = component.keyEvent
+    <span class="keyword">if</span> keyEvent <span class="keyword">then</span>
+      keyEvent(component, key, pressed)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- Draws and updates every component managed by this GUI.
+</span><span class="comment">--
+</span><span class="comment">-- Must be called in update() for the GUI to update and render.
+</span><a id="133"></a><span class="comment">-- @param dt The time elapsed since the last draw, in seconds.
+</span><span class="keyword">function</span> GUI.step(dt)
+  GUI.mousePosition = console.canvasMousePosition()
+  <span class="keyword">local</span> hoverComponent
+  <span class="keyword">for</span> _,component <span class="keyword">in</span> <span class="global">ipairs</span>(GUI.components) <span class="keyword">do</span>
+    <span class="keyword">if</span> component.visible ~= <span class="keyword">false</span> <span class="keyword">then</span>
+      hoverComponent = component:step(dt) <span class="keyword">or</span> hoverComponent
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  <span class="keyword">if</span> hoverComponent <span class="keyword">then</span>
+    hoverComponent.mouseOver = <span class="keyword">true</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span></pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-23 04:51:10 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

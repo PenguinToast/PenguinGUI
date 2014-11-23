@@ -1,0 +1,464 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-56315532-1', 'auto');
+      ga('require', 'displayfeatures');
+      ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Source</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../source/binding.lua.html">binding.lua</a></li>
+  <li><strong>bindingfunctions.lua</strong></li>
+  <li><a href="../source/button.lua.html">button.lua</a></li>
+  <li><a href="../source/checkbox.lua.html">checkbox.lua</a></li>
+  <li><a href="../source/component.lua.html">component.lua</a></li>
+  <li><a href="../source/frame.lua.html">frame.lua</a></li>
+  <li><a href="../source/gui.lua.html">gui.lua</a></li>
+  <li><a href="../source/image.lua.html">image.lua</a></li>
+  <li><a href="../source/label.lua.html">label.lua</a></li>
+  <li><a href="../source/panel.lua.html">panel.lua</a></li>
+  <li><a href="../source/radiobutton.lua.html">radiobutton.lua</a></li>
+  <li><a href="../source/textbutton.lua.html">textbutton.lua</a></li>
+  <li><a href="../source/textfield.lua.html">textfield.lua</a></li>
+  <li><a href="../source/util.lua.html">util.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/Binding.html">Binding</a></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Button.html">Button</a></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+  <li><a href="../classes/Component.html">Component</a></li>
+  <li><a href="../classes/Frame.html">Frame</a></li>
+  <li><a href="../classes/Image.html">Image</a></li>
+  <li><a href="../classes/Label.html">Label</a></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
+  <li><a href="../classes/RadioButton.html">RadioButton</a></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><a href="../classes/TextField.html">TextField</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>bindingfunctions.lua</h2>
+<pre>
+<span class="comment">--- @module Binding
+</span>
+<span class="comment">-- Creates a binding function (convenience function)
+</span><span class="comment">--
+</span><span class="comment">-- @param f A function that returns this value's new value after the value
+</span><span class="comment">--      that it is bound to changes.
+</span><span class="comment">-- @param numArgs The number of arguments to the function to create.
+</span><span class="keyword">local</span> createFunction = <span class="keyword">function</span>(f)
+  <span class="keyword">return</span> <span class="keyword">function</span>(...)
+    <span class="keyword">local</span> out = Binding.proxy(<span class="global">setmetatable</span>({}, Binding.valueTable))
+    <span class="keyword">local</span> getters = {}
+    <span class="keyword">local</span> boundto = {self}
+    <span class="keyword">local</span> args = <span class="global">table</span>.pack(...)
+    <span class="keyword">local</span> numArgs = args.n
+    <span class="keyword">for</span> i = <span class="number">1</span>, numArgs, <span class="number">1</span> <span class="keyword">do</span>
+      <span class="keyword">local</span> value = args[i]
+      <span class="keyword">local</span> getter
+      <span class="keyword">if</span> Binding.isValue(value) <span class="keyword">then</span>
+        getter = <span class="keyword">function</span>()
+          <span class="keyword">return</span> value.value
+        <span class="keyword">end</span>
+      <span class="keyword">else</span>
+        getter = <span class="keyword">function</span>()
+          <span class="keyword">return</span> value
+        <span class="keyword">end</span>
+      <span class="keyword">end</span>
+      getters[i] = getter
+    <span class="keyword">end</span>
+    out.valueChanged = <span class="keyword">function</span>(binding, old, new)
+      out.value = f(<span class="global">unpack</span>(getters))
+    <span class="keyword">end</span>
+    <span class="keyword">for</span> i = <span class="number">1</span>, numArgs, <span class="number">1</span> <span class="keyword">do</span>
+      <span class="keyword">local</span> value = args[i]
+      <span class="keyword">if</span> Binding.isValue(value) <span class="keyword">then</span>
+        value:addValueBinding(out)
+      <span class="keyword">end</span>
+      <span class="global">table</span>.insert(boundto, value)
+    <span class="keyword">end</span>
+    out.boundto = boundto
+    <span class="keyword">return</span> out
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">--- @type Binding
+</span>
+<span class="comment">--- Creates a binding containing the string representation of this binding.
+</span><span class="comment">-- @function tostring
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.<span class="global">tostring</span> = createFunction(
+  <span class="keyword">function</span>(value)
+    <span class="keyword">return</span> <span class="global">tostring</span>(value())
+  <span class="keyword">end</span>
+)
+Binding.<span class="global">tostring</span> = Binding.valueTable.<span class="global">tostring</span>
+
+<span class="comment">--- Creates a binding containing the number value of this binding.
+</span><span class="comment">-- @function tonumber
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.<span class="global">tonumber</span> = createFunction(
+  <span class="keyword">function</span>(value)
+    <span class="keyword">return</span> <span class="global">tonumber</span>(value())
+  <span class="keyword">end</span>
+)
+Binding.<span class="global">tonumber</span> = Binding.valueTable.<span class="global">tonumber</span>
+
+<span class="comment">--- Creates a new binding containing the sum of this binding and others.
+</span><span class="comment">-- @function add
+</span><span class="comment">-- @param ... Can be bindings, or constants (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.add = createFunction(
+  <span class="keyword">function</span>(first, ...)
+    <span class="keyword">local</span> out = first()
+    <span class="keyword">local</span> args = <span class="global">table</span>.pack(...)
+    <span class="keyword">for</span> _,value <span class="keyword">in</span> <span class="global">ipairs</span>(args) <span class="keyword">do</span>
+      out = out + value()
+    <span class="keyword">end</span>
+    <span class="keyword">return</span> out
+  <span class="keyword">end</span>
+)
+Binding.add = Binding.valueTable.add
+
+<span class="comment">--- Creates a new binding containing the difference of this binding and others.
+</span><span class="comment">-- @function sub
+</span><span class="comment">-- @param ... Can be bindings, or constants (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.sub = createFunction(
+  <span class="keyword">function</span>(first, ...)
+    <span class="keyword">local</span> out = first()
+    <span class="keyword">local</span> args = <span class="global">table</span>.pack(...)
+    <span class="keyword">for</span> _,value <span class="keyword">in</span> <span class="global">ipairs</span>(args) <span class="keyword">do</span>
+      out = out - value()
+    <span class="keyword">end</span>
+    <span class="keyword">return</span> out
+  <span class="keyword">end</span>
+)
+Binding.sub = Binding.valueTable.sub
+
+<span class="comment">--- Creates a new binding containing the product of this binding and others.
+</span><span class="comment">-- @function mul
+</span><span class="comment">-- @param ... Can be bindings, or constants (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.mul = createFunction(
+  <span class="keyword">function</span>(first, ...)
+    <span class="keyword">local</span> out = first()
+    <span class="keyword">local</span> args = <span class="global">table</span>.pack(...)
+    <span class="keyword">for</span> _,value <span class="keyword">in</span> <span class="global">ipairs</span>(args) <span class="keyword">do</span>
+      out = out * value()
+    <span class="keyword">end</span>
+    <span class="keyword">return</span> out
+  <span class="keyword">end</span>
+)
+Binding.mul = Binding.valueTable.mul
+
+<span class="comment">--- Creates a new binding containing the quotient of this binding and others.
+</span><span class="comment">-- @function div
+</span><span class="comment">-- @param ... Can be bindings, or constants (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.div = createFunction(
+  <span class="keyword">function</span>(first, ...)
+    <span class="keyword">local</span> out = first()
+    <span class="keyword">local</span> args = <span class="global">table</span>.pack(...)
+    <span class="keyword">for</span> _,value <span class="keyword">in</span> <span class="global">ipairs</span>(args) <span class="keyword">do</span>
+      out = out / value()
+    <span class="keyword">end</span>
+    <span class="keyword">return</span> out
+  <span class="keyword">end</span>
+)
+Binding.div = Binding.valueTable.div
+
+<span class="comment">--- Creates a new binding containing the modulus of this binding and others.
+</span><span class="comment">-- @function mod
+</span><span class="comment">-- @param ... Can be bindings, or constants (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.mod = createFunction(
+  <span class="keyword">function</span>(first, ...)
+    <span class="keyword">local</span> out = first()
+    <span class="keyword">local</span> args = <span class="global">table</span>.pack(...)
+    <span class="keyword">for</span> _,value <span class="keyword">in</span> <span class="global">ipairs</span>(args) <span class="keyword">do</span>
+      out = out % value()
+    <span class="keyword">end</span>
+    <span class="keyword">return</span> out
+  <span class="keyword">end</span>
+)
+Binding.mod = Binding.valueTable.mod
+
+<span class="comment">--- Creates a new binding containing the exponentiation of this binding and
+</span><span class="comment">-- others.
+</span><span class="comment">-- @function pow
+</span><span class="comment">-- @param ... Can be bindings, or constants (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.pow = createFunction(
+  <span class="keyword">function</span>(first, ...)
+    <span class="keyword">local</span> out = first()
+    <span class="keyword">local</span> args = <span class="global">table</span>.pack(...)
+    <span class="keyword">for</span> _,value <span class="keyword">in</span> <span class="global">ipairs</span>(args) <span class="keyword">do</span>
+      out = out ^ value()
+    <span class="keyword">end</span>
+    <span class="keyword">return</span> out
+  <span class="keyword">end</span>
+)
+Binding.pow = Binding.valueTable.pow
+
+<span class="comment">--- Creates a new binding containing the negation of this binding.
+</span><span class="comment">-- @function negate
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.negate = createFunction(
+  <span class="keyword">function</span>(value)
+    <span class="keyword">return</span> -value()
+  <span class="keyword">end</span>
+)
+Binding.negate = Binding.valueTable.negate
+
+<span class="comment">--- Creates a new binding containing the concatenation of this binding and
+</span><span class="comment">-- others.
+</span><span class="comment">-- @function concat
+</span><span class="comment">-- @param ... Can be bindings, or constants (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.concat = createFunction(
+  <span class="keyword">function</span>(first, ...)
+    <span class="keyword">local</span> out = first()
+    <span class="keyword">local</span> args = <span class="global">table</span>.pack(...)
+    <span class="keyword">for</span> _,value <span class="keyword">in</span> <span class="global">ipairs</span>(args) <span class="keyword">do</span>
+      out = out .. value()
+    <span class="keyword">end</span>
+    <span class="keyword">return</span> out
+  <span class="keyword">end</span>
+)
+Binding.concat = Binding.valueTable.concat
+
+<span class="comment">--- Creates a new binding containing the length of this binding.
+</span><span class="comment">-- @function len
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.len = createFunction(
+  <span class="keyword">function</span>(value)
+    <span class="keyword">return</span> #value()
+  <span class="keyword">end</span>
+)
+Binding.len = Binding.valueTable.len
+
+<span class="comment">--- Creates a new binding representing if this value is equal to another.
+</span><span class="comment">-- @function eq
+</span><span class="comment">-- @param other Can be another binding or a constant (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.eq = createFunction(
+  <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a() == b()
+  <span class="keyword">end</span>
+)
+Binding.eq = Binding.valueTable.eq
+
+<span class="comment">--- Creates a new binding representing if this value is not equal to another.
+</span><span class="comment">-- @function ne
+</span><span class="comment">-- @param other Can be another binding or a constant (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.ne = createFunction(
+  <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a() ~= b()
+  <span class="keyword">end</span>
+)
+Binding.ne = Binding.valueTable.ne
+
+<span class="comment">--- Creates a new binding representing if this value is less than to another.
+</span><span class="comment">-- @function lt
+</span><span class="comment">-- @param other Can be another binding or a constant (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.lt = createFunction(
+  <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a() &lt; b()
+  <span class="keyword">end</span>
+)
+Binding.lt = Binding.valueTable.lt
+
+<span class="comment">--- Creates a new binding representing if this value is greater than to another.
+</span><span class="comment">-- @function gt
+</span><span class="comment">-- @param other Can be another binding or a constant (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.gt = createFunction(
+  <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a() &gt; b()
+  <span class="keyword">end</span>
+)
+Binding.gt = Binding.valueTable.gt
+
+<span class="comment">--- Creates a new binding representing if this value is less than or equal
+</span><span class="comment">-- to another.
+</span><span class="comment">-- @function le
+</span><span class="comment">-- @param other Can be another binding or a constant (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.le = createFunction(
+  <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a() &lt;= b()
+  <span class="keyword">end</span>
+)
+Binding.le = Binding.valueTable.le
+
+<span class="comment">--- Creates a new binding representing if this value is greater than or equal
+</span><span class="comment">-- to another.
+</span><span class="comment">-- @function ge
+</span><span class="comment">-- @param other Can be another binding or a constant (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.ge = createFunction(
+  <span class="keyword">function</span>(a, b)
+    <span class="keyword">return</span> a() &gt;= b()
+  <span class="keyword">end</span>
+)
+Binding.ge = Binding.valueTable.ge
+
+<span class="comment">--- Creates a new binding containing this binding AND others.
+</span><span class="comment">-- @function AND
+</span><span class="comment">-- @param ... Can be bindings, or constants (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.AND = createFunction(
+  <span class="keyword">function</span>(first, ...)
+    <span class="keyword">local</span> out = first()
+    <span class="keyword">local</span> args = <span class="global">table</span>.pack(...)
+    <span class="keyword">for</span> _,value <span class="keyword">in</span> <span class="global">ipairs</span>(args) <span class="keyword">do</span>
+      out = out <span class="keyword">and</span> value()
+    <span class="keyword">end</span>
+    <span class="keyword">return</span> out
+  <span class="keyword">end</span>
+)
+Binding.AND = Binding.valueTable.AND
+
+<span class="comment">--- Creates a new binding containing this binding OR others.
+</span><span class="comment">-- @function OR
+</span><span class="comment">-- @param ... Can be bindings, or constants (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.OR = createFunction(
+  <span class="keyword">function</span>(first, ...)
+    <span class="keyword">local</span> out = first()
+    <span class="keyword">local</span> args = <span class="global">table</span>.pack(...)
+    <span class="keyword">for</span> _,value <span class="keyword">in</span> <span class="global">ipairs</span>(args) <span class="keyword">do</span>
+      out = out <span class="keyword">or</span> value()
+    <span class="keyword">end</span>
+    <span class="keyword">return</span> out
+  <span class="keyword">end</span>
+)
+Binding.OR = Binding.valueTable.OR
+
+<span class="comment">--- Creates a new binding containing NOT this binding.
+</span><span class="comment">-- @function NOT
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.NOT = createFunction(
+  <span class="keyword">function</span>(value)
+    <span class="keyword">return</span> <span class="keyword">not</span> value()
+  <span class="keyword">end</span>
+)
+Binding.NOT = Binding.valueTable.NOT
+
+<span class="comment">--- Creates a new binding with the value of the first value if this binding is
+</span><span class="comment">-- true, or the second value if this binding is false.
+</span><span class="comment">-- @function THEN
+</span><span class="comment">--
+</span><span class="comment">-- @param ifTrue The value the new binding will be set to when this value is
+</span><span class="comment">--      true. Can either be another value, or a constant (number, etc.)
+</span><span class="comment">-- @param ifFalse The value the new binding will be set to when this value is
+</span><span class="comment">--      false. Can either be another value, or a constant (number, etc.)
+</span><span class="comment">-- @return A new binding.
+</span>Binding.valueTable.THEN = <span class="keyword">function</span>(self, ifTrue, ifFalse)
+  <span class="keyword">local</span> out = Binding.proxy(<span class="global">setmetatable</span>({}, Binding.valueTable))
+  <span class="keyword">local</span> trueFunction
+  <span class="keyword">local</span> falseFunction
+  <span class="keyword">local</span> boundto = {self}
+  <span class="keyword">if</span> Binding.isValue(ifTrue) <span class="keyword">then</span>
+    trueFunction = <span class="keyword">function</span>()
+      <span class="keyword">return</span> ifTrue.value
+    <span class="keyword">end</span>
+  <span class="keyword">else</span>
+    trueFunction = <span class="keyword">function</span>()
+      <span class="keyword">return</span> ifTrue
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  <span class="keyword">if</span> Binding.isValue(ifFalse) <span class="keyword">then</span>
+    falseFunction = <span class="keyword">function</span>()
+      <span class="keyword">return</span> ifFalse.value
+    <span class="keyword">end</span>
+  <span class="keyword">else</span>
+    falseFunction = <span class="keyword">function</span>()
+      <span class="keyword">return</span> ifFalse
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  out.valueChanged = <span class="keyword">function</span>(binding, old, new)
+    <span class="keyword">if</span> self.value <span class="keyword">then</span>
+      out.value = trueFunction()
+    <span class="keyword">else</span>
+      out.value = falseFunction()
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  self:addValueBinding(out)
+  <span class="keyword">if</span> Binding.isValue(ifTrue) <span class="keyword">then</span>
+    ifTrue:addValueBinding(out)
+    <span class="global">table</span>.insert(boundto, ifTrue)
+  <span class="keyword">end</span>
+  <span class="keyword">if</span> Binding.isValue(ifFalse) <span class="keyword">then</span>
+    ifFalse:addValueBinding(out)
+    <span class="global">table</span>.insert(boundto, ifFalse)
+  <span class="keyword">end</span>
+  out.boundto = boundto
+  <span class="keyword">return</span> out
+<span class="keyword">end</span>
+Binding.THEN = Binding.valueTable.THEN
+
+<span class="comment">--- @type end
+</span></pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-23 04:51:10 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
