@@ -282,7 +282,7 @@ Binding.proxyTable = {
       if listeners and listeners[k] then
         local keyListeners = listeners[k]
         for _,keyListener in ipairs(keyListeners) do
-          new = keyListener(instance, k, old, new) or new
+          new = keyListener(t, k, old, new) or new
         end
       end
       local bindings = instance.bindings
@@ -1868,6 +1868,51 @@ function List:addItem(item)
   return item, index
 end
 
+function List:removeItem(item)
+  if type(item) == "number" then -- Remove by index
+    local removed = table.remove(self.items, item)
+    if not removed then
+      return nil, -1
+    end
+    self:remove(removed)
+    self:positionItems()
+    if self.bottomIndex == nil then
+      self:scroll(true)
+    end
+    return removed, item
+  else -- Remove by item
+    local index = PtUtil.removeObject(self.items, item)
+    if index == -1 then
+      return nil, -1
+    end
+    self:remove(item)
+    self:positionItems()
+    if self.bottomIndex == nil then
+      self:scroll(true)
+    end
+    return item, index
+  end
+end
+
+function List:clearItems()
+  for index,item in ripairs(self.items) do
+    self:removeItem(index)
+  end
+end
+
+function List:getItem(index)
+  return self.items[index]
+end
+
+function List:indexOfItem(item)
+  for index,obj in ipairs(self.items) do
+    if item == obj then
+      return index
+    end
+  end
+  return -1
+end
+
 function List:positionItems()
   local items = self.items
   local padding = self.itemPadding
@@ -1930,6 +1975,8 @@ function List:updateScrollBar()
   if bottomIndex == nil and topIndex == 1 then
     self.scrollBarLength = maxLength
     self.scrollBarOffset = 0
+    self.scrollBarTick = 0
+    self.scrollBarTickCount = 0
   else
     local items = self.items
     local numItems -- Number of displayed items

@@ -6,17 +6,33 @@ function init()
   GUI.add(testbutton)
 
   local list = List(30, 30, 100, 100, 12)
+  local selected = Binding.proxy({item = nil})
   GUI.add(list)
-  for i=1,20,1 do
+  for i=1,100,1 do
     local item = list:emplaceItem("Item " .. i)
+    if i == 1 then
+      selected.item = item
+    end
     local listener = 
       function(t, k, old, new)
         if new then
-          world.logInfo("%s has been selected.", t.text)
+          selected.item = t
         end
       end
     item:addListener("selected", listener)
   end
+
+  local removeButton = TextButton(150, 60, 100, 12, "Remove")
+  removeButton:bind("text", Binding.concat("Remove ",
+                                           Binding(selected, {"item", "text"})))
+  removeButton.onClick = function()
+    list:removeItem(selected.item)
+    local item = list:getItem(1)
+    if item then
+      item:select()
+    end
+  end
+  GUI.add(removeButton)
 end
 
 function testButtonClick(button, mouseButton)

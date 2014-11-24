@@ -145,6 +145,62 @@ function List:addItem(item)
   return item, index
 end
 
+--- Removes an item from this list.
+-- @param item Either the item to remove, or the index of the item to remove.
+-- @return The removed item, or nil if the item was not removed.
+-- @return The index of the removed item, or -1 if the item was not removed.
+function List:removeItem(item)
+  if type(item) == "number" then -- Remove by index
+    local removed = table.remove(self.items, item)
+    if not removed then
+      return nil, -1
+    end
+    self:remove(removed)
+    self:positionItems()
+    if self.bottomIndex == nil then
+      self:scroll(true)
+    end
+    return removed, item
+  else -- Remove by item
+    local index = PtUtil.removeObject(self.items, item)
+    if index == -1 then
+      return nil, -1
+    end
+    self:remove(item)
+    self:positionItems()
+    if self.bottomIndex == nil then
+      self:scroll(true)
+    end
+    return item, index
+  end
+end
+
+--- Removes all items from this list.
+function List:clearItems()
+  for index,item in ripairs(self.items) do
+    self:removeItem(index)
+  end
+end
+
+--- Retrieve the item at a given index.
+-- @param index The index to retrieve the item from.
+-- @return The item at the given index, or nil if there is none.
+function List:getItem(index)
+  return self.items[index]
+end
+
+--- Get the index of the given item.
+-- @param item The item to find the index of.
+-- @return The index of the item, or -1 if the item was not found.
+function List:indexOfItem(item)
+  for index,obj in ipairs(self.items) do
+    if item == obj then
+      return index
+    end
+  end
+  return -1
+end
+
 -- Positions and clips items
 function List:positionItems()
   local items = self.items
@@ -209,6 +265,8 @@ function List:updateScrollBar()
   if bottomIndex == nil and topIndex == 1 then
     self.scrollBarLength = maxLength
     self.scrollBarOffset = 0
+    self.scrollBarTick = 0
+    self.scrollBarTickCount = 0
   else
     local items = self.items
     local numItems -- Number of displayed items

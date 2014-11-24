@@ -43,7 +43,7 @@ Binding.proxyTable = {
       if listeners and listeners[k] then
         local keyListeners = listeners[k]
         for _,keyListener in ipairs(keyListeners) do
-          new = keyListener(instance, k, old, new) or new
+          new = keyListener(t, k, old, new) or new
         end
       end
       local bindings = instance.bindings
