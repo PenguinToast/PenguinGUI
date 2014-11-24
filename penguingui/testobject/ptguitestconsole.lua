@@ -6,10 +6,10 @@ function init()
   GUI.add(testbutton)
 
   -- Slider test
-  local slider = Slider(30, 100, 150, 10)
+  local slider = Slider(30, 150, 150, 10)
   GUI.add(slider)
   local sliderLabel = Label(40 + slider.width, slider.y, "0", 12)
-  sliderLabel:bind("text", Binding(slider, "percentage"):tostring())
+  sliderLabel:bind("text", Binding(slider, "value"):tostring())
   GUI.add(sliderLabel)
   
   -- List test

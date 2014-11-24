@@ -542,6 +542,13 @@ end
 
 Binding.proxyTable.bind = Binding.bind
 
+function Binding.bindBidirectional(t1, k1, t2, k2)
+  t1:bind(k1, Binding(t2, k2))
+  t2:bind(k2, Binding(t1, k1))
+end
+
+Binding.proxyTable.bindBidirectional = Binding.bindBidirectional
+
 function Binding.unbind(target, key)
   local binding = target.boundto[key]
   if binding then
@@ -949,16 +956,6 @@ Component.hasFocus = nil
 function Component:_init()
   self.children = {}
   self.offset = Binding.proxy({0, 0})
-  if self.listeners then
-    local listeners = {}
-    for key,keyListeners in pairs(self.listeners) do
-      listeners[key] = {}
-      for i,keyListener in ipairs(keyListeners) do
-        listeners[key][i] = keyListener
-      end
-    end
-    self.listeners = listeners
-  end
 end
 
 
@@ -1233,13 +1230,6 @@ end
 --------------------------------------------------------------------------------
 
 Label = class(Component)
-Label.listeners = {
-  text = {
-    function(t, k, old, new)
-      t:recalculateBounds()
-    end
-  }
-}
 
 
 function Label:_init(x, y, text, fontSize, fontColor)
@@ -1250,6 +1240,7 @@ function Label:_init(x, y, text, fontSize, fontColor)
   self.text = text
   self.x = x
   self.y = y
+  self:addListener("text", self.recalculateBounds)
   self:recalculateBounds()
 end
 
@@ -1274,15 +1265,6 @@ end
 --------------------------------------------------------------------------------
 
 TextButton = class(Button)
-TextButton.listeners = {
-  text = {
-    function(t, k, old, new)
-      local label = t.label
-      label.text = new
-      t:repositionLabel()
-    end
-  }
-}
 
 
 function TextButton:_init(x, y, width, height, text, fontColor)
@@ -1290,10 +1272,19 @@ function TextButton:_init(x, y, width, height, text, fontColor)
   local padding = 2
   local fontSize = height - padding * 2
   local label = Label(0, padding, text, fontSize, fontColor)
+  self.text = text
   
   self.padding = padding
   self.label = label
   self:add(label)
+
+  self:addListener(
+    "text",
+    function(t, k, old, new)
+      t.label.text = new
+      t:repositionLabel()
+    end
+  )
 
   self:repositionLabel()
 end
@@ -2095,27 +2086,62 @@ end
 --------------------------------------------------------------------------------
 
 Slider = class(Component)
-Slider.lineColor = "#878787"
+Slider.lineColor = "#676767"
 Slider.lineSize = 2
 Slider.handleBorderColor = "#B1B1B1"
 Slider.handleBorderSize = 1
 Slider.handleColor = Slider.lineColor
+Slider.handleHoverColor = "#A0A0A0"
+Slider.handlePressedColor = "#C0C0C0"
 Slider.handleSize = 5
 
 
-function Slider:_init(x, y, width, height, vertical)
+function Slider:_init(x, y, width, height, max, step, vertical)
   Component._init(self)
   self.x = x
   self.y = y
   self.width = width
   self.height = height
+  self.mouseOver = false
+  self.max = max or 1
+  self.step = step
   self.vertical = vertical
-  self.percentage = 0
+  self.value = 0
 end
 
 
 function Slider:update(dt)
-  
+  if self.dragging then
+    if not GUI.mouseState[1] then
+      self.dragging = false
+    else
+      local mousePos = GUI.mousePosition
+      local slidableLength
+      if self.vertical then
+        
+      else
+
+      end
+    end
+  end
+  if self.moving ~= nil then
+    if not GUI.mouseState[1] then
+      self.moving = nil
+    else
+      local step = self.step
+      local direction = self.moving
+      local max = self.max
+      if not step then
+        step = max / 100
+      end
+      local value = self.value
+      if direction then
+        self.value = math.min(value + step, max)
+      else
+        self.value = math.max(value - step, 0)
+      end
+    end
+  end
 end
 
 function Slider:draw(dt)
@@ -2124,15 +2150,24 @@ function Slider:draw(dt)
   local w = self.width
   local h = self.height
 
-  local percentage = self.percentage
+  local lineSize = self.lineSize
+  local lineColor = self.lineColor
+  local percentage = self.value / self.max
   local handleBorderSize = self.handleBorderSize
   local handleSize = self.handleSize
+  local slidableLength
   local handleBorderRect
   local handleRect
   if self.vertical then
     PtUtil.drawLine({startX + w / 2, startY},
-      {startX + w / 2, startY + h}, self.lineColor, self.lineSize)
-    local sliderY = startY + percentage * (h - handleSize)
+      {startX + w / 2, startY + h}, lineColor, lineSize)
+    PtUtil.drawLine({startX, startY + handleSize / 2}
+      , {startX + w, startY + handleSize / 2}, lineColor, lineSize)
+    PtUtil.drawLine({startX, startY + h - handleSize / 2}
+      , {startX + w, startY + h - handleSize / 2}, lineColor, lineSize)
+      
+    slidableLength = h - lineSize * 2 - handleSize
+    local sliderY = startY + lineSize + percentage * slidableLength
     handleBorderRect = {startX, sliderY, startX + w, sliderY + handleSize}
     handleRect = {startX + handleBorderSize, sliderY + handleBorderSize
                   , startX + w - handleBorderSize
@@ -2140,14 +2175,81 @@ function Slider:draw(dt)
   else
     PtUtil.drawLine({startX, startY + h / 2},
       {startX + w, startY + h / 2}, self.lineColor, self.lineSize)
-    local sliderX = startX + percentage * (w - handleSize)
+    PtUtil.drawLine({startX + lineSize / 2, startY},
+      {startX + lineSize / 2, startY + h}, lineColor, lineSize)
+    PtUtil.drawLine({startX + w - lineSize / 2, startY},
+      {startX + w - lineSize / 2, startY + h}, lineColor, lineSize)
+    
+    slidableLength = w - lineSize * 2 - handleSize
+    local sliderX = startX + lineSize + percentage * slidableLength
     handleBorderRect = {sliderX, startY, sliderX + handleSize, startY + h}
     handleRect = {sliderX + handleBorderSize, startY + handleBorderSize
                   , sliderX + handleSize - handleBorderSize
                   , startY + h - handleBorderSize}
   end
   PtUtil.drawRect(handleBorderRect, self.handleBorderColor, handleBorderSize)
-  PtUtil.fillRect(handleRect, self.handleColor)
+  local handleColor
+  if self.dragging then
+    handleColor = self.handlePressedColor
+  elseif self.mouseOver then
+    handleColor = self.handleHoverColor
+  else
+    handleColor = self.handleColor
+  end
+  PtUtil.fillRect(handleRect, handleColor)
 end
 
+function Slider:clickEvent(position, button, pressed)
+  if button == 1 then -- Only react to LMB
+    local startX = self.x + self.offset[1]
+    local startY = self.y + self.offset[2]
+    local w = self.width
+    local h = self.height
 
+    local lineSize = self.lineSize
+    local handleSize = self.handleSize
+    local percentage = self.value / self.max
+    local handleX
+    local handleY
+    local handleWidth
+    local handleHeight
+    if self.vertical then
+      local slidableLength = h - lineSize * 2 - handleSize
+      handleX = startX
+      handleY = startY + lineSize + percentage * slidableLength
+      handleWidth = w
+      handleHeight = handleSize
+    else
+      local slidableLength = w - lineSize * 2 - handleSize
+      handleX = startX + lineSize + percentage * slidableLength
+      handleWidth = handleSize
+      handleHeight = h
+    end
+    if position[1] >= handleX and position[1] <= handleX + handleWidth
+      and position[2] >= handleY and position[2] <= handleY + handleHeight
+    then
+      local dragOffset
+      if self.vertical then
+        dragOffset = position[2] - handleY
+      else
+        dragOffset = position[1] - handleX
+      end
+      self.dragOffset = dragOffset
+      self.dragging = true
+    else
+      if self.vertical then
+        if position[2] < barY then
+          self.moving = false
+        else
+          self.moving = true
+        end
+      else
+        if position[1] < barX then
+          self.moving = false
+        else
+          self.moving = true
+        end
+      end
+    end
+  end
+end

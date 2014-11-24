@@ -4,13 +4,6 @@
 -- -- Create a label with the text "Hello"
 -- local label = Label(0, 0, "Hello")
 Label = class(Component)
-Label.listeners = {
-  text = {
-    function(t, k, old, new)
-      t:recalculateBounds()
-    end
-  }
-}
 
 --- Constructor
 -- @section
@@ -31,6 +24,7 @@ function Label:_init(x, y, text, fontSize, fontColor)
   self.text = text
   self.x = x
   self.y = y
+  self:addListener("text", self.recalculateBounds)
   self:recalculateBounds()
 end
 

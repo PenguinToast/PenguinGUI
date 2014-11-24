@@ -62,16 +62,6 @@ Component.hasFocus = nil
 function Component:_init()
   self.children = {}
   self.offset = Binding.proxy({0, 0})
-  if self.listeners then
-    local listeners = {}
-    for key,keyListeners in pairs(self.listeners) do
-      listeners[key] = {}
-      for i,keyListener in ipairs(keyListeners) do
-        listeners[key][i] = keyListener
-      end
-    end
-    self.listeners = listeners
-  end
 end
 
 --- @section end

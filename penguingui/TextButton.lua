@@ -4,15 +4,6 @@
 -- -- Create a text button with the text "Hello"
 -- local button = TextButton(0, 0, 100, 16, "Hello")
 TextButton = class(Button)
-TextButton.listeners = {
-  text = {
-    function(t, k, old, new)
-      local label = t.label
-      label.text = new
-      t:repositionLabel()
-    end
-  }
-}
 
 --- Constructor
 -- @section
@@ -31,10 +22,19 @@ function TextButton:_init(x, y, width, height, text, fontColor)
   local padding = 2
   local fontSize = height - padding * 2
   local label = Label(0, padding, text, fontSize, fontColor)
+  self.text = text
   
   self.padding = padding
   self.label = label
   self:add(label)
+
+  self:addListener(
+    "text",
+    function(t, k, old, new)
+      t.label.text = new
+      t:repositionLabel()
+    end
+  )
 
   self:repositionLabel()
 end

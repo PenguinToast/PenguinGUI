@@ -335,7 +335,7 @@ end
 
 --- @type end
 
---- Binds the key in the specified table to the 10 given value
+--- Binds the key in the specified table to the given value
 --
 -- @param target The table where the key to be bound is.
 -- @param key The key to be bound.
@@ -376,6 +376,20 @@ function Binding.bind(target, key, value)
 end
 
 Binding.proxyTable.bind = Binding.bind
+
+--- Binds the key in the specified table to the key in the other table, and
+-- vice versa.
+--
+-- @param t1 The first table where the key to be bound is.
+-- @param k1 The key in the first table to be bound.
+-- @param t2 The second table where the key to be bound is.
+-- @param k2 The key in the second table to be bound.
+function Binding.bindBidirectional(t1, k1, t2, k2)
+  t1:bind(k1, Binding(t2, k2))
+  t2:bind(k2, Binding(t1, k1))
+end
+
+Binding.proxyTable.bindBidirectional = Binding.bindBidirectional
 
 --- Removes the binding on the given key in the given target.
 --

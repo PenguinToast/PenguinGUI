@@ -1,4 +1,4 @@
-local inspect ={
+inspect ={
   _VERSION = 'inspect.lua 3.0.0',
   _URL     = 'http://github.com/kikito/inspect.lua',
   _DESCRIPTION = 'human-readable representations of tables',
@@ -326,5 +326,5 @@ end
 
 setmetatable(inspect, { __call = function(_, ...) return inspect.inspect(...) end })
 
-return inspect
+-- return inspect
 
