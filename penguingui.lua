@@ -26,6 +26,7 @@ function PtUtil.library()
     "/penguingui/RadioButton.lua",
     "/penguingui/TextRadioButton.lua",
     "/penguingui/List.lua",
+    "/penguingui/Slider.lua",
     "/lib/profilerapi.lua",
     "/lib/inspect.lua"
   }
@@ -2088,3 +2089,65 @@ function List:clickEvent(position, button, pressed)
     end
   end
 end
+
+--------------------------------------------------------------------------------
+-- Slider.lua
+--------------------------------------------------------------------------------
+
+Slider = class(Component)
+Slider.lineColor = "#878787"
+Slider.lineSize = 2
+Slider.handleBorderColor = "#B1B1B1"
+Slider.handleBorderSize = 1
+Slider.handleColor = Slider.lineColor
+Slider.handleSize = 5
+
+
+function Slider:_init(x, y, width, height, vertical)
+  Component._init(self)
+  self.x = x
+  self.y = y
+  self.width = width
+  self.height = height
+  self.vertical = vertical
+  self.percentage = 0
+end
+
+
+function Slider:update(dt)
+  
+end
+
+function Slider:draw(dt)
+  local startX = self.x + self.offset[1]
+  local startY = self.y + self.offset[2]
+  local w = self.width
+  local h = self.height
+
+  local percentage = self.percentage
+  local handleBorderSize = self.handleBorderSize
+  local handleSize = self.handleSize
+  local handleBorderRect
+  local handleRect
+  if self.vertical then
+    PtUtil.drawLine({startX + w / 2, startY},
+      {startX + w / 2, startY + h}, self.lineColor, self.lineSize)
+    local sliderY = startY + percentage * (h - handleSize)
+    handleBorderRect = {startX, sliderY, startX + w, sliderY + handleSize}
+    handleRect = {startX + handleBorderSize, sliderY + handleBorderSize
+                  , startX + w - handleBorderSize
+                  , sliderY + handleSize - handleBorderSize}
+  else
+    PtUtil.drawLine({startX, startY + h / 2},
+      {startX + w, startY + h / 2}, self.lineColor, self.lineSize)
+    local sliderX = startX + percentage * (w - handleSize)
+    handleBorderRect = {sliderX, startY, sliderX + handleSize, startY + h}
+    handleRect = {sliderX + handleBorderSize, startY + handleBorderSize
+                  , sliderX + handleSize - handleBorderSize
+                  , startY + h - handleBorderSize}
+  end
+  PtUtil.drawRect(handleBorderRect, self.handleBorderColor, handleBorderSize)
+  PtUtil.fillRect(handleRect, self.handleColor)
+end
+
+

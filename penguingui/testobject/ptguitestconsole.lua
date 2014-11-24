@@ -5,10 +5,18 @@ function init()
   testbutton.onClick = testButtonClick
   GUI.add(testbutton)
 
+  -- Slider test
+  local slider = Slider(30, 100, 150, 10)
+  GUI.add(slider)
+  local sliderLabel = Label(40 + slider.width, slider.y, "0", 12)
+  sliderLabel:bind("text", Binding(slider, "percentage"):tostring())
+  GUI.add(sliderLabel)
+  
+  -- List test
   local list = List(30, 30, 100, 100, 12)
   local selected = Binding.proxy({item = nil})
   GUI.add(list)
-  for i=1,100,1 do
+  for i=1,20,1 do
     local item = list:emplaceItem("Item " .. i)
     if i == 1 then
       selected.item = item
