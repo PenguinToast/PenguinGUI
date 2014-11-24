@@ -34,17 +34,11 @@ function List:_init(x, y, width, height, itemSize, itemFactory)
   self.itemSize = itemSize
   self.itemFactory = itemFactory or
     function(size, text)
-      if self.horizontal then
-        return TextRadioButton(0, 0, size, height
-                                 - (self.borderSize * 2
-                                      + self.itemPadding * 2), text)
-      else
-        return TextRadioButton(0, 0, width
-                                 - (self.borderSize * 2
-                                      + self.itemPadding * 2
-                                      + self.scrollBarSize + 2),
-                               size, text)
-      end
+      return TextRadioButton(0, 0, width
+                               - (self.borderSize * 2
+                                    + self.itemPadding * 2
+                                    + self.scrollBarSize + 2),
+                             size, text)
     end
   self.items = {}
   self.topIndex = 1
@@ -56,6 +50,36 @@ end
 
 function List:update(dt)
   -- Handle scroll bar dragging
+  if self.barDragging then
+    if not GUI.mouseState[1] or self.scrollBarTickCount == 0 then
+      -- Stop dragging
+      self.barDragging = false
+    else
+      local mousePos = GUI.mousePosition
+      local dragPos
+      local dragOffset = self.barDragOffset
+      if self.horizontal then
+        dragPos = (mousePos[1] - dragOffset) - self.x + self.offset[1]
+          + self.borderSize + 0.5
+      else
+        dragPos = self.y + self.offset[2] + self.height - self.borderSize
+          - 0.5 - (dragOffset + mousePos[2])
+      end
+      local tickSize = self.scrollBarTick
+      local newTop = math.floor(dragPos / tickSize + 0.5)
+      newTop = math.max(newTop, 0)
+      newTop = math.min(newTop, self.scrollBarTickCount)
+      self.topIndex = newTop + 1
+      self:positionItems()
+    end
+  end
+  if self.barMoving ~= nil then
+    if not GUI.mouseState[1] then
+      self.barMoving = nil
+    else
+      self:scroll(self.barMoving)
+    end
+  end
 end
 
 function List:draw(dt)
@@ -187,14 +211,20 @@ function List:updateScrollBar()
     self.scrollBarOffset = 0
   else
     local items = self.items
-    local numItems
+    local numItems -- Number of displayed items
     if bottomIndex == nil then
       numItems = #items + 1 - topIndex
     else
       numItems = bottomIndex - topIndex
     end
-    self.scrollBarLength = maxLength * (numItems / #items)
-    self.scrollBarOffset = (topIndex - 1) * (maxLength / #items)
+    local barLength = math.max(
+      numItems * maxLength / #items,
+      self.scrollBarSize)
+    local barTick = (maxLength - barLength) / math.max((#items - numItems), 1)
+    self.scrollBarLength = barLength
+    self.scrollBarOffset = (topIndex - 1) * barTick
+    self.scrollBarTick = barTick
+    self.scrollBarTickCount = #items - numItems
   end
 end
 
@@ -213,7 +243,7 @@ function List:scroll(up)
 end
 
 function List:clickEvent(position, button, pressed)
-  if button >= 4 then
+  if button >= 4 then -- scroll
     if pressed then
       if button == 4 then -- Scroll up
         self:scroll(true)
@@ -222,5 +252,74 @@ function List:clickEvent(position, button, pressed)
       end
     end
     return true
+  elseif button == 1 then -- scrollbar
+    local startX = self.x + self.offset[1]
+    local startY = self.y + self.offset[2]
+    local w = self.width
+    local h = self.height
+    local borderSize = self.borderSize
+    local scrollBarSize = self.scrollBarSize
+    local scrollBarLength = self.scrollBarLength
+    
+    local scrollX
+    local scrollY
+    local scrollWidth
+    local scrollHeight
+    if self.horizontal then
+      scrollX = startX + borderSize
+      scrollY = startY + borderSize
+      scrollWidth = w - (borderSize * 2)
+      scrollHeight = scrollBarSize + 1
+    else
+      scrollX = startX + w - borderSize - scrollBarSize - 1
+      scrollY = startY + borderSize
+      scrollWidth = scrollBarSize + 1
+      scrollHeight = h - (borderSize * 2)
+    end
+    if position[1] >= scrollX and position[1] <= scrollX + scrollWidth
+      and position[2] >= scrollY and position[2] <= scrollY + scrollHeight
+    then -- In scroll bar area
+      local barX
+      local barY
+      local barWidth
+      local barHeight
+      if self.horizontal then
+        barX = scrollX + self.scrollBarOffset
+        barY = scrollY
+        barWidth = scrollBarLength + 1
+        barHeight = scrollHeight
+      else
+        barX = scrollX
+        barY = scrollY + scrollHeight - self.scrollBarOffset - (scrollBarLength + 1)
+        barWidth = scrollWidth
+        barHeight = scrollBarLength + 1
+      end
+      if position[1] >= barX and position[1] <= barX + barWidth
+        and position[2] >= barY and position[2] <= barY + barHeight
+      then -- In scroll bar
+        local dragOffset
+        if self.horizontal then
+          dragOffset = position[1] - (barX + 0.5)
+        else
+          dragOffset = (barY + barHeight - 0.5) - position[2]
+        end
+        self.barDragOffset = dragOffset
+        self.barDragging = true
+      else -- In empty space
+        if self.horizontal then
+          if position[1] < barX then
+            self.barMoving = true
+          else
+            self.barMoving = false
+          end
+        else
+          if position[2] > barY + barHeight then
+            self.barMoving = true
+          else
+            self.barMoving = false
+          end
+        end
+      end
+    end
   end
 end
