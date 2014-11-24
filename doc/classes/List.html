@@ -1,0 +1,447 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>PenguinGUI Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-56315532-1', 'auto');
+      ga('require', 'displayfeatures');
+      ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>PenguinGUI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Fields">Fields</a></li>
+<li><a href="#Constructor">Constructor </a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Button.html">Button</a></li>
+  <li><a href="../classes/CheckBox.html">CheckBox</a></li>
+  <li><a href="../classes/Component.html">Component</a></li>
+  <li><a href="../classes/Frame.html">Frame</a></li>
+  <li><a href="../classes/Image.html">Image</a></li>
+  <li><a href="../classes/Label.html">Label</a></li>
+  <li><strong>List</strong></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
+  <li><a href="../classes/RadioButton.html">RadioButton</a></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
+  <li><a href="../classes/TextField.html">TextField</a></li>
+  <li><a href="../classes/TextRadioButton.html">TextRadioButton</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/Binding.html">Binding</a></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>List</code></h1>
+<p>A scrollable list</p>
+<p></p>
+
+
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#List.backgroundColor">List.backgroundColor</a></td>
+	<td class="summary">The background color of this list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List.borderColor">List.borderColor</a></td>
+	<td class="summary">The border color of this list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List.borderSize">List.borderSize</a></td>
+	<td class="summary">The thickness of this list's border.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List.itemPadding">List.itemPadding</a></td>
+	<td class="summary">Padding in between items.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List.scrollBarSize">List.scrollBarSize</a></td>
+	<td class="summary">Thickness of the scroll bar</td>
+	</tr>
+</table>
+<h2><a href="#Constructor">Constructor </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#List:_init">List:_init (x, y, width, height, itemSize[, itemFactory])</a></td>
+	<td class="summary">Constructs a new List.</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#List:addItem">List:addItem (item)</a></td>
+	<td class="summary">Adds an item to this list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List:clearItems">List:clearItems ()</a></td>
+	<td class="summary">Removes all items from this list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List:emplaceItem">List:emplaceItem (...)</a></td>
+	<td class="summary">Constructs and adds an item to this list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List:getItem">List:getItem (index)</a></td>
+	<td class="summary">Retrieve the item at a given index.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List:indexOfItem">List:indexOfItem (item)</a></td>
+	<td class="summary">Get the index of the given item.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List:removeItem">List:removeItem (item)</a></td>
+	<td class="summary">Removes an item from this list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List:scroll">List:scroll (up)</a></td>
+	<td class="summary">Scroll the list one item.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "List.backgroundColor"></a>
+    <strong>List.backgroundColor</strong>
+    </dt>
+    <dd>
+    The background color of this list.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "List.borderColor"></a>
+    <strong>List.borderColor</strong>
+    </dt>
+    <dd>
+    The border color of this list.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "List.borderSize"></a>
+    <strong>List.borderSize</strong>
+    </dt>
+    <dd>
+    The thickness of this list's border.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "List.itemPadding"></a>
+    <strong>List.itemPadding</strong>
+    </dt>
+    <dd>
+    Padding in between items.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "List.scrollBarSize"></a>
+    <strong>List.scrollBarSize</strong>
+    </dt>
+    <dd>
+    Thickness of the scroll bar
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2><a name="Constructor"></a>Constructor </h2>
+
+
+    <dl class="function">
+    <dt>
+    <a name = "List:_init"></a>
+    <strong>List:_init (x, y, width, height, itemSize[, itemFactory])</strong>
+    </dt>
+    <dd>
+    Constructs a new List.
+ New lists are by default vertical.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+         The x coordinate of the new component, relative to its parent.
+        </li>
+        <li><span class="parameter">y</span>
+         The y coordinate of the new component, relative to its parent.
+        </li>
+        <li><span class="parameter">width</span>
+         The width of the new component.
+        </li>
+        <li><span class="parameter">height</span>
+         The height of the new component.
+        </li>
+        <li><span class="parameter">itemSize</span>
+         The height(if vertical) or width (if horizontal) of each
+      list item.
+        </li>
+        <li><span class="parameter">itemFactory</span>
+         A function to return a new item. The first argument
+      should be item size. Defaults to creating TextRadioButtons.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "List:addItem"></a>
+    <strong>List:addItem (item)</strong>
+    </dt>
+    <dd>
+    Adds an item to this list.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">item</span>
+         The item to add to this list.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+        The item added to this list.</li>
+        <li>
+        The list index of the added item.</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "List:clearItems"></a>
+    <strong>List:clearItems ()</strong>
+    </dt>
+    <dd>
+    Removes all items from this list.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "List:emplaceItem"></a>
+    <strong>List:emplaceItem (...)</strong>
+    </dt>
+    <dd>
+    Constructs and adds an item to this list.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         Arguments to pass to the item constructor.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+        The newly created list item.</li>
+        <li>
+        The list index of the new list item.</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "List:getItem"></a>
+    <strong>List:getItem (index)</strong>
+    </dt>
+    <dd>
+    Retrieve the item at a given index.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">index</span>
+         The index to retrieve the item from.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        The item at the given index, or nil if there is none.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "List:indexOfItem"></a>
+    <strong>List:indexOfItem (item)</strong>
+    </dt>
+    <dd>
+    Get the index of the given item.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">item</span>
+         The item to find the index of.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        The index of the item, or -1 if the item was not found.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "List:removeItem"></a>
+    <strong>List:removeItem (item)</strong>
+    </dt>
+    <dd>
+    Removes an item from this list.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">item</span>
+         Either the item to remove, or the index of the item to remove.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+        The removed item, or nil if the item was not removed.</li>
+        <li>
+        The index of the removed item, or -1 if the item was not removed.</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "List:scroll"></a>
+    <strong>List:scroll (up)</strong>
+    </dt>
+    <dd>
+    Scroll the list one item.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">up</span>
+         Up or down.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2014-11-24 03:22:32 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

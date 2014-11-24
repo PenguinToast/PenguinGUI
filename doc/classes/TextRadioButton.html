@@ -57,11 +57,11 @@
   <li><a href="../classes/Image.html">Image</a></li>
   <li><a href="../classes/Label.html">Label</a></li>
   <li><a href="../classes/List.html">List</a></li>
-  <li><strong>Panel</strong></li>
+  <li><a href="../classes/Panel.html">Panel</a></li>
   <li><a href="../classes/RadioButton.html">RadioButton</a></li>
   <li><a href="../classes/TextButton.html">TextButton</a></li>
   <li><a href="../classes/TextField.html">TextField</a></li>
-  <li><a href="../classes/TextRadioButton.html">TextRadioButton</a></li>
+  <li><strong>TextRadioButton</strong></li>
 </ul>
 <h2>Modules</h2>
 <ul class="$(kind=='Topics' and '' or 'nowrap'">
@@ -74,22 +74,33 @@
 
 <div id="content">
 
-<h1>Class <code>Panel</code></h1>
-<p>A group of components, will hopefully eventually manage layouts (TODO).</p>
-<p></p>
+<h1>Class <code>TextRadioButton</code></h1>
+<p>A radio button with text.</p>
+<p>
+ Extends <a href="../classes/RadioButton.html#">RadioButton</a>, so all fields of <a href="../classes/RadioButton.html#">RadioButton</a> are inherited.</p>
     <h3>Usage:</h3>
     <ul>
         <pre class="example">
- -- Create an empty panel.
- local panel = Panel(0, 0)</pre>
+ -- Create a group of buttons that print when they are selected.
+ local group = Panel(0, 0)
+ local numButtons = 10
+ for i = 1, numButtons, 1 do
+   local button = TextRadioButton(0, i * 20, 60, 16, &quot;Button &quot; .. i)
+   button:addListener(&quot;selected&quot;, function(t, k, old, new)
+     if new then
+       print(t.text .. &quot; was selected&quot;)
+     end
+   end)
+   group:add(button)
+ end</pre>
     </ul>
 
 
 <h2><a href="#Constructor">Constructor </a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#Panel:_init">Panel:_init (x, y)</a></td>
-	<td class="summary">Constructs a Panel.</td>
+	<td class="name" nowrap><a href="#TextRadioButton:_init">TextRadioButton:_init (x, y, width, height, text)</a></td>
+	<td class="summary">Constructs a new TextRadioButton.</td>
 	</tr>
 </table>
 
@@ -102,12 +113,11 @@
 
     <dl class="function">
     <dt>
-    <a name = "Panel:_init"></a>
-    <strong>Panel:_init (x, y)</strong>
+    <a name = "TextRadioButton:_init"></a>
+    <strong>TextRadioButton:_init (x, y, width, height, text)</strong>
     </dt>
     <dd>
-    Constructs a Panel.
-
+    Constructs a new TextRadioButton.
 
 
     <h3>Parameters:</h3>
@@ -117,6 +127,15 @@
         </li>
         <li><span class="parameter">y</span>
          The y coordinate of the new component, relative to its parent.
+        </li>
+        <li><span class="parameter">width</span>
+         The width of the new component.
+        </li>
+        <li><span class="parameter">height</span>
+         The height of the new component.
+        </li>
+        <li><span class="parameter">text</span>
+         The text of this radio button.
         </li>
     </ul>
 
