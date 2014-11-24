@@ -1,5 +1,12 @@
 --- A scrollable list
 -- @classmod List
+-- @usage
+-- -- Create a list of 20 items
+-- local list = List(0, 0, 100, 100, 12)
+-- for i=1,20,1 do
+--   local item = list:emplaceItem("Item " .. i)
+--   item:addListener("selected", function() world.logInfo(item.text) end)
+-- end
 List = class(Component)
 --- The border color of this list.
 List.borderColor = "#545454"
