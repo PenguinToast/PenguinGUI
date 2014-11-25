@@ -30,8 +30,8 @@ List.scrollBarSize = 3
 -- @param height The height of the new component.
 -- @param itemSize The height(if vertical) or width (if horizontal) of each
 --      list item.
--- @param[opt] itemFactory A function to return a new item. The first argument
---      should be item size. Defaults to creating TextRadioButtons.
+-- @param[opt] itemFactory A function to return a new item. The arguments should
+--      be x, y, width, height. Defaults to creating TextRadioButtons.
 -- @param[opt=false] horizontal If true, this list will be horizontal.
 function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
   Component._init(self)
@@ -40,14 +40,7 @@ function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
   self.width = width
   self.height = height
   self.itemSize = itemSize
-  self.itemFactory = itemFactory or
-    function(size, text)
-      return TextRadioButton(0, 0, width
-                               - (self.borderSize * 2
-                                    + self.itemPadding * 2
-                                    + self.scrollBarSize + 2),
-                             size, text)
-    end
+  self.itemFactory = itemFactory or TextRadioButton
   self.items = {}
   self.topIndex = 1
   self.bottomIndex = 1
@@ -115,7 +108,21 @@ end
 -- @return The newly created list item.
 -- @return The list index of the new list item.
 function List:emplaceItem(...)
-  return self:addItem(self.itemFactory(self.itemSize, ...))
+  local width
+  local height
+  if self.horizontal then
+    width = self.itemSize
+    height = self.height - (self.borderSize * 2
+                              + self.itemPadding * 2
+                              + self.scrollBarSize + 2)
+  else
+    width = self.width - (self.borderSize * 2
+                            + self.itemPadding * 2
+                            + self.scrollBarSize + 2)
+    height = self.itemSize
+  end
+  item = self.itemFactory(0, 0, width, height, ...)
+  return self:addItem(item)
 end
 
 --- Adds an item to this list.

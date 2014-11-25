@@ -859,7 +859,7 @@ end
 function GUI.remove(component)
   for index,comp in ripairs(GUI.components) do
     if (comp == component) then
-      table.remove(GUI.components, index)
+      component:removeSelf()
       return true
     end
   end
@@ -975,11 +975,26 @@ function Component:remove(child)
   local children = self.children
   for index,comp in ripairs(children) do
     if (comp == child) then
-      table.remove(children, index)
+      child:removeSelf()
       return true
     end
   end
   return false
+end
+
+function Component:removeSelf()
+  local siblings
+  if self.parent then
+    siblings = self.parent.children
+  else
+    siblings = GUI.components
+  end
+  for index,sibling in ripairs(siblings) do
+    if sibling == self then
+      table.remove(siblings, index)
+      return
+    end
+  end
 end
 
 function Component:pack(padding)
@@ -1703,6 +1718,25 @@ function RadioButton:setParent(parent)
   self.selected = true
 end
 
+function RadioButton:removeSelf()
+  CheckBox.removeSelf(self)
+  if self.selected then
+    local siblings
+    if self.parent == nil then
+      siblings = GUI.components
+    else
+      siblings = self.parent.children
+    end
+
+    for _,sibling in ipairs(siblings) do
+      if sibling.is_a[RadioButton] then
+        sibling:select()
+        return
+      end
+    end
+  end
+end
+
 function RadioButton:clickEvent(position, button, pressed)
   if button <= 3 then
     if not pressed and self.pressed then
@@ -1992,14 +2026,7 @@ function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
   self.width = width
   self.height = height
   self.itemSize = itemSize
-  self.itemFactory = itemFactory or
-    function(size, text)
-      return TextRadioButton(0, 0, width
-                               - (self.borderSize * 2
-                                    + self.itemPadding * 2
-                                    + self.scrollBarSize + 2),
-                             size, text)
-    end
+  self.itemFactory = itemFactory or TextRadioButton
   self.items = {}
   self.topIndex = 1
   self.bottomIndex = 1
@@ -2060,7 +2087,21 @@ function List:draw(dt)
 end
 
 function List:emplaceItem(...)
-  return self:addItem(self.itemFactory(self.itemSize, ...))
+  local width
+  local height
+  if self.horizontal then
+    width = self.itemSize
+    height = self.height - (self.borderSize * 2
+                              + self.itemPadding * 2
+                              + self.scrollBarSize + 2)
+  else
+    width = self.width - (self.borderSize * 2
+                            + self.itemPadding * 2
+                            + self.scrollBarSize + 2)
+    height = self.itemSize
+  end
+  item = self.itemFactory(0, 0, width, height, ...)
+  return self:addItem(item)
 end
 
 function List:addItem(item)

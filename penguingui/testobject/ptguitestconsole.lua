@@ -76,10 +76,6 @@ function listTest(panel)
                                            Binding(selected, {"item", "text"})))
   removeButton.onClick = function()
     list:removeItem(selected.item)
-    local item = list:getItem(1)
-    if item then
-      item:select()
-    end
   end
   panel:add(removeButton)
 end

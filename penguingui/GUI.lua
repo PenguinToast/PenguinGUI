@@ -48,7 +48,7 @@ end
 function GUI.remove(component)
   for index,comp in ripairs(GUI.components) do
     if (comp == component) then
-      table.remove(GUI.components, index)
+      component:removeSelf()
       return true
     end
   end

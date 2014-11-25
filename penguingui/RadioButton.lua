@@ -83,6 +83,25 @@ function RadioButton:setParent(parent)
   self.selected = true
 end
 
+function RadioButton:removeSelf()
+  CheckBox.removeSelf(self)
+  if self.selected then
+    local siblings
+    if self.parent == nil then
+      siblings = GUI.components
+    else
+      siblings = self.parent.children
+    end
+
+    for _,sibling in ipairs(siblings) do
+      if sibling.is_a[RadioButton] then
+        sibling:select()
+        return
+      end
+    end
+  end
+end
+
 function RadioButton:clickEvent(position, button, pressed)
   if button <= 3 then
     if not pressed and self.pressed then

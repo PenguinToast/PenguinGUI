@@ -83,11 +83,27 @@ function Component:remove(child)
   local children = self.children
   for index,comp in ripairs(children) do
     if (comp == child) then
-      table.remove(children, index)
+      child:removeSelf()
       return true
     end
   end
   return false
+end
+
+--- Remove self from parent.
+function Component:removeSelf()
+  local siblings
+  if self.parent then
+    siblings = self.parent.children
+  else
+    siblings = GUI.components
+  end
+  for index,sibling in ripairs(siblings) do
+    if sibling == self then
+      table.remove(siblings, index)
+      return
+    end
+  end
 end
 
 --- Resizes this component around its children.
