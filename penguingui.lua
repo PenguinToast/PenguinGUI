@@ -2148,8 +2148,12 @@ function List:positionItems()
   end
   local past = false
   local itemCount = 0
+  local possibleItemCount = 1
   for i,item in ipairs(items) do
-    if i < topIndex or past or item.filtered then
+    if possibleItemCount < topIndex and not item.filtered then
+      item.visible = false
+      possibleItemCount = possibleItemCount + 1
+    elseif past or item.filtered then
       item.visible = false
     else
       itemCount = itemCount + 1
