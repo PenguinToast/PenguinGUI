@@ -1230,6 +1230,7 @@ end
 --------------------------------------------------------------------------------
 
 Label = class(Component)
+Label.text = nil
 
 
 function Label:_init(x, y, text, fontSize, fontColor)
@@ -1265,6 +1266,7 @@ end
 --------------------------------------------------------------------------------
 
 TextButton = class(Button)
+TextButton.text = nil
 
 
 function TextButton:_init(x, y, width, height, text, fontColor)
@@ -1700,15 +1702,7 @@ TextRadioButton = class(RadioButton)
 TextRadioButton.hoverColor = "#1F1F1F"
 TextRadioButton.pressedColor = "#454545"
 TextRadioButton.checkColor = "#343434"
-TextRadioButton.listeners = {
-  text = {
-    function(t, k, old, new)
-      local label = t.label
-      label.text = new
-      t:repositionLabel()
-    end
-  }
-}
+TextButton.text = nil
 
 
 function TextRadioButton:_init(x, y, width, height, text)
@@ -1725,6 +1719,13 @@ function TextRadioButton:_init(x, y, width, height, text)
   self:add(label)
 
   self.text = text
+  self:addListener(
+    "text",
+    function(t, k, old, new)
+      t.label.text = new
+      t:repositionLabel()
+    end
+  )
   self:repositionLabel()
 end
 
@@ -1757,6 +1758,8 @@ Slider.handleColor = Slider.lineColor
 Slider.handleHoverColor = "#A0A0A0"
 Slider.handlePressedColor = "#C0C0C0"
 Slider.handleSize = 5
+Slider.value = nil
+Slider.maxValue = nil
 
 
 function Slider:_init(x, y, width, height, max, step, vertical)

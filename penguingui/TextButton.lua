@@ -4,6 +4,8 @@
 -- -- Create a text button with the text "Hello"
 -- local button = TextButton(0, 0, 100, 16, "Hello")
 TextButton = class(Button)
+--- The text of the button.
+TextButton.text = nil
 
 --- Constructor
 -- @section

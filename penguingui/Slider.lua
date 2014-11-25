@@ -25,6 +25,10 @@ Slider.handleHoverColor = "#A0A0A0"
 Slider.handlePressedColor = "#C0C0C0"
 --- The size of the slider handle.
 Slider.handleSize = 5
+--- The current value of the slider.
+Slider.value = nil
+--- The maximum value of the slider.
+Slider.maxValue = nil
 
 --- Constructor
 -- @section

@@ -18,15 +18,8 @@ TextRadioButton = class(RadioButton)
 TextRadioButton.hoverColor = "#1F1F1F"
 TextRadioButton.pressedColor = "#454545"
 TextRadioButton.checkColor = "#343434"
-TextRadioButton.listeners = {
-  text = {
-    function(t, k, old, new)
-      local label = t.label
-      label.text = new
-      t:repositionLabel()
-    end
-  }
-}
+--- The text of the button.
+TextButton.text = nil
 
 --- Constructor
 -- @section
@@ -51,6 +44,13 @@ function TextRadioButton:_init(x, y, width, height, text)
   self:add(label)
 
   self.text = text
+  self:addListener(
+    "text",
+    function(t, k, old, new)
+      t.label.text = new
+      t:repositionLabel()
+    end
+  )
   self:repositionLabel()
 end
 

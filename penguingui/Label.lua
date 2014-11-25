@@ -4,6 +4,8 @@
 -- -- Create a label with the text "Hello"
 -- local label = Label(0, 0, "Hello")
 Label = class(Component)
+--- The text of the label.
+Label.text = nil
 
 --- Constructor
 -- @section
