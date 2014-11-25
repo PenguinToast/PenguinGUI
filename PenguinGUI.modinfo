@@ -5,7 +5,7 @@
     "dependencies": [],
     "metadata": {
         "author": "PenguinToast",
-        "version": "0.1",
-        "description": "Retained-mode GUI library in LUA for canvases"
+        "version": "0.2",
+        "description": "Extensible object-oriented GUI library in LUA for canvases"
     }
 }
