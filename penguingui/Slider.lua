@@ -169,6 +169,8 @@ function Slider:draw(dt)
   PtUtil.fillRect(handleRect, handleColor)
 end
 
+--- Get the percentage of max that this slider's value is at.
+-- @return A percentage, from 0 to 1 inclusive.
 function Slider:getPercentage()
   if self.maxValue == 0 then
     return 0
