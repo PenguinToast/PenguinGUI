@@ -32,7 +32,8 @@ List.scrollBarSize = 3
 --      list item.
 -- @param[opt] itemFactory A function to return a new item. The first argument
 --      should be item size. Defaults to creating TextRadioButtons.
-function List:_init(x, y, width, height, itemSize, itemFactory)
+-- @param[opt=false] horizontal If true, this list will be horizontal.
+function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
   Component._init(self)
   self.x = x
   self.y = y
@@ -51,42 +52,40 @@ function List:_init(x, y, width, height, itemSize, itemFactory)
   self.topIndex = 1
   self.bottomIndex = nil
   self.mouseOver = false
+
+  -- Create scrollbar
+  local borderSize = self.borderSize
+  local barSize = self.scrollBarSize
+  local slider
+  if horizontal then
+    slider = Slider(borderSize + 0.5, borderSize + 0.5
+                    , width - borderSize * 2 - 1, barSize, 0, 1, false)
+  else
+    slider = Slider(width - borderSize - barSize - 0.5
+                    , borderSize + 0.5, barSize
+                    , height - borderSize * 2 - 1, 0, 1, true)
+  end
+  slider.lineSize = 0
+  slider.handleBorderSize = 0
+  slider:addListener(
+    "value",
+    function(t, k, old, new)
+      local list = t.parent
+      if list.horizontal then
+        list.topIndex = new + 1
+      else
+        list.topIndex = t.maxValue - t.value + 1
+      end
+      list:positionItems()
+    end
+  )
+  self.slider = slider
+  self:add(slider)
 end
 
 --- @section end
 
 function List:update(dt)
-  -- Handle scroll bar dragging
-  if self.barDragging then
-    if not GUI.mouseState[1] or self.scrollBarTickCount == 0 then
-      -- Stop dragging
-      self.barDragging = false
-    else
-      local mousePos = GUI.mousePosition
-      local dragPos
-      local dragOffset = self.barDragOffset
-      if self.horizontal then
-        dragPos = (mousePos[1] - dragOffset) - self.x + self.offset[1]
-          + self.borderSize + 0.5
-      else
-        dragPos = self.y + self.offset[2] + self.height - self.borderSize
-          - 0.5 - (dragOffset + mousePos[2])
-      end
-      local tickSize = self.scrollBarTick
-      local newTop = math.floor(dragPos / tickSize + 0.5)
-      newTop = math.max(newTop, 0)
-      newTop = math.min(newTop, self.scrollBarTickCount)
-      self.topIndex = newTop + 1
-      self:positionItems()
-    end
-  end
-  if self.barMoving ~= nil then
-    if not GUI.mouseState[1] then
-      self.barMoving = nil
-    else
-      self:scroll(self.barMoving)
-    end
-  end
 end
 
 function List:draw(dt)
@@ -102,32 +101,14 @@ function List:draw(dt)
   PtUtil.drawRect(borderRect, borderColor, borderSize)
   PtUtil.fillRect(rect, self.backgroundColor)
 
-  -- Draw scroll bar
+  -- Draw scroll bar border
   local scrollBarSize = self.scrollBarSize
   if self.horizontal then
-    -- Start with border
     local lineY = startY + borderSize + scrollBarSize + 1.5
     PtUtil.drawLine({startX, lineY}, {startX + w, lineY}, borderColor, 1)
-    -- Now the bar
-    local scrollLeft = startX + borderSize + 0.5
-    local scrollY = startY + borderSize + 0.5
-    local scrollBarLength = self.scrollBarLength
-    local scrollX = scrollTop + self.scrollBarOffset
-    PtUtil.fillRect({scrollX, scrollY,
-                     scrollX + scrollBarLength, scrollY + self.scrollBarSize},
-      borderColor)
   else
-    -- Start with border
     local lineX = startX + w - borderSize - scrollBarSize - 1.5
     PtUtil.drawLine({lineX, startY}, {lineX, startY + h}, borderColor, 1)
-    -- Now the bar
-    local scrollTop = startY + h - borderSize - 0.5
-    local scrollX = lineX + 1
-    local scrollBarLength = self.scrollBarLength
-    local scrollY = scrollTop - self.scrollBarOffset - scrollBarLength
-    PtUtil.fillRect({scrollX, scrollY,
-                     scrollX + self.scrollBarSize, scrollY + scrollBarLength},
-      borderColor)
   end
 end
 
@@ -261,19 +242,18 @@ end
 -- Calculate scroll bar stuff
 function List:updateScrollBar()
   local maxLength
+  local slider = self.slider
   local offset
   if self.horizontal then
-    maxLength = self.width - (self.borderSize * 2 + 1)
+    maxLength = slider.width
   else
-    maxLength = self.height - (self.borderSize * 2 + 1)
+    maxLength = slider.height
   end
   local topIndex = self.topIndex
   local bottomIndex = self.bottomIndex
   if bottomIndex == nil and topIndex == 1 then
-    self.scrollBarLength = maxLength
-    self.scrollBarOffset = 0
-    self.scrollBarTick = 0
-    self.scrollBarTickCount = 0
+    slider.handleSize = maxLength
+    slider.maxValue = 0
   else
     local items = self.items
     local numItems -- Number of displayed items
@@ -285,11 +265,13 @@ function List:updateScrollBar()
     local barLength = math.max(
       numItems * maxLength / #items,
       self.scrollBarSize)
-    local barTick = (maxLength - barLength) / math.max((#items - numItems), 1)
-    self.scrollBarLength = barLength
-    self.scrollBarOffset = (topIndex - 1) * barTick
-    self.scrollBarTick = barTick
-    self.scrollBarTickCount = #items - numItems
+    slider.handleSize = barLength
+    slider.maxValue = #items - numItems
+    if self.horizontal then
+      slider.value = topIndex - 1
+    else
+      slider.value = slider.maxValue - (topIndex - 1)
+    end
   end
 end
 
@@ -317,74 +299,5 @@ function List:clickEvent(position, button, pressed)
       end
     end
     return true
-  elseif button == 1 then -- scrollbar
-    local startX = self.x + self.offset[1]
-    local startY = self.y + self.offset[2]
-    local w = self.width
-    local h = self.height
-    local borderSize = self.borderSize
-    local scrollBarSize = self.scrollBarSize
-    local scrollBarLength = self.scrollBarLength
-    
-    local scrollX
-    local scrollY
-    local scrollWidth
-    local scrollHeight
-    if self.horizontal then
-      scrollX = startX + borderSize
-      scrollY = startY + borderSize
-      scrollWidth = w - (borderSize * 2)
-      scrollHeight = scrollBarSize + 1
-    else
-      scrollX = startX + w - borderSize - scrollBarSize - 1
-      scrollY = startY + borderSize
-      scrollWidth = scrollBarSize + 1
-      scrollHeight = h - (borderSize * 2)
-    end
-    if position[1] >= scrollX and position[1] <= scrollX + scrollWidth
-      and position[2] >= scrollY and position[2] <= scrollY + scrollHeight
-    then -- In scroll bar area
-      local barX
-      local barY
-      local barWidth
-      local barHeight
-      if self.horizontal then
-        barX = scrollX + self.scrollBarOffset
-        barY = scrollY
-        barWidth = scrollBarLength + 1
-        barHeight = scrollHeight
-      else
-        barX = scrollX
-        barY = scrollY + scrollHeight - self.scrollBarOffset - (scrollBarLength + 1)
-        barWidth = scrollWidth
-        barHeight = scrollBarLength + 1
-      end
-      if position[1] >= barX and position[1] <= barX + barWidth
-        and position[2] >= barY and position[2] <= barY + barHeight
-      then -- In scroll bar
-        local dragOffset
-        if self.horizontal then
-          dragOffset = position[1] - (barX + 0.5)
-        else
-          dragOffset = (barY + barHeight - 0.5) - position[2]
-        end
-        self.barDragOffset = dragOffset
-        self.barDragging = true
-      else -- In empty space
-        if self.horizontal then
-          if position[1] < barX then
-            self.barMoving = true
-          else
-            self.barMoving = false
-          end
-        else
-          if position[2] > barY + barHeight then
-            self.barMoving = true
-          else
-            self.barMoving = false
-          end
-        end
-      end
-    end
   end
 end

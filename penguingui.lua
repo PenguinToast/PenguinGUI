@@ -25,8 +25,8 @@ function PtUtil.library()
     "/penguingui/CheckBox.lua",
     "/penguingui/RadioButton.lua",
     "/penguingui/TextRadioButton.lua",
-    "/penguingui/List.lua",
     "/penguingui/Slider.lua",
+    "/penguingui/List.lua",
     "/lib/profilerapi.lua",
     "/lib/inspect.lua"
   }
@@ -1745,6 +1745,216 @@ function TextRadioButton:repositionLabel()
 end
 
 --------------------------------------------------------------------------------
+-- Slider.lua
+--------------------------------------------------------------------------------
+
+Slider = class(Component)
+Slider.lineColor = "#676767"
+Slider.lineSize = 2
+Slider.handleBorderColor = "#B1B1B1"
+Slider.handleBorderSize = 1
+Slider.handleColor = Slider.lineColor
+Slider.handleHoverColor = "#A0A0A0"
+Slider.handlePressedColor = "#C0C0C0"
+Slider.handleSize = 5
+
+
+function Slider:_init(x, y, width, height, max, step, vertical)
+  Component._init(self)
+  self.x = x
+  self.y = y
+  self.width = width
+  self.height = height
+  self.mouseOver = false
+  self.maxValue = max or 1
+  self.valueStep = step
+  self.vertical = vertical
+  self.value = 0
+  self:addListener(
+    "maxValue",
+    function(t, k, old, new)
+      if t.value > new then
+        t.value = new
+      end
+    end
+  )
+end
+
+
+function Slider:update(dt)
+  if self.dragging then
+    if not GUI.mouseState[1] then
+      self.dragging = false
+    else
+      local mousePos = GUI.mousePosition
+      local lineSize = self.lineSize
+      local max = self.maxValue
+      local step = self.valueStep
+      local sliderValue
+      if self.vertical then
+        sliderValue = (mousePos[2] - self.dragOffset
+                         - (self.y + self.offset[2] + lineSize)
+                      ) / (self.height - lineSize * 2 - self.handleSize) * max
+      else
+        sliderValue = (mousePos[1] - self.dragOffset
+                         - (self.x + self.offset[1] + lineSize)
+                      ) / (self.width - lineSize * 2 - self.handleSize) * max
+      end
+      if sliderValue ~= sliderValue then -- sliderValue is NaN
+        sliderValue = 0
+      end
+      sliderValue = math.max(sliderValue, 0)
+      sliderValue = math.min(sliderValue, max)
+      if step then
+        local stepFreq = 1 / step
+        sliderValue = math.floor(sliderValue * stepFreq + 0.5) / stepFreq
+      end
+      self.value = sliderValue
+    end
+  end
+  if self.moving ~= nil then
+    if not GUI.mouseState[1] then
+      self.moving = nil
+    else
+      local step = self.valueStep
+      local direction = self.moving
+      local max = self.maxValue
+      if not step then
+        step = max / 100
+      end
+      local value = self.value
+      if direction then
+        self.value = math.min(value + step, max)
+      else
+        self.value = math.max(value - step, 0)
+      end
+    end
+  end
+end
+
+function Slider:draw(dt)
+  local startX = self.x + self.offset[1]
+  local startY = self.y + self.offset[2]
+  local w = self.width
+  local h = self.height
+
+  local lineSize = self.lineSize
+  local lineColor = self.lineColor
+  local percentage = self:getPercentage()
+  local handleBorderSize = self.handleBorderSize
+  local handleSize = self.handleSize
+  local slidableLength
+  local handleBorderRect
+  local handleRect
+  if self.vertical then
+    PtUtil.drawLine({startX + w / 2, startY},
+      {startX + w / 2, startY + h}, lineColor, lineSize)
+    PtUtil.drawLine({startX, startY + lineSize / 2}
+      , {startX + w, startY + lineSize / 2}, lineColor, lineSize)
+    PtUtil.drawLine({startX, startY + h - lineSize / 2}
+      , {startX + w, startY + h - lineSize / 2}, lineColor, lineSize)
+      
+    slidableLength = h - lineSize * 2 - handleSize
+    local sliderY = startY + lineSize + percentage * slidableLength
+    handleBorderRect = {startX, sliderY, startX + w, sliderY + handleSize}
+    handleRect = {startX + handleBorderSize, sliderY + handleBorderSize
+                  , startX + w - handleBorderSize
+                  , sliderY + handleSize - handleBorderSize}
+  else
+    PtUtil.drawLine({startX, startY + h / 2},
+      {startX + w, startY + h / 2}, self.lineColor, self.lineSize)
+    PtUtil.drawLine({startX + lineSize / 2, startY},
+      {startX + lineSize / 2, startY + h}, lineColor, lineSize)
+    PtUtil.drawLine({startX + w - lineSize / 2, startY},
+      {startX + w - lineSize / 2, startY + h}, lineColor, lineSize)
+    
+    slidableLength = w - lineSize * 2 - handleSize
+    local sliderX = startX + lineSize + percentage * slidableLength
+    handleBorderRect = {sliderX, startY, sliderX + handleSize, startY + h}
+    handleRect = {sliderX + handleBorderSize, startY + handleBorderSize
+                  , sliderX + handleSize - handleBorderSize
+                  , startY + h - handleBorderSize}
+  end
+  PtUtil.drawRect(handleBorderRect, self.handleBorderColor, handleBorderSize)
+  local handleColor
+  if self.dragging then
+    handleColor = self.handlePressedColor
+  elseif self.mouseOver then
+    handleColor = self.handleHoverColor
+  else
+    handleColor = self.handleColor
+  end
+  PtUtil.fillRect(handleRect, handleColor)
+end
+
+function Slider:getPercentage()
+  if self.maxValue == 0 then
+    return 0
+  else
+    return self.value / self.maxValue
+  end
+end
+
+function Slider:clickEvent(position, button, pressed)
+  if button == 1 then -- Only react to LMB
+    if pressed then
+      local startX = self.x + self.offset[1]
+      local startY = self.y + self.offset[2]
+      local w = self.width
+      local h = self.height
+
+      local lineSize = self.lineSize
+      local handleSize = self.handleSize
+      local percentage = self:getPercentage()
+      local handleX
+      local handleY
+      local handleWidth
+      local handleHeight
+      if self.vertical then
+        local slidableLength = h - lineSize * 2 - handleSize
+        handleX = startX
+        handleY = startY + lineSize + percentage * slidableLength
+        handleWidth = w
+        handleHeight = handleSize
+      else
+        local slidableLength = w - lineSize * 2 - handleSize
+        handleX = startX + lineSize + percentage * slidableLength
+        handleY = startY
+        handleWidth = handleSize
+        handleHeight = h
+      end
+      if position[1] >= handleX and position[1] <= handleX + handleWidth
+        and position[2] >= handleY and position[2] <= handleY + handleHeight
+      then
+        local dragOffset
+        if self.vertical then
+          dragOffset = position[2] - handleY
+        else
+          dragOffset = position[1] - handleX
+        end
+        self.dragOffset = dragOffset
+        self.dragging = true
+      else
+        if self.vertical then
+          if position[2] < handleY then
+            self.moving = false
+          else
+            self.moving = true
+          end
+        else
+          if position[1] < handleX then
+            self.moving = false
+          else
+            self.moving = true
+          end
+        end
+      end
+    end
+    return true
+  end
+end
+
+--------------------------------------------------------------------------------
 -- List.lua
 --------------------------------------------------------------------------------
 
@@ -1756,7 +1966,7 @@ List.itemPadding = 2
 List.scrollBarSize = 3
 
 
-function List:_init(x, y, width, height, itemSize, itemFactory)
+function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
   Component._init(self)
   self.x = x
   self.y = y
@@ -1775,39 +1985,38 @@ function List:_init(x, y, width, height, itemSize, itemFactory)
   self.topIndex = 1
   self.bottomIndex = nil
   self.mouseOver = false
+
+  local borderSize = self.borderSize
+  local barSize = self.scrollBarSize
+  local slider
+  if horizontal then
+    slider = Slider(borderSize + 0.5, borderSize + 0.5
+                    , width - borderSize * 2 - 1, barSize, 0, 1, false)
+  else
+    slider = Slider(width - borderSize - barSize - 0.5
+                    , borderSize + 0.5, barSize
+                    , height - borderSize * 2 - 1, 0, 1, true)
+  end
+  slider.lineSize = 0
+  slider.handleBorderSize = 0
+  slider:addListener(
+    "value",
+    function(t, k, old, new)
+      local list = t.parent
+      if list.horizontal then
+        list.topIndex = new + 1
+      else
+        list.topIndex = t.maxValue - t.value + 1
+      end
+      list:positionItems()
+    end
+  )
+  self.slider = slider
+  self:add(slider)
 end
 
 
 function List:update(dt)
-  if self.barDragging then
-    if not GUI.mouseState[1] or self.scrollBarTickCount == 0 then
-      self.barDragging = false
-    else
-      local mousePos = GUI.mousePosition
-      local dragPos
-      local dragOffset = self.barDragOffset
-      if self.horizontal then
-        dragPos = (mousePos[1] - dragOffset) - self.x + self.offset[1]
-          + self.borderSize + 0.5
-      else
-        dragPos = self.y + self.offset[2] + self.height - self.borderSize
-          - 0.5 - (dragOffset + mousePos[2])
-      end
-      local tickSize = self.scrollBarTick
-      local newTop = math.floor(dragPos / tickSize + 0.5)
-      newTop = math.max(newTop, 0)
-      newTop = math.min(newTop, self.scrollBarTickCount)
-      self.topIndex = newTop + 1
-      self:positionItems()
-    end
-  end
-  if self.barMoving ~= nil then
-    if not GUI.mouseState[1] then
-      self.barMoving = nil
-    else
-      self:scroll(self.barMoving)
-    end
-  end
 end
 
 function List:draw(dt)
@@ -1827,23 +2036,9 @@ function List:draw(dt)
   if self.horizontal then
     local lineY = startY + borderSize + scrollBarSize + 1.5
     PtUtil.drawLine({startX, lineY}, {startX + w, lineY}, borderColor, 1)
-    local scrollLeft = startX + borderSize + 0.5
-    local scrollY = startY + borderSize + 0.5
-    local scrollBarLength = self.scrollBarLength
-    local scrollX = scrollTop + self.scrollBarOffset
-    PtUtil.fillRect({scrollX, scrollY,
-                     scrollX + scrollBarLength, scrollY + self.scrollBarSize},
-      borderColor)
   else
     local lineX = startX + w - borderSize - scrollBarSize - 1.5
     PtUtil.drawLine({lineX, startY}, {lineX, startY + h}, borderColor, 1)
-    local scrollTop = startY + h - borderSize - 0.5
-    local scrollX = lineX + 1
-    local scrollBarLength = self.scrollBarLength
-    local scrollY = scrollTop - self.scrollBarOffset - scrollBarLength
-    PtUtil.fillRect({scrollX, scrollY,
-                     scrollX + self.scrollBarSize, scrollY + scrollBarLength},
-      borderColor)
   end
 end
 
@@ -1956,19 +2151,18 @@ end
 
 function List:updateScrollBar()
   local maxLength
+  local slider = self.slider
   local offset
   if self.horizontal then
-    maxLength = self.width - (self.borderSize * 2 + 1)
+    maxLength = slider.width
   else
-    maxLength = self.height - (self.borderSize * 2 + 1)
+    maxLength = slider.height
   end
   local topIndex = self.topIndex
   local bottomIndex = self.bottomIndex
   if bottomIndex == nil and topIndex == 1 then
-    self.scrollBarLength = maxLength
-    self.scrollBarOffset = 0
-    self.scrollBarTick = 0
-    self.scrollBarTickCount = 0
+    slider.handleSize = maxLength
+    slider.maxValue = 0
   else
     local items = self.items
     local numItems -- Number of displayed items
@@ -1980,11 +2174,13 @@ function List:updateScrollBar()
     local barLength = math.max(
       numItems * maxLength / #items,
       self.scrollBarSize)
-    local barTick = (maxLength - barLength) / math.max((#items - numItems), 1)
-    self.scrollBarLength = barLength
-    self.scrollBarOffset = (topIndex - 1) * barTick
-    self.scrollBarTick = barTick
-    self.scrollBarTickCount = #items - numItems
+    slider.handleSize = barLength
+    slider.maxValue = #items - numItems
+    if self.horizontal then
+      slider.value = topIndex - 1
+    else
+      slider.value = slider.maxValue - (topIndex - 1)
+    end
   end
 end
 
@@ -2009,247 +2205,5 @@ function List:clickEvent(position, button, pressed)
       end
     end
     return true
-  elseif button == 1 then -- scrollbar
-    local startX = self.x + self.offset[1]
-    local startY = self.y + self.offset[2]
-    local w = self.width
-    local h = self.height
-    local borderSize = self.borderSize
-    local scrollBarSize = self.scrollBarSize
-    local scrollBarLength = self.scrollBarLength
-    
-    local scrollX
-    local scrollY
-    local scrollWidth
-    local scrollHeight
-    if self.horizontal then
-      scrollX = startX + borderSize
-      scrollY = startY + borderSize
-      scrollWidth = w - (borderSize * 2)
-      scrollHeight = scrollBarSize + 1
-    else
-      scrollX = startX + w - borderSize - scrollBarSize - 1
-      scrollY = startY + borderSize
-      scrollWidth = scrollBarSize + 1
-      scrollHeight = h - (borderSize * 2)
-    end
-    if position[1] >= scrollX and position[1] <= scrollX + scrollWidth
-      and position[2] >= scrollY and position[2] <= scrollY + scrollHeight
-    then -- In scroll bar area
-      local barX
-      local barY
-      local barWidth
-      local barHeight
-      if self.horizontal then
-        barX = scrollX + self.scrollBarOffset
-        barY = scrollY
-        barWidth = scrollBarLength + 1
-        barHeight = scrollHeight
-      else
-        barX = scrollX
-        barY = scrollY + scrollHeight - self.scrollBarOffset - (scrollBarLength + 1)
-        barWidth = scrollWidth
-        barHeight = scrollBarLength + 1
-      end
-      if position[1] >= barX and position[1] <= barX + barWidth
-        and position[2] >= barY and position[2] <= barY + barHeight
-      then -- In scroll bar
-        local dragOffset
-        if self.horizontal then
-          dragOffset = position[1] - (barX + 0.5)
-        else
-          dragOffset = (barY + barHeight - 0.5) - position[2]
-        end
-        self.barDragOffset = dragOffset
-        self.barDragging = true
-      else -- In empty space
-        if self.horizontal then
-          if position[1] < barX then
-            self.barMoving = true
-          else
-            self.barMoving = false
-          end
-        else
-          if position[2] > barY + barHeight then
-            self.barMoving = true
-          else
-            self.barMoving = false
-          end
-        end
-      end
-    end
-  end
-end
-
---------------------------------------------------------------------------------
--- Slider.lua
---------------------------------------------------------------------------------
-
-Slider = class(Component)
-Slider.lineColor = "#676767"
-Slider.lineSize = 2
-Slider.handleBorderColor = "#B1B1B1"
-Slider.handleBorderSize = 1
-Slider.handleColor = Slider.lineColor
-Slider.handleHoverColor = "#A0A0A0"
-Slider.handlePressedColor = "#C0C0C0"
-Slider.handleSize = 5
-
-
-function Slider:_init(x, y, width, height, max, step, vertical)
-  Component._init(self)
-  self.x = x
-  self.y = y
-  self.width = width
-  self.height = height
-  self.mouseOver = false
-  self.max = max or 1
-  self.step = step
-  self.vertical = vertical
-  self.value = 0
-end
-
-
-function Slider:update(dt)
-  if self.dragging then
-    if not GUI.mouseState[1] then
-      self.dragging = false
-    else
-      local mousePos = GUI.mousePosition
-      local slidableLength
-      if self.vertical then
-        
-      else
-
-      end
-    end
-  end
-  if self.moving ~= nil then
-    if not GUI.mouseState[1] then
-      self.moving = nil
-    else
-      local step = self.step
-      local direction = self.moving
-      local max = self.max
-      if not step then
-        step = max / 100
-      end
-      local value = self.value
-      if direction then
-        self.value = math.min(value + step, max)
-      else
-        self.value = math.max(value - step, 0)
-      end
-    end
-  end
-end
-
-function Slider:draw(dt)
-  local startX = self.x + self.offset[1]
-  local startY = self.y + self.offset[2]
-  local w = self.width
-  local h = self.height
-
-  local lineSize = self.lineSize
-  local lineColor = self.lineColor
-  local percentage = self.value / self.max
-  local handleBorderSize = self.handleBorderSize
-  local handleSize = self.handleSize
-  local slidableLength
-  local handleBorderRect
-  local handleRect
-  if self.vertical then
-    PtUtil.drawLine({startX + w / 2, startY},
-      {startX + w / 2, startY + h}, lineColor, lineSize)
-    PtUtil.drawLine({startX, startY + handleSize / 2}
-      , {startX + w, startY + handleSize / 2}, lineColor, lineSize)
-    PtUtil.drawLine({startX, startY + h - handleSize / 2}
-      , {startX + w, startY + h - handleSize / 2}, lineColor, lineSize)
-      
-    slidableLength = h - lineSize * 2 - handleSize
-    local sliderY = startY + lineSize + percentage * slidableLength
-    handleBorderRect = {startX, sliderY, startX + w, sliderY + handleSize}
-    handleRect = {startX + handleBorderSize, sliderY + handleBorderSize
-                  , startX + w - handleBorderSize
-                  , sliderY + handleSize - handleBorderSize}
-  else
-    PtUtil.drawLine({startX, startY + h / 2},
-      {startX + w, startY + h / 2}, self.lineColor, self.lineSize)
-    PtUtil.drawLine({startX + lineSize / 2, startY},
-      {startX + lineSize / 2, startY + h}, lineColor, lineSize)
-    PtUtil.drawLine({startX + w - lineSize / 2, startY},
-      {startX + w - lineSize / 2, startY + h}, lineColor, lineSize)
-    
-    slidableLength = w - lineSize * 2 - handleSize
-    local sliderX = startX + lineSize + percentage * slidableLength
-    handleBorderRect = {sliderX, startY, sliderX + handleSize, startY + h}
-    handleRect = {sliderX + handleBorderSize, startY + handleBorderSize
-                  , sliderX + handleSize - handleBorderSize
-                  , startY + h - handleBorderSize}
-  end
-  PtUtil.drawRect(handleBorderRect, self.handleBorderColor, handleBorderSize)
-  local handleColor
-  if self.dragging then
-    handleColor = self.handlePressedColor
-  elseif self.mouseOver then
-    handleColor = self.handleHoverColor
-  else
-    handleColor = self.handleColor
-  end
-  PtUtil.fillRect(handleRect, handleColor)
-end
-
-function Slider:clickEvent(position, button, pressed)
-  if button == 1 then -- Only react to LMB
-    local startX = self.x + self.offset[1]
-    local startY = self.y + self.offset[2]
-    local w = self.width
-    local h = self.height
-
-    local lineSize = self.lineSize
-    local handleSize = self.handleSize
-    local percentage = self.value / self.max
-    local handleX
-    local handleY
-    local handleWidth
-    local handleHeight
-    if self.vertical then
-      local slidableLength = h - lineSize * 2 - handleSize
-      handleX = startX
-      handleY = startY + lineSize + percentage * slidableLength
-      handleWidth = w
-      handleHeight = handleSize
-    else
-      local slidableLength = w - lineSize * 2 - handleSize
-      handleX = startX + lineSize + percentage * slidableLength
-      handleWidth = handleSize
-      handleHeight = h
-    end
-    if position[1] >= handleX and position[1] <= handleX + handleWidth
-      and position[2] >= handleY and position[2] <= handleY + handleHeight
-    then
-      local dragOffset
-      if self.vertical then
-        dragOffset = position[2] - handleY
-      else
-        dragOffset = position[1] - handleX
-      end
-      self.dragOffset = dragOffset
-      self.dragging = true
-    else
-      if self.vertical then
-        if position[2] < barY then
-          self.moving = false
-        else
-          self.moving = true
-        end
-      else
-        if position[1] < barX then
-          self.moving = false
-        else
-          self.moving = true
-        end
-      end
-    end
   end
 end

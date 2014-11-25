@@ -4,13 +4,6 @@ function init()
   local testbutton = TextButton(10, 10, 100, 16, "Make window")
   testbutton.onClick = testButtonClick
   GUI.add(testbutton)
-
-  -- Slider test
-  local slider = Slider(30, 150, 150, 10)
-  GUI.add(slider)
-  local sliderLabel = Label(40 + slider.width, slider.y, "0", 12)
-  sliderLabel:bind("text", Binding(slider, "value"):tostring())
-  GUI.add(sliderLabel)
   
   -- List test
   local list = List(30, 30, 100, 100, 12)
