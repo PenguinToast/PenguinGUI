@@ -46,13 +46,12 @@
 <ul>
 <li><a href="#Fields">Fields</a></li>
 <li><a href="#Constructor">Constructor </a></li>
-<li><a href="#Methods">Methods</a></li>
 </ul>
 
 
 <h2>Classes</h2>
 <ul class="$(kind=='Topics' and '' or 'nowrap'">
-  <li><strong>Button</strong></li>
+  <li><a href="../classes/Button.html">Button</a></li>
   <li><a href="../classes/CheckBox.html">CheckBox</a></li>
   <li><a href="../classes/Component.html">Component</a></li>
   <li><a href="../classes/Frame.html">Frame</a></li>
@@ -61,7 +60,7 @@
   <li><a href="../classes/List.html">List</a></li>
   <li><a href="../classes/Panel.html">Panel</a></li>
   <li><a href="../classes/RadioButton.html">RadioButton</a></li>
-  <li><a href="../classes/Slider.html">Slider</a></li>
+  <li><strong>Slider</strong></li>
   <li><a href="../classes/TextButton.html">TextButton</a></li>
   <li><a href="../classes/TextField.html">TextField</a></li>
   <li><a href="../classes/TextRadioButton.html">TextRadioButton</a></li>
@@ -77,54 +76,62 @@
 
 <div id="content">
 
-<h1>Class <code>Button</code></h1>
-<p>A clickable button.</p>
+<h1>Class <code>Slider</code></h1>
+<p>A slider</p>
 <p></p>
     <h3>Usage:</h3>
     <ul>
-        <pre class="example"> -- Create an empty button that prints when it is clicked
- local button = Button(0, 0, 100, 100)
- button.onClick = function(component, button)
-   print(&quot;Clicked with mouse button &quot; .. button)
- end</pre>
+        <pre class="example">
+ -- Create a slider
+ local slider = Slider(0, 0, 100, 12)
+ slider:addListener(
+   &quot;value&quot;,
+   function(t, k, old, new)
+     world.logInfo(&quot;Slider is now at %s&quot;, new)
+   end)</pre>
     </ul>
 
 
 <h2><a href="#Fields">Fields</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#Button.color">Button.color</a></td>
-	<td class="summary">The color of this button.</td>
+	<td class="name" nowrap><a href="#Slider.handleBorderColor">Slider.handleBorderColor</a></td>
+	<td class="summary">The color of the slider handle border.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Button.hoverColor">Button.hoverColor</a></td>
-	<td class="summary">The color of this button when the mouse is over it.</td>
+	<td class="name" nowrap><a href="#Slider.handleBorderSize">Slider.handleBorderSize</a></td>
+	<td class="summary">The thickness of the slider handle border.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Button.innerBorderColor">Button.innerBorderColor</a></td>
-	<td class="summary">The color of the inner border of this button.</td>
+	<td class="name" nowrap><a href="#Slider.handleColor">Slider.handleColor</a></td>
+	<td class="summary">The color of the slider handle.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Button.innerBorderHoverColor">Button.innerBorderHoverColor</a></td>
-	<td class="summary">The color of the inner border of this button when the mouse is over it.</td>
+	<td class="name" nowrap><a href="#Slider.handleHoverColor">Slider.handleHoverColor</a></td>
+	<td class="summary">The color of the slider handle when the mouse is over it.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Button.outerBorderColor">Button.outerBorderColor</a></td>
-	<td class="summary">The color of the outer border of this button.</td>
+	<td class="name" nowrap><a href="#Slider.handlePressedColor">Slider.handlePressedColor</a></td>
+	<td class="summary">The color of the slider handle when it is being dragged.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Slider.handleSize">Slider.handleSize</a></td>
+	<td class="summary">The size of the slider handle.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Slider.lineColor">Slider.lineColor</a></td>
+	<td class="summary">The color of the slider line.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Slider.lineSize">Slider.lineSize</a></td>
+	<td class="summary">The thickness of the slider line.</td>
 	</tr>
 </table>
 <h2><a href="#Constructor">Constructor </a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#Button:_init">Button:_init (x, y, width, height)</a></td>
-	<td class="summary">Constructs a new Button.</td>
-	</tr>
-</table>
-<h2><a href="#Methods">Methods</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#Button:onClick">Button:onClick (button)</a></td>
-	<td class="summary">Called when this button is clicked.</td>
+	<td class="name" nowrap><a href="#Slider:_init">Slider:_init (x, y, width, height[, max=1[, step=nil[, vertical=false]]])</a></td>
+	<td class="summary">Constructs a new Slider.</td>
 	</tr>
 </table>
 
@@ -136,11 +143,11 @@
 
     <dl class="function">
     <dt>
-    <a name = "Button.color"></a>
-    <strong>Button.color</strong>
+    <a name = "Slider.handleBorderColor"></a>
+    <strong>Slider.handleBorderColor</strong>
     </dt>
     <dd>
-    The color of this button.
+    The color of the slider handle border.
 
 
 
@@ -150,11 +157,11 @@
 
 </dd>
     <dt>
-    <a name = "Button.hoverColor"></a>
-    <strong>Button.hoverColor</strong>
+    <a name = "Slider.handleBorderSize"></a>
+    <strong>Slider.handleBorderSize</strong>
     </dt>
     <dd>
-    The color of this button when the mouse is over it.
+    The thickness of the slider handle border.
 
 
 
@@ -164,11 +171,11 @@
 
 </dd>
     <dt>
-    <a name = "Button.innerBorderColor"></a>
-    <strong>Button.innerBorderColor</strong>
+    <a name = "Slider.handleColor"></a>
+    <strong>Slider.handleColor</strong>
     </dt>
     <dd>
-    The color of the inner border of this button.
+    The color of the slider handle.
 
 
 
@@ -178,11 +185,11 @@
 
 </dd>
     <dt>
-    <a name = "Button.innerBorderHoverColor"></a>
-    <strong>Button.innerBorderHoverColor</strong>
+    <a name = "Slider.handleHoverColor"></a>
+    <strong>Slider.handleHoverColor</strong>
     </dt>
     <dd>
-    The color of the inner border of this button when the mouse is over it.
+    The color of the slider handle when the mouse is over it.
 
 
 
@@ -192,11 +199,53 @@
 
 </dd>
     <dt>
-    <a name = "Button.outerBorderColor"></a>
-    <strong>Button.outerBorderColor</strong>
+    <a name = "Slider.handlePressedColor"></a>
+    <strong>Slider.handlePressedColor</strong>
     </dt>
     <dd>
-    The color of the outer border of this button.
+    The color of the slider handle when it is being dragged.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Slider.handleSize"></a>
+    <strong>Slider.handleSize</strong>
+    </dt>
+    <dd>
+    The size of the slider handle.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Slider.lineColor"></a>
+    <strong>Slider.lineColor</strong>
+    </dt>
+    <dd>
+    The color of the slider line.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Slider.lineSize"></a>
+    <strong>Slider.lineSize</strong>
+    </dt>
+    <dd>
+    The thickness of the slider line.
 
 
 
@@ -211,11 +260,12 @@
 
     <dl class="function">
     <dt>
-    <a name = "Button:_init"></a>
-    <strong>Button:_init (x, y, width, height)</strong>
+    <a name = "Slider:_init"></a>
+    <strong>Slider:_init (x, y, width, height[, max=1[, step=nil[, vertical=false]]])</strong>
     </dt>
     <dd>
-    Constructs a new Button.
+    Constructs a new Slider.
+ New sliders are by default horizontal.
 
 
     <h3>Parameters:</h3>
@@ -232,29 +282,19 @@
         <li><span class="parameter">height</span>
          The height of the new component.
         </li>
-    </ul>
-
-
-
-
-
-</dd>
-</dl>
-    <h2><a name="Methods"></a>Methods</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "Button:onClick"></a>
-    <strong>Button:onClick (button)</strong>
-    </dt>
-    <dd>
-    Called when this button is clicked.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">button</span>
-         The mouse button that was used.
+        <li><span class="parameter">max</span>
+         The maximum value of this slider. The slider will slide from
+      0 to max.
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">step</span>
+         The step size to snap the slider to. If nil, the slider will
+      slide smoothly.
+         (<em>default</em> nil)
+        </li>
+        <li><span class="parameter">vertical</span>
+         If true, the slider will be vertical.
+         (<em>default</em> false)
         </li>
     </ul>
 
