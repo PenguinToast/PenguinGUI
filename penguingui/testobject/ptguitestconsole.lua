@@ -1,14 +1,45 @@
 function init()
   storage = console.configParameter("scriptStorage")
-  
+  local tests = {
+    "textTest",
+    "windowTest",
+    "listTest"
+  }
+  local y = 190
+  local pad = 10
+  local x = 10
+  for _,test in ipairs(tests) do
+    local button = TextRadioButton(x, y, 70, 12, test)
+    x = x + button.width + pad
+    GUI.add(button)
+    local panel = Panel(0, 0)
+    GUI.add(panel)
+    panel:bind("visible", Binding(button, "selected"))
+    _ENV[test](panel)
+  end
+end
+
+function textTest(panel)
+  local y = 10
+  local x = 10
+  for i=5,20,1 do
+    local label = Label(x, y, "lllllllllllllllllllll", i)
+    y = y + label.height + 2
+    panel:add(label)
+  end
+end
+
+function windowTest(panel)
   local testbutton = TextButton(10, 10, 100, 16, "Make window")
   testbutton.onClick = testButtonClick
-  GUI.add(testbutton)
-  
+  panel:add(testbutton)
+end
+
+function listTest(panel)
   -- List test
   local list = List(30, 30, 100, 100, 12)
   local selected = Binding.proxy({item = nil})
-  GUI.add(list)
+  panel:add(list)
   for i=1,20,1 do
     local item = list:emplaceItem("Item " .. i)
     if i == 1 then
@@ -24,7 +55,7 @@ function init()
   end
 
   local filter = TextField(list.x, list.y + list.height + 5, list.width, 15, "Filter")
-  GUI.add(filter)
+  panel:add(filter)
   filter:addListener(
     "text",
     function(t, k, old, new)
@@ -48,7 +79,7 @@ function init()
       item:select()
     end
   end
-  GUI.add(removeButton)
+  panel:add(removeButton)
 end
 
 function testButtonClick(button, mouseButton)
