@@ -50,7 +50,8 @@ function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
     end
   self.items = {}
   self.topIndex = 1
-  self.bottomIndex = nil
+  self.bottomIndex = 1
+  self.itemCount = 0
   self.mouseOver = false
 
   -- Create scrollbar
@@ -84,9 +85,6 @@ function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
 end
 
 --- @section end
-
-function List:update(dt)
-end
 
 function List:draw(dt)
   local startX = self.x + self.offset[1]
@@ -129,38 +127,41 @@ function List:addItem(item)
   local items = self.items
   local index = #items + 1
   items[index] = item
+  self.itemCount = self.itemCount + 1
   self:positionItems()
   return item, index
 end
 
 --- Removes an item from this list.
--- @param item Either the item to remove, or the index of the item to remove.
+-- @param target Either the item to remove, or the index of the item to remove.
 -- @return The removed item, or nil if the item was not removed.
 -- @return The index of the removed item, or -1 if the item was not removed.
-function List:removeItem(item)
-  if type(item) == "number" then -- Remove by index
-    local removed = table.remove(self.items, item)
-    if not removed then
+function List:removeItem(target)
+  local item
+  local index
+  if type(target) == "number" then -- Remove by index
+    index = target
+    item = table.remove(self.items, index)
+    if not item then
       return nil, -1
     end
-    self:remove(removed)
-    self:positionItems()
-    if self.bottomIndex == nil then
-      self:scroll(true)
-    end
-    return removed, item
   else -- Remove by item
-    local index = PtUtil.removeObject(self.items, item)
+    item = target
+    index = PtUtil.removeObject(self.items, item)
     if index == -1 then
       return nil, -1
     end
-    self:remove(item)
-    self:positionItems()
-    if self.bottomIndex == nil then
-      self:scroll(true)
-    end
-    return item, index
   end
+  self:remove(item)
+  if not item.filtered then
+    self.itemCount = self.itemCount - 1
+  end
+  if self.bottomIndex > self.itemCount + 1 then
+    self:scroll(true)
+  else
+    self:positionItems()
+  end
+  return item, index
 end
 
 --- Removes all items from this list.
@@ -189,6 +190,31 @@ function List:indexOfItem(item)
   return -1
 end
 
+--- Filters the items in this list.
+-- @param filter A function that should take a list item as the argument, and
+--      return true to show that item or false to hide that item. If nil, show
+--      all items.
+function List:filter(filter)
+  local itemCount = 0
+  if filter then
+    for _,item in ipairs(self.items) do
+      if not filter(item) then
+        item.filtered = true
+      else
+        itemCount = itemCount + 1
+        item.filtered = nil
+      end
+    end
+  else
+    for _,item in ipairs(self.items) do
+      item.filtered = nil
+    end
+  end
+  self.itemCount = itemCount
+  self.topIndex = 1
+  self:positionItems()
+end
+
 -- Positions and clips items
 function List:positionItems()
   local items = self.items
@@ -206,10 +232,12 @@ function List:positionItems()
     min = border + padding
   end
   local past = false
+  local itemCount = 0
   for i,item in ipairs(items) do
-    if i < topIndex or past then
+    if i < topIndex or past or item.filtered then
       item.visible = false
     else
+      itemCount = itemCount + 1
       item.visible = nil
       if self.horizontal then
         item.y = min
@@ -217,7 +245,7 @@ function List:positionItems()
         item.x = current
         if current + itemSize > self.width - borderSize then
           item.visible = false
-          self.bottomIndex = i
+          self.bottomIndex = itemCount + topIndex - 1
           past = true
         end
       else
@@ -226,7 +254,7 @@ function List:positionItems()
         item.y = current
         if current < border then
           item.visible = false
-          self.bottomIndex = i
+          self.bottomIndex = itemCount + topIndex - 1
           past = true
         end
       end
@@ -234,7 +262,7 @@ function List:positionItems()
     item.layout = true
   end
   if not past then
-    self.bottomIndex = nil
+    self.bottomIndex = topIndex + itemCount
   end
   self:updateScrollBar()
 end
@@ -249,24 +277,20 @@ function List:updateScrollBar()
   else
     maxLength = slider.height
   end
+  local items = self.items
   local topIndex = self.topIndex
   local bottomIndex = self.bottomIndex
-  if bottomIndex == nil and topIndex == 1 then
+  local itemCount = self.itemCount
+  if bottomIndex > itemCount and topIndex == 1 then
     slider.handleSize = maxLength
     slider.maxValue = 0
   else
-    local items = self.items
-    local numItems -- Number of displayed items
-    if bottomIndex == nil then
-      numItems = #items + 1 - topIndex
-    else
-      numItems = bottomIndex - topIndex
-    end
+    local numItems = bottomIndex - topIndex -- Number of displayed items
     local barLength = math.max(
-      numItems * maxLength / #items,
+      numItems * maxLength / itemCount,
       self.scrollBarSize)
     slider.handleSize = barLength
-    slider.maxValue = #items - numItems
+    slider.maxValue = itemCount - numItems
     if self.horizontal then
       slider.value = topIndex - 1
     else
@@ -282,7 +306,7 @@ function List:scroll(up)
   if up then
     self.topIndex = math.max(self.topIndex - 1, 1)
   else
-    if self.bottomIndex then
+    if self.bottomIndex <= self.itemCount then
       self.topIndex = self.topIndex + 1
     end
   end

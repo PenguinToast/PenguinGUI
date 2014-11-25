@@ -76,17 +76,19 @@ function GUI.clickEvent(position, button, pressed)
   local components = GUI.components
   local topFound = false
   for index,component in ripairs(components) do
-    -- Focus top-level components
-    if not topFound then
-      if component:contains(position) then
-        table.remove(components, index)
-        components[#components + 1] = component
-        topFound = true
+    if component.visible ~= false then
+      -- Focus top-level components
+      if not topFound then
+        if component:contains(position) then
+          table.remove(components, index)
+          components[#components + 1] = component
+          topFound = true
+        end
       end
-    end
-    if GUI.clickEventHelper(component, position, button, pressed) then
-      -- The click was consumed
-      break
+      if GUI.clickEventHelper(component, position, button, pressed) then
+        -- The click was consumed
+        break
+      end
     end
   end
 end
@@ -94,9 +96,11 @@ end
 function GUI.clickEventHelper(component, position, button, pressed)
   local children = component.children
   for _,child in ripairs(children) do
-    if GUI.clickEventHelper(child, position, button, pressed) then
-      -- The click was consumed
-      return true
+    if child.visible ~= false then
+      if GUI.clickEventHelper(child, position, button, pressed) then
+        -- The click was consumed
+        return true
+      end
     end
   end
   -- Only check bounds if the component has a clickEvent
@@ -119,11 +123,13 @@ function GUI.keyEvent(key, pressed)
   GUI.keyState[key] = pressed
   local component = GUI.focusedComponent
   while component do
-    local keyEvent = component.keyEvent
-    if keyEvent then
-      if keyEvent(component, key, pressed) then
-        -- Key was consumed
-        return
+    if component.visible ~= false then
+      local keyEvent = component.keyEvent
+      if keyEvent then
+        if keyEvent(component, key, pressed) then
+          -- Key was consumed
+          return
+        end
       end
     end
     component = component.parent

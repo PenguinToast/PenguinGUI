@@ -23,6 +23,21 @@ function init()
     item:addListener("selected", listener)
   end
 
+  local filter = TextField(list.x, list.y + list.height + 5, list.width, 15, "Filter")
+  GUI.add(filter)
+  filter:addListener(
+    "text",
+    function(t, k, old, new)
+      list:filter(
+        function(item)
+          if item.text:find(new) then
+            return true
+          end
+        end
+      )
+    end
+  )
+
   local removeButton = TextButton(150, 60, 100, 12, "Remove")
   removeButton:bind("text", Binding.concat("Remove ",
                                            Binding(selected, {"item", "text"})))
