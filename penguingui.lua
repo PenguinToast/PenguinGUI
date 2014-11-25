@@ -2060,6 +2060,8 @@ function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
   )
   self.slider = slider
   self:add(slider)
+
+  self:positionItems()
 end
 
 
