@@ -22,11 +22,13 @@ end
 function textTest(panel)
   local y = 10
   local x = 10
-  for i=5,20,1 do
-    local label = Label(x, y, "lllllllllllllllllllll", i)
-    y = y + label.height + 2
-    panel:add(label)
+  local button = TextButton(x, y, 70, 12, "text")
+  local field = TextField(x, y + button.height + 10, 150, 12, "Set text")
+  field.onEnter = function()
+    button.text = field.text
   end
+  panel:add(button)
+  panel:add(field)
 end
 
 function windowTest(panel)

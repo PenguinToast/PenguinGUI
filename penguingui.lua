@@ -1273,16 +1273,16 @@ end
 
 TextButton = class(Button)
 TextButton.text = nil
+TextButton.textPadding = 2
 
 
 function TextButton:_init(x, y, width, height, text, fontColor)
   Button._init(self, x, y, width, height)
-  local padding = 2
+  local padding = self.textPadding
   local fontSize = height - padding * 2
   local label = Label(0, padding, text, fontSize, fontColor)
   self.text = text
   
-  self.padding = padding
   self.label = label
   self:add(label)
 
@@ -1300,7 +1300,20 @@ end
 
 function TextButton:repositionLabel()
   local label = self.label
+  local text = label.text
+  local padding = self.textPadding
+  local maxHeight = self.height - padding * 2
+  local maxWidth = self.width - padding * 2
+  if label.height < maxHeight then
+    label.fontSize = maxHeight
+    label:recalculateBounds()
+  end
+  while label.width > maxWidth do
+    label.fontSize = label.fontSize - 1
+    label:recalculateBounds()
+  end
   label.x = (self.width - label.width) / 2
+  label.y = (self.height - label.height) / 2
 end
 
 
@@ -1709,6 +1722,7 @@ TextRadioButton.hoverColor = "#1F1F1F"
 TextRadioButton.pressedColor = "#454545"
 TextRadioButton.checkColor = "#343434"
 TextButton.text = nil
+TextRadioButton.textPadding = 2
 
 
 function TextRadioButton:_init(x, y, width, height, text)
@@ -1716,11 +1730,10 @@ function TextRadioButton:_init(x, y, width, height, text)
   self.width = width
   self.height = height
   
-  local padding = 2
+  local padding = self.textPadding
   local fontSize = height - padding * 2
   local label = Label(0, padding, text, fontSize, fontColor)
   
-  self.padding = padding
   self.label = label
   self:add(label)
 
@@ -1746,10 +1759,7 @@ function TextRadioButton:drawCheck(dt)
   PtUtil.fillRect(checkRect, self.checkColor)
 end
 
-function TextRadioButton:repositionLabel()
-  local label = self.label
-  label.x = (self.width - label.width) / 2
-end
+TextRadioButton.repositionLabel = TextButton.repositionLabel
 
 --------------------------------------------------------------------------------
 -- Slider.lua

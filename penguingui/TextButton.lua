@@ -6,6 +6,8 @@
 TextButton = class(Button)
 --- The text of the button.
 TextButton.text = nil
+--- The padding between the text and the button edge.
+TextButton.textPadding = 2
 
 --- Constructor
 -- @section
@@ -21,12 +23,11 @@ TextButton.text = nil
 -- @param fontColor (optional) The color of the text to display, default white.
 function TextButton:_init(x, y, width, height, text, fontColor)
   Button._init(self, x, y, width, height)
-  local padding = 2
+  local padding = self.textPadding
   local fontSize = height - padding * 2
   local label = Label(0, padding, text, fontSize, fontColor)
   self.text = text
   
-  self.padding = padding
   self.label = label
   self:add(label)
 
@@ -46,7 +47,20 @@ end
 -- Centers the text label
 function TextButton:repositionLabel()
   local label = self.label
+  local text = label.text
+  local padding = self.textPadding
+  local maxHeight = self.height - padding * 2
+  local maxWidth = self.width - padding * 2
+  if label.height < maxHeight then
+    label.fontSize = maxHeight
+    label:recalculateBounds()
+  end
+  while label.width > maxWidth do
+    label.fontSize = label.fontSize - 1
+    label:recalculateBounds()
+  end
   label.x = (self.width - label.width) / 2
+  label.y = (self.height - label.height) / 2
 end
 
 --- Called when this button is clicked.

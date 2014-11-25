@@ -20,6 +20,8 @@ TextRadioButton.pressedColor = "#454545"
 TextRadioButton.checkColor = "#343434"
 --- The text of the button.
 TextButton.text = nil
+--- The padding between the text and the button edge.
+TextRadioButton.textPadding = 2
 
 --- Constructor
 -- @section
@@ -35,11 +37,10 @@ function TextRadioButton:_init(x, y, width, height, text)
   self.width = width
   self.height = height
   
-  local padding = 2
+  local padding = self.textPadding
   local fontSize = height - padding * 2
   local label = Label(0, padding, text, fontSize, fontColor)
   
-  self.padding = padding
   self.label = label
   self:add(label)
 
@@ -66,8 +67,4 @@ function TextRadioButton:drawCheck(dt)
   PtUtil.fillRect(checkRect, self.checkColor)
 end
 
--- Centers the text label
-function TextRadioButton:repositionLabel()
-  local label = self.label
-  label.x = (self.width - label.width) / 2
-end
+TextRadioButton.repositionLabel = TextButton.repositionLabel
