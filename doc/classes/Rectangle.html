@@ -46,7 +46,6 @@
 <ul>
 <li><a href="#Fields">Fields</a></li>
 <li><a href="#Constructor">Constructor </a></li>
-<li><a href="#Methods">Methods</a></li>
 </ul>
 
 
@@ -62,9 +61,9 @@
   <li><a href="../classes/List.html">List</a></li>
   <li><a href="../classes/Panel.html">Panel</a></li>
   <li><a href="../classes/RadioButton.html">RadioButton</a></li>
-  <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+  <li><strong>Rectangle</strong></li>
   <li><a href="../classes/Slider.html">Slider</a></li>
-  <li><strong>TextButton</strong></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
   <li><a href="../classes/TextField.html">TextField</a></li>
   <li><a href="../classes/TextRadioButton.html">TextRadioButton</a></li>
 </ul>
@@ -79,40 +78,33 @@
 
 <div id="content">
 
-<h1>Class <code>TextButton</code></h1>
-<p>A button that has a text label.</p>
+<h1>Class <code>Rectangle</code></h1>
+<p>A rectangle.</p>
 <p></p>
     <h3>Usage:</h3>
     <ul>
         <pre class="example">
- -- Create a text button with the text &quot;Hello&quot;
- local button = TextButton(0, 0, 100, 16, &quot;Hello&quot;)</pre>
+ -- Create a filled square
+ local rect = Rectangle(0, 0, 10, 10)</pre>
     </ul>
 
 
 <h2><a href="#Fields">Fields</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#TextButton.text">TextButton.text</a></td>
-	<td class="summary">The text of the button.</td>
+	<td class="name" nowrap><a href="#Rectangle.color">Rectangle.color</a></td>
+	<td class="summary">The color of the rectangle.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#TextButton.textPadding">TextButton.textPadding</a></td>
-	<td class="summary">The padding between the text and the button edge.</td>
+	<td class="name" nowrap><a href="#Rectangle.lineSize">Rectangle.lineSize</a></td>
+	<td class="summary">The width of the line, if not filled.</td>
 	</tr>
 </table>
 <h2><a href="#Constructor">Constructor </a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#TextButton:_init">TextButton:_init (x, y, width, height, text, fontColor)</a></td>
-	<td class="summary">Constructs a button with a text label.</td>
-	</tr>
-</table>
-<h2><a href="#Methods">Methods</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#TextButton:onClick">TextButton:onClick (button)</a></td>
-	<td class="summary">Called when this button is clicked.</td>
+	<td class="name" nowrap><a href="#Rectangle:_init">Rectangle:_init (x, y, width, height[, color="black"[, lineSize=nil]])</a></td>
+	<td class="summary">Constructs a new Rectangle.</td>
 	</tr>
 </table>
 
@@ -124,11 +116,11 @@
 
     <dl class="function">
     <dt>
-    <a name = "TextButton.text"></a>
-    <strong>TextButton.text</strong>
+    <a name = "Rectangle.color"></a>
+    <strong>Rectangle.color</strong>
     </dt>
     <dd>
-    The text of the button.
+    The color of the rectangle.
 
 
 
@@ -138,11 +130,11 @@
 
 </dd>
     <dt>
-    <a name = "TextButton.textPadding"></a>
-    <strong>TextButton.textPadding</strong>
+    <a name = "Rectangle.lineSize"></a>
+    <strong>Rectangle.lineSize</strong>
     </dt>
     <dd>
-    The padding between the text and the button edge.
+    The width of the line, if not filled.
 
 
 
@@ -157,11 +149,11 @@
 
     <dl class="function">
     <dt>
-    <a name = "TextButton:_init"></a>
-    <strong>TextButton:_init (x, y, width, height, text, fontColor)</strong>
+    <a name = "Rectangle:_init"></a>
+    <strong>Rectangle:_init (x, y, width, height[, color="black"[, lineSize=nil]])</strong>
     </dt>
     <dd>
-    Constructs a button with a text label.
+    Constructs a new Rectangle.
 
 
     <h3>Parameters:</h3>
@@ -178,36 +170,14 @@
         <li><span class="parameter">height</span>
          The height of the new component.
         </li>
-        <li><span class="parameter">text</span>
-         The text string to display on the button. The button's size will
-             be based on this string.
+        <li><span class="parameter">color</span>
+         The color of the new component.
+         (<em>default</em> "black")
         </li>
-        <li><span class="parameter">fontColor</span>
-         (optional) The color of the text to display, default white.
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-</dl>
-    <h2><a name="Methods"></a>Methods</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "TextButton:onClick"></a>
-    <strong>TextButton:onClick (button)</strong>
-    </dt>
-    <dd>
-    Called when this button is clicked.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">button</span>
-         The mouse button that was used.
+        <li><span class="parameter">lineSize</span>
+         The width of the line, if nil, the rectangle will
+      be filled.
+         (<em>default</em> nil)
         </li>
     </ul>
 
