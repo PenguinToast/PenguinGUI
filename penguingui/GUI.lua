@@ -106,9 +106,9 @@ function GUI.clickEventHelper(component, position, button, pressed)
   -- Only check bounds if the component has a clickEvent
   if component.clickEvent then
     if component:contains(position) then
-      GUI.setFocusedComponent(component)
       if component:clickEvent(position, button, pressed) then
         -- The click was consumed
+        GUI.setFocusedComponent(component)
         return true
       end
     end

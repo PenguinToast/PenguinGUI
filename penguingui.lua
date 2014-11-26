@@ -906,8 +906,8 @@ function GUI.clickEventHelper(component, position, button, pressed)
   end
   if component.clickEvent then
     if component:contains(position) then
-      GUI.setFocusedComponent(component)
       if component:clickEvent(position, button, pressed) then
+        GUI.setFocusedComponent(component)
         return true
       end
     end
