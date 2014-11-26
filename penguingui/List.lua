@@ -61,6 +61,9 @@ function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
   end
   slider.lineSize = 0
   slider.handleBorderSize = 0
+  slider.handleColor = "#545454"
+  slider.handleHoverColor = "#787878"
+  slider.handlePressedColor = "#A0A0A0"
   slider:addListener(
     "value",
     function(t, k, old, new)

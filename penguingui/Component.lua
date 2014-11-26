@@ -109,7 +109,8 @@ end
 --- Resizes this component around its children.
 --
 -- @param[opt] padding Amount of padding to put between the component's
---                children and this component's borders.
+--                children and this component's borders. If nil, this will
+--                not shrink the component.
 function Component:pack(padding)
   local width = 0
   local height = 0
@@ -117,9 +118,17 @@ function Component:pack(padding)
     width = math.max(width, child.x + child.width)
     height = math.max(height, child.y + child.height)
   end
-  padding = padding or 0
-  self.width = width + padding
-  self.height = height + padding
+  if padding == nil then
+    if self.width < width then
+      self.width = width
+    end
+    if self.height < height then
+      self.height = height
+    end
+  else
+    self.width = width + padding
+    self.height = height + padding
+  end
 end
 
 -- Draws and updates this component, and any children.

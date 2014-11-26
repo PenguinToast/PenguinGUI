@@ -1006,9 +1006,17 @@ function Component:pack(padding)
     width = math.max(width, child.x + child.width)
     height = math.max(height, child.y + child.height)
   end
-  padding = padding or 0
-  self.width = width + padding
-  self.height = height + padding
+  if padding == nil then
+    if self.width < width then
+      self.width = width
+    end
+    if self.height < height then
+      self.height = height
+    end
+  else
+    self.width = width + padding
+    self.height = height + padding
+  end
 end
 
 function Component:step(dt)
@@ -1873,13 +1881,13 @@ TextRadioButton.repositionLabel = TextButton.repositionLabel
 --------------------------------------------------------------------------------
 
 Slider = class(Component)
-Slider.lineColor = "#676767"
+Slider.lineColor = "black"
 Slider.lineSize = 2
 Slider.handleBorderColor = "#B1B1B1"
 Slider.handleBorderSize = 1
 Slider.handleColor = Slider.lineColor
-Slider.handleHoverColor = "#A0A0A0"
-Slider.handlePressedColor = "#C0C0C0"
+Slider.handleHoverColor = "#323232"
+Slider.handlePressedColor = "#545454"
 Slider.handleSize = 5
 Slider.value = nil
 Slider.maxValue = nil
@@ -2119,6 +2127,9 @@ function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
   end
   slider.lineSize = 0
   slider.handleBorderSize = 0
+  slider.handleColor = "#545454"
+  slider.handleHoverColor = "#787878"
+  slider.handlePressedColor = "#A0A0A0"
   slider:addListener(
     "value",
     function(t, k, old, new)
