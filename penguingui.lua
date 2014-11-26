@@ -15,6 +15,8 @@ function PtUtil.library()
     "/penguingui/BindingFunctions.lua",
     "/penguingui/GUI.lua",
     "/penguingui/Component.lua",
+    "/penguingui/Line.lua",
+    "/penguingui/Rectangle.lua",
     "/penguingui/Panel.lua",
     "/penguingui/Frame.lua",
     "/penguingui/Button.lua",
@@ -1079,6 +1081,77 @@ function Component:contains(position)
 end
 
 
+
+--------------------------------------------------------------------------------
+-- Line.lua
+--------------------------------------------------------------------------------
+
+Line = class(Component)
+Line.color = "black"
+Line.size = 1
+
+
+function Line:_init(x, y, endX, endY, color, lineSize)
+  Component._init(self)
+  self.x = x
+  self.y = y
+  self.endX = x
+  self.endY = y
+  self.width = endX - x
+  self.height = endY - y
+  self.color = color
+  self.size = size
+end
+
+
+function Line:draw(dt)
+  local offset = self.offset
+  local startX = self.x + offset[1]
+  local startY = self.y + offset[2]
+  local endX = self.endX + offset[1]
+  local endY = self.endY + offset[2]
+
+  local size = self.size
+  local color = self.color
+  PtUtil.drawLine({startX, startY}, {endX, endY}, color, width)
+end
+
+
+--------------------------------------------------------------------------------
+-- Rectangle.lua
+--------------------------------------------------------------------------------
+
+Rectangle = class(Component)
+Rectangle.color = "black"
+Rectangle.lineSize = nil
+
+
+function Rectangle:_init(x, y, width, height, color, lineSize)
+  Component._init(self)
+  self.x = x
+  self.y = y
+  self.width = width
+  self.height = height
+  self.color = color
+  self.lineSize = lineSize
+end
+
+
+function Rectangle:draw(dt)
+  local startX = self.x + self.offset[1]
+  local startY = self.y + self.offset[2]
+  local w = self.width
+  local h = self.height
+
+  local rect = {startX, startY, startX + w, startY + h}
+  local lineSize = self.lineSize
+  local color = self.color
+  if lineSize then
+    PtUtil.drawRect(rect, color, lineSize)
+  else
+    PtUtil.fillRect(rect, color)
+  end
+end
 
 --------------------------------------------------------------------------------
 -- Panel.lua

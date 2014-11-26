@@ -14,6 +14,8 @@ function PtUtil.library()
     "/penguingui/BindingFunctions.lua",
     "/penguingui/GUI.lua",
     "/penguingui/Component.lua",
+    "/penguingui/Line.lua",
+    "/penguingui/Rectangle.lua",
     "/penguingui/Panel.lua",
     "/penguingui/Frame.lua",
     "/penguingui/Button.lua",
