@@ -11,7 +11,7 @@ end
 
 function onInteraction(args)
   local interactionConfig = entity.configParameter("interactionConfig")
-
+  
   local development = true
   if development then
     local consoleScripts = PtUtil.library()

@@ -22,7 +22,8 @@ BEGIN {inLibrary=0;}
   }
 }' penguingui/Util.lua)
 
-echo -e "-- This script contains all the scripts in this library, so you only need to\n-- include this script for production purposes." > penguingui.lua
+grep "author\|version\|support" PenguinGUI.modinfo | sed 's/^\s*\(.*\),*$/-- \1/' > penguingui.lua
+echo -e "-- This script contains all the scripts in this library, so you only need to\n-- include this script for production purposes." >> penguingui.lua
 for filename in $scripts; do
     printf "\n" >> penguingui.lua
     for i in {1..80}; do printf "-" >> penguingui.lua; done

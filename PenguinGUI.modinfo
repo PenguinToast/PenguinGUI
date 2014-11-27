@@ -6,6 +6,7 @@
     "metadata": {
         "author": "PenguinToast",
         "version": "0.2",
-        "description": "Extensible object-oriented GUI library in LUA for canvases"
+        "description": "Extensible object-oriented GUI library in LUA for canvases",
+        "support_url": "http://penguintoast.github.io/PenguinGUI"
     }
 }

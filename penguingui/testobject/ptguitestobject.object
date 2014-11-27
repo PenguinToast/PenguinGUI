@@ -20,7 +20,7 @@
     }
   ],
 
-  "scripts" : [ "/penguingui/Util.lua", "ptguitestobject.lua" ],
+  "scripts" : ["/lib/inspect.lua", "/penguingui/Util.lua", "ptguitestobject.lua"],
   "scriptDelta" : 15,
 
   "animation" : "/objects/wired/switch/switchtoggle.animation",

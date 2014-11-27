@@ -1,3 +1,7 @@
+-- "version": "Beta v. Enraged Koala",
+-- "author": "PenguinToast",
+-- "version": "0.2",
+-- "support_url": "http://penguintoast.github.io/PenguinGUI"
 -- This script contains all the scripts in this library, so you only need to
 -- include this script for production purposes.
 
