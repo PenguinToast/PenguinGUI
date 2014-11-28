@@ -219,6 +219,7 @@ function List:filter(filter)
     end
   else
     for _,item in ipairs(self.items) do
+      itemCount = itemCount + 1
       item.filtered = nil
     end
   end
