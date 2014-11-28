@@ -35,6 +35,13 @@ function windowTest(panel)
   local testbutton = TextButton(10, 10, 100, 16, "Make window")
   testbutton.onClick = testButtonClick
   panel:add(testbutton)
+
+  local slider = Slider(10, 40, 100, 10, 50, 100, 1)
+  local label = Label(120, 40, "", 10)
+  label:bind("text", Binding.concat(
+               "Sample Slider: ", Binding(slider, "value")))
+  panel:add(slider)
+  panel:add(label)
 end
 
 function listTest(panel)

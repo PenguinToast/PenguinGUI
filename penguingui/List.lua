@@ -53,11 +53,11 @@ function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
   local slider
   if horizontal then
     slider = Slider(borderSize + 0.5, borderSize + 0.5
-                    , width - borderSize * 2 - 1, barSize, 0, 1, false)
+                    , width - borderSize * 2 - 1, barSize, 0, 0, 1, false)
   else
     slider = Slider(width - borderSize - barSize - 0.5
                     , borderSize + 0.5, barSize
-                    , height - borderSize * 2 - 1, 0, 1, true)
+                    , height - borderSize * 2 - 1, 0, 0, 1, true)
   end
   slider.lineSize = 0
   slider.handleBorderSize = 0

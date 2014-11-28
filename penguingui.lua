@@ -1895,19 +1895,21 @@ Slider.handlePressedColor = "#545454"
 Slider.handleSize = 5
 Slider.value = nil
 Slider.maxValue = nil
+Slider.minValue = nil
 
 
-function Slider:_init(x, y, width, height, max, step, vertical)
+function Slider:_init(x, y, width, height, min, max, step, vertical)
   Component._init(self)
   self.x = x
   self.y = y
   self.width = width
   self.height = height
   self.mouseOver = false
+  self.minValue = min or 0
   self.maxValue = max or 1
   self.valueStep = step
   self.vertical = vertical
-  self.value = 0
+  self.value = self.minValue
   self:addListener(
     "maxValue",
     function(t, k, old, new)
@@ -1926,27 +1928,30 @@ function Slider:update(dt)
     else
       local mousePos = GUI.mousePosition
       local lineSize = self.lineSize
+      local min = self.minValue
       local max = self.maxValue
+      local len = max - min
       local step = self.valueStep
       local sliderValue
       if self.vertical then
         sliderValue = (mousePos[2] - self.dragOffset
                          - (self.y + self.offset[2] + lineSize)
-                      ) / (self.height - lineSize * 2 - self.handleSize) * max
+                      ) / (self.height - lineSize * 2 - self.handleSize) * len
       else
         sliderValue = (mousePos[1] - self.dragOffset
                          - (self.x + self.offset[1] + lineSize)
-                      ) / (self.width - lineSize * 2 - self.handleSize) * max
+                      ) / (self.width - lineSize * 2 - self.handleSize) * len
       end
       if sliderValue ~= sliderValue then -- sliderValue is NaN
         sliderValue = 0
       end
       sliderValue = math.max(sliderValue, 0)
-      sliderValue = math.min(sliderValue, max)
+      sliderValue = math.min(sliderValue, len)
       if step then
         local stepFreq = 1 / step
         sliderValue = math.floor(sliderValue * stepFreq + 0.5) / stepFreq
       end
+      sliderValue = sliderValue + min
       self.value = sliderValue
     end
   end
@@ -1957,14 +1962,16 @@ function Slider:update(dt)
       local step = self.valueStep
       local direction = self.moving
       local max = self.maxValue
+      local min = self.minValue
+      local len = max - min
       if not step then
-        step = max / 100
+        step = len / 100
       end
       local value = self.value
       if direction then
         self.value = math.min(value + step, max)
       else
-        self.value = math.max(value - step, 0)
+        self.value = math.max(value - step, min)
       end
     end
   end
@@ -2026,10 +2033,13 @@ function Slider:draw(dt)
 end
 
 function Slider:getPercentage()
-  if self.maxValue == 0 then
+  local min = self.minValue
+  local max = self.maxValue
+  local len = max - min
+  if len == 0 then
     return 0
   else
-    return self.value / self.maxValue
+    return (self.value - min) / len
   end
 end
 
@@ -2123,11 +2133,11 @@ function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
   local slider
   if horizontal then
     slider = Slider(borderSize + 0.5, borderSize + 0.5
-                    , width - borderSize * 2 - 1, barSize, 0, 1, false)
+                    , width - borderSize * 2 - 1, barSize, 0, 0, 1, false)
   else
     slider = Slider(width - borderSize - barSize - 0.5
                     , borderSize + 0.5, barSize
-                    , height - borderSize * 2 - 1, 0, 1, true)
+                    , height - borderSize * 2 - 1, 0, 0, 1, true)
   end
   slider.lineSize = 0
   slider.handleBorderSize = 0
