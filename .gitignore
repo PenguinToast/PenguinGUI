@@ -1,4 +1,7 @@
 GPATH
 GTAGS
 GRTAGS
+.project
+.buildpath
+.settings/
 

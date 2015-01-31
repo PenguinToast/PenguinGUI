@@ -1,11 +1,11 @@
 {
     "name": "PenguinGUI",
-    "version": "Beta v. Enraged Koala",
+    "version": "Beta v. Upbeat Giraffe",
     "path": ".",
     "dependencies": [],
     "metadata": {
         "author": "PenguinToast",
-        "version": "0.3.1",
+        "version": "0.3.2",
         "description": "Extensible object-oriented GUI library in LUA for canvases",
         "support_url": "http://penguintoast.github.io/PenguinGUI"
     }
