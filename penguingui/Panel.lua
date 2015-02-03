@@ -1,4 +1,4 @@
---- A group of components, will hopefully eventually manage layouts (TODO).
+--- A group of components.
 -- @classmod Panel
 -- @usage
 -- -- Create an empty panel.
@@ -22,5 +22,24 @@ end
 
 function Panel:add(child)
   Component.add(self, child)
-  self:pack()
+  self:updateLayoutManager()
+  if not self.layoutManager then
+    self:pack()
+  end
+end
+
+--- Sets the layout manager for this Panel.
+-- @param layout The new layout manager for this panel, or nil to clear the
+--           layout manager.
+function Panel:setLayoutManager(layout)
+  self.layoutManager = layout
+  self:updateLayoutManager()
+end
+
+--- Updates the components in this panel according to its layout manager.
+function Panel:updateLayoutManager()
+  local layout = self.layoutManager
+  if layout then
+    layout:layout(self)
+  end
 end

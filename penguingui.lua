@@ -21,6 +21,9 @@ function PtUtil.library()
     "/penguingui/Component.lua",
     "/penguingui/Line.lua",
     "/penguingui/Rectangle.lua",
+    "/penguingui/Align.lua",
+    "/penguingui/HorizontalLayout.lua",
+    "/penguingui/VerticalLayout.lua",
     "/penguingui/Panel.lua",
     "/penguingui/Frame.lua",
     "/penguingui/Button.lua",
@@ -1166,6 +1169,131 @@ function Rectangle:draw(dt)
 end
 
 --------------------------------------------------------------------------------
+-- Align.lua
+--------------------------------------------------------------------------------
+
+Align = {}
+
+Align.LEFT = 0
+Align.CENTER = 1
+Align.RIGHT = 2
+Align.TOP = 3
+Align.BOTTOM = 4
+
+--------------------------------------------------------------------------------
+-- HorizontalLayout.lua
+--------------------------------------------------------------------------------
+
+HorizontalLayout = class()
+
+HorizontalLayout.padding = nil
+HorizontalLayout.vAlignment = Align.CENTER
+HorizontalLayout.hAlignment = Align.LEFT
+
+
+function HorizontalLayout:_init(padding, hAlign, vAlign)
+  self.padding = padding or 0
+  if hAlign then
+    self.hAlignment = hAlign
+  end
+  if vAlign then
+    self.vAlignment = vAlign
+  end
+end
+
+
+function HorizontalLayout:layout(container)
+  local vAlign = self.vAlignment
+  local hAlign = self.hAlignment
+  local padding = self.padding
+
+  local components = container.children
+  local totalWidth = 0
+  for _,component in ipairs(components) do
+    totalWidth = totalWidth + component.width
+  end
+  totalWidth = totalWidth + (#components - 1) * padding
+
+  local startX
+  if hAlign == Align.LEFT then
+    startX = 0
+  elseif hAlign == Align.CENTER then
+    startX = (container.width - totalWidth) / 2
+  else -- ALIGN_RIGHT
+    startX = container.width - totalWidth
+  end
+
+  for _,component in ipairs(components) do
+    component.x = startX
+    if vAlign == Align.TOP then
+      component.y = container.height - component.height
+    elseif vAlign == Align.CENTER then
+      component.y = (container.height - component.height) / 2
+    else -- ALIGN_BOTTOM
+      component.y = 0
+    end
+    startX = startX + component.width + padding
+  end
+end
+
+--------------------------------------------------------------------------------
+-- VerticalLayout.lua
+--------------------------------------------------------------------------------
+
+VerticalLayout = class()
+
+VerticalLayout.padding = nil
+VerticalLayout.vAlignment = Align.TOP
+VerticalLayout.hAlignment = Align.CENTER
+
+
+function VerticalLayout:_init(padding, vAlign, hAlign)
+  self.padding = padding or 0
+  if hAlign then
+    self.hAlignment = hAlign
+  end
+  if vAlign then
+    self.vAlignment = vAlign
+  end
+end
+
+
+function VerticalLayout:layout()
+  local vAlign = self.vAlignment
+  local hAlign = self.hAlignment
+  local padding = self.padding
+
+  local container = self.component
+  local components = container.children
+  local totalHeight = 0
+  for _,component in ipairs(components) do
+    totalHeight = totalHeight + component.height
+  end
+  totalHeight = totalHeight + (#components - 1) * padding
+
+  local startY
+  if vAlign == Align.TOP then
+    startY = container.height - totalHeight
+  elseif vAlign == Align.CENTER then
+    startY = (container.height - totalHeight) / 2
+  else -- ALIGN_BOTTOM
+    startY = 0
+  end
+
+  for _,component in ipairs(components) do
+    component.y = startY
+    if hAlign == Align.LEFT then
+      component.x = 0
+    elseif hAlign == Align.CENTER then
+      component.x = (container.width - component.width) / 2
+    else -- ALIGN_RIGHT
+      component.x = container.width - component.width
+    end
+    startY = startY + component.height + padding
+  end
+end
+
+--------------------------------------------------------------------------------
 -- Panel.lua
 --------------------------------------------------------------------------------
 
@@ -1181,7 +1309,22 @@ end
 
 function Panel:add(child)
   Component.add(self, child)
-  self:pack()
+  self:updateLayoutManager()
+  if not self.layoutManager then
+    self:pack()
+  end
+end
+
+function Panel:setLayoutManager(layout)
+  self.layoutManager = layout
+  self:updateLayoutManager()
+end
+
+function Panel:updateLayoutManager()
+  local layout = self.layoutManager
+  if layout then
+    layout:layout(self)
+  end
 end
 
 --------------------------------------------------------------------------------
