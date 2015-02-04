@@ -34,11 +34,12 @@ end
 
 --- @section end
 
-function HorizontalLayout:layout(container)
+function HorizontalLayout:layout()
   local vAlign = self.vAlignment
   local hAlign = self.hAlignment
   local padding = self.padding
 
+  local container = self.container
   local components = container.children
   local totalWidth = 0
   for _,component in ipairs(components) do

@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 PtUtil = {}
-PtUtil.charWidths = {6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 6, 6, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 4, 8, 12, 10, 12, 12, 4, 6, 6, 8, 8, 6, 8, 4, 12, 10, 6, 10, 10, 10, 10, 10, 10, 10, 10, 4, 4, 8, 8, 8, 10, 12, 10, 10, 8, 10, 8, 8, 10, 10, 8, 10, 10, 8, 12, 10, 10, 10, 10, 10, 10, 8, 10, 10, 12, 10, 10, 8, 6, 12, 6, 8, 10, 6, 10, 10, 9, 10, 10, 8, 10, 10, 4, 6, 9, 4, 12, 10, 10, 10, 10, 8, 10, 8, 10, 10, 12, 8, 10, 10, 8, 4, 8, 10, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 6, 10, 10, 15, 10, 5, 13, 7, 14, 15, 15, 10, 6, 14, 12, 16, 14, 7, 7, 6, 11, 12, 8, 7, 6, 16, 16, 15, 15, 15, 10, 10, 10, 10, 10, 10, 10, 14, 10, 8, 8, 8, 8, 8, 8, 8, 8, 13, 10, 10, 10, 10, 10, 10, 10, 13, 10, 10, 10, 10, 10, 14, 11, 10, 10, 10, 10, 10, 10, 15, 9, 10, 10, 10, 10, 8, 8, 8, 8, 12, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 15, 10}
+PtUtil.charWidths = {4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 4, 4, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 6, 8, 7, 8, 8, 3, 4, 4, 6, 6, 4, 6, 3, 8, 7, 4, 7, 7, 7, 7, 7, 7, 7, 7, 3, 3, 6, 6, 6, 7, 8, 7, 7, 6, 7, 6, 6, 7, 7, 6, 7, 7, 6, 8, 7, 7, 7, 7, 7, 7, 6, 7, 7, 8, 7, 7, 6, 4, 8, 4, 6, 7, 4, 7, 7, 6, 7, 7, 6, 7, 7, 3, 4, 6, 3, 8, 7, 7, 7, 7, 6, 7, 6, 7, 7, 8, 6, 7, 7, 6, 3, 6, 7, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 4, 7, 7, 10, 7, 3, 9, 5, 10, 10, 10, 7, 4, 10, 8, 11, 10, 5, 5, 4, 8, 8, 6, 5, 4, 11, 11, 10, 10, 10, 7, 7, 7, 7, 7, 7, 7, 10, 7, 6, 6, 6, 6, 6, 6, 6, 6, 9, 7, 7, 7, 7, 7, 7, 7, 9, 7, 7, 7, 7, 7, 10, 8, 7, 7, 7, 7, 7, 7, 10, 6, 7, 7, 7, 7, 6, 6, 6, 6, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 10, 7}
 
 function PtUtil.library()
   return {
@@ -42,8 +42,8 @@ function PtUtil.library()
 end
 
 function PtUtil.drawText(text, options, fontSize, color)
+  fontSize = fontSize or 16
   if text:byte() == 32 then -- If it starts with a space, offset the string
-    fontSize = fontSize or 16
     local xOffset = PtUtil.getStringWidth(" ", fontSize)
     local oldX = options.position[1]
     options.position[1] = oldX + xOffset
@@ -65,7 +65,7 @@ function PtUtil.getStringWidth(text, fontSize)
 end
 
 function PtUtil.getFontScale(size)
-  return (size - 16) * 0.0625 + 1
+  return size / 11
 end
 
 PtUtil.specialKeyMap = {
@@ -1202,11 +1202,12 @@ function HorizontalLayout:_init(padding, hAlign, vAlign)
 end
 
 
-function HorizontalLayout:layout(container)
+function HorizontalLayout:layout()
   local vAlign = self.vAlignment
   local hAlign = self.hAlignment
   local padding = self.padding
 
+  local container = self.container
   local components = container.children
   local totalWidth = 0
   for _,component in ipairs(components) do
@@ -1263,7 +1264,7 @@ function VerticalLayout:layout()
   local hAlign = self.hAlignment
   local padding = self.padding
 
-  local container = self.component
+  local container = self.container
   local components = container.children
   local totalHeight = 0
   for _,component in ipairs(components) do
@@ -1273,15 +1274,15 @@ function VerticalLayout:layout()
 
   local startY
   if vAlign == Align.TOP then
-    startY = container.height - totalHeight
+    startY = container.height
   elseif vAlign == Align.CENTER then
-    startY = (container.height - totalHeight) / 2
+    startY = container.height - (container.height - totalHeight) / 2
   else -- ALIGN_BOTTOM
-    startY = 0
+    startY = totalHeight
   end
 
   for _,component in ipairs(components) do
-    component.y = startY
+    component.y = startY - component.height
     if hAlign == Align.LEFT then
       component.x = 0
     elseif hAlign == Align.CENTER then
@@ -1289,7 +1290,7 @@ function VerticalLayout:layout()
     else -- ALIGN_RIGHT
       component.x = container.width - component.width
     end
-    startY = startY + component.height + padding
+    startY = startY - (component.height + padding)
   end
 end
 
@@ -1300,10 +1301,16 @@ end
 Panel = class(Component)
 
 
-function Panel:_init(x, y)
+function Panel:_init(x, y, width, height)
   Component._init(self)
   self.x = x
   self.y = y
+  if width then
+    self.width = width
+  end
+  if height then
+    self.height = height
+  end
 end
 
 
@@ -1317,13 +1324,14 @@ end
 
 function Panel:setLayoutManager(layout)
   self.layoutManager = layout
+  layout.container = self
   self:updateLayoutManager()
 end
 
 function Panel:updateLayoutManager()
   local layout = self.layoutManager
   if layout then
-    layout:layout(self)
+    layout:layout()
   end
 end
 

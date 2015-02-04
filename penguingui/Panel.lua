@@ -12,10 +12,18 @@ Panel = class(Component)
 -- 
 -- @param x The x coordinate of the new component, relative to its parent.
 -- @param y The y coordinate of the new component, relative to its parent.
-function Panel:_init(x, y)
+-- @param width[opt] The width of the new component.
+-- @param height[opt] The height of the new component.
+function Panel:_init(x, y, width, height)
   Component._init(self)
   self.x = x
   self.y = y
+  if width then
+    self.width = width
+  end
+  if height then
+    self.height = height
+  end
 end
 
 --- @section end
@@ -33,6 +41,7 @@ end
 --           layout manager.
 function Panel:setLayoutManager(layout)
   self.layoutManager = layout
+  layout.container = self
   self:updateLayoutManager()
 end
 
@@ -40,6 +49,6 @@ end
 function Panel:updateLayoutManager()
   local layout = self.layoutManager
   if layout then
-    layout:layout(self)
+    layout:layout()
   end
 end

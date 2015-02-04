@@ -39,7 +39,7 @@ function VerticalLayout:layout()
   local hAlign = self.hAlignment
   local padding = self.padding
 
-  local container = self.component
+  local container = self.container
   local components = container.children
   local totalHeight = 0
   for _,component in ipairs(components) do
@@ -49,15 +49,15 @@ function VerticalLayout:layout()
 
   local startY
   if vAlign == Align.TOP then
-    startY = container.height - totalHeight
+    startY = container.height
   elseif vAlign == Align.CENTER then
-    startY = (container.height - totalHeight) / 2
+    startY = container.height - (container.height - totalHeight) / 2
   else -- ALIGN_BOTTOM
-    startY = 0
+    startY = totalHeight
   end
 
   for _,component in ipairs(components) do
-    component.y = startY
+    component.y = startY - component.height
     if hAlign == Align.LEFT then
       component.x = 0
     elseif hAlign == Align.CENTER then
@@ -65,6 +65,6 @@ function VerticalLayout:layout()
     else -- ALIGN_RIGHT
       component.x = container.width - component.width
     end
-    startY = startY + component.height + padding
+    startY = startY - (component.height + padding)
   end
 end

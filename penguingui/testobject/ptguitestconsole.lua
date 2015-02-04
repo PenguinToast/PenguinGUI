@@ -3,7 +3,8 @@ function init()
   local tests = {
     "textTest",
     "windowTest",
-    "listTest"
+    "listTest",
+    "labelTest"
   }
   local y = 190
   local pad = 10
@@ -16,6 +17,19 @@ function init()
     GUI.add(panel)
     panel:bind("visible", Binding(button, "selected"))
     _ENV[test](panel)
+  end
+end
+
+function labelTest(panel)
+  local x = 10
+  local y = 10
+  local text = "ABCDEabcdegjp^|"
+  for i=5,25,1 do
+    local label = Label(x, y, text, i)
+    local rect = Rectangle(x, y, label.width, label.height, "red")
+    panel:add(rect)
+    panel:add(label)
+    y = y + label.height + 1
   end
 end
 

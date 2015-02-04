@@ -2,7 +2,7 @@
 -- @module PtUtil
 PtUtil = {}
 -- Pixel widths of the first 255 characters. This was generated in Java.
-PtUtil.charWidths = {6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 6, 6, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 4, 8, 12, 10, 12, 12, 4, 6, 6, 8, 8, 6, 8, 4, 12, 10, 6, 10, 10, 10, 10, 10, 10, 10, 10, 4, 4, 8, 8, 8, 10, 12, 10, 10, 8, 10, 8, 8, 10, 10, 8, 10, 10, 8, 12, 10, 10, 10, 10, 10, 10, 8, 10, 10, 12, 10, 10, 8, 6, 12, 6, 8, 10, 6, 10, 10, 9, 10, 10, 8, 10, 10, 4, 6, 9, 4, 12, 10, 10, 10, 10, 8, 10, 8, 10, 10, 12, 8, 10, 10, 8, 4, 8, 10, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 6, 10, 10, 15, 10, 5, 13, 7, 14, 15, 15, 10, 6, 14, 12, 16, 14, 7, 7, 6, 11, 12, 8, 7, 6, 16, 16, 15, 15, 15, 10, 10, 10, 10, 10, 10, 10, 14, 10, 8, 8, 8, 8, 8, 8, 8, 8, 13, 10, 10, 10, 10, 10, 10, 10, 13, 10, 10, 10, 10, 10, 14, 11, 10, 10, 10, 10, 10, 10, 15, 9, 10, 10, 10, 10, 8, 8, 8, 8, 12, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 15, 10}
+PtUtil.charWidths = {4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 4, 4, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 6, 8, 7, 8, 8, 3, 4, 4, 6, 6, 4, 6, 3, 8, 7, 4, 7, 7, 7, 7, 7, 7, 7, 7, 3, 3, 6, 6, 6, 7, 8, 7, 7, 6, 7, 6, 6, 7, 7, 6, 7, 7, 6, 8, 7, 7, 7, 7, 7, 7, 6, 7, 7, 8, 7, 7, 6, 4, 8, 4, 6, 7, 4, 7, 7, 6, 7, 7, 6, 7, 7, 3, 4, 6, 3, 8, 7, 7, 7, 7, 6, 7, 6, 7, 7, 8, 6, 7, 7, 6, 3, 6, 7, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 4, 7, 7, 10, 7, 3, 9, 5, 10, 10, 10, 7, 4, 10, 8, 11, 10, 5, 5, 4, 8, 8, 6, 5, 4, 11, 11, 10, 10, 10, 7, 7, 7, 7, 7, 7, 7, 10, 7, 6, 6, 6, 6, 6, 6, 6, 6, 9, 7, 7, 7, 7, 7, 7, 7, 9, 7, 7, 7, 7, 7, 10, 8, 7, 7, 7, 7, 7, 7, 10, 6, 7, 7, 7, 7, 6, 6, 6, 6, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 10, 7}
 
 --- Get a list of all lua scripts in the PenguinGUI library.
 --
@@ -40,8 +40,9 @@ end
 --
 -- All parameters are identical to those of console.canvasDrawText
 function PtUtil.drawText(text, options, fontSize, color)
+  -- Convert to pixels
+  fontSize = fontSize or 16
   if text:byte() == 32 then -- If it starts with a space, offset the string
-    fontSize = fontSize or 16
     local xOffset = PtUtil.getStringWidth(" ", fontSize)
     local oldX = options.position[1]
     options.position[1] = oldX + xOffset
@@ -68,9 +69,9 @@ end
 
 --- Gets the scale of the specified font size.
 --
--- @param size The font size to get the scale for
+-- @param size The font size to get the scale for.
 function PtUtil.getFontScale(size)
-  return (size - 16) * 0.0625 + 1
+  return size / 11
 end
 
 PtUtil.specialKeyMap = {
