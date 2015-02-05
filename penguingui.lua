@@ -1728,7 +1728,7 @@ function TextField:clickEvent(position, button, pressed)
       local charWidth = PtUtil.getStringWidth(text:sub(i, i), self.fontSize)
       if xPos < (totalWidth + charWidth * 0.6) then
         self:setCursorPosition(i - 1)
-        return
+        return true
       end
       totalWidth = totalWidth + charWidth
     end
