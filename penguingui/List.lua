@@ -45,6 +45,7 @@ function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
   self.topIndex = 1
   self.bottomIndex = 1
   self.itemCount = 0
+  self.horizontal = horizontal
   self.mouseOver = false
 
   -- Create scrollbar

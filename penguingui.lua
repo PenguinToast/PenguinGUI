@@ -1992,7 +1992,7 @@ TextRadioButton = class(RadioButton)
 TextRadioButton.hoverColor = "#1F1F1F"
 TextRadioButton.pressedColor = "#454545"
 TextRadioButton.checkColor = "#343434"
-TextButton.text = nil
+TextRadioButton.text = nil
 TextRadioButton.textPadding = 2
 
 
@@ -2278,6 +2278,7 @@ function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
   self.topIndex = 1
   self.bottomIndex = 1
   self.itemCount = 0
+  self.horizontal = horizontal
   self.mouseOver = false
 
   local borderSize = self.borderSize

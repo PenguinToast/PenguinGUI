@@ -19,7 +19,7 @@ TextRadioButton.hoverColor = "#1F1F1F"
 TextRadioButton.pressedColor = "#454545"
 TextRadioButton.checkColor = "#343434"
 --- The text of the button.
-TextButton.text = nil
+TextRadioButton.text = nil
 --- The padding between the text and the button edge.
 TextRadioButton.textPadding = 2
 

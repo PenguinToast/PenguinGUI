@@ -196,7 +196,6 @@ function TextField:clickEvent(position, button, pressed)
     end
     self:setCursorPosition(#text)
 
-    -- FIXME focus bug
     return true
   end
 end
