@@ -37,6 +37,7 @@ function Panel:add(child)
 end
 
 --- Sets the layout manager for this Panel.
+-- THIS IS WIP. THE API IS LIKELY TO CHANGE.
 -- @param layout The new layout manager for this panel, or nil to clear the
 --           layout manager.
 function Panel:setLayoutManager(layout)

@@ -159,6 +159,9 @@ function List:removeItem(target)
       return nil, -1
     end
   else -- Remove by item
+    if target == nil then
+      return nil
+    end
     item = target
     index = PtUtil.removeObject(self.items, item)
     if index == -1 then

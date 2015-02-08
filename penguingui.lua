@@ -1670,6 +1670,9 @@ function TextField:draw(dt)
 end
 
 function TextField:setCursorPosition(pos)
+  if pos > #self.text then
+    pos = #self.text
+  end
   self.cursorPosition = pos
 
   if pos < self.textOffset then
@@ -1756,7 +1759,9 @@ function TextField:keyEvent(keyCode, pressed)
 
   if #key == 1 then -- Type a character
     self.text = text:sub(1, cursorPos) .. key .. text:sub(cursorPos + 1)
-    self:setCursorPosition(cursorPos + 1)
+    if text ~= self.text then
+      self:setCursorPosition(cursorPos + 1)
+    end
   else -- Special character
     if key == "backspace" then
       if cursorPos > 0 then
@@ -2377,6 +2382,9 @@ function List:removeItem(target)
       return nil, -1
     end
   else -- Remove by item
+    if target == nil then
+      return nil
+    end
     item = target
     index = PtUtil.removeObject(self.items, item)
     if index == -1 then
