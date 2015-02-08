@@ -25,6 +25,8 @@ TextField.defaultTextHoverColor = "#777777"
 TextField.cursorColor = "white"
 --- The period of the cursor's blinking.
 TextField.cursorRate = 1
+--- The filter pattern to restrict this TextField's text to, or nil if none.
+TextField.filter = nil
 
 --- Constructor
 -- @section
@@ -220,15 +222,26 @@ function TextField:keyEvent(keyCode, pressed)
   local text = self.text
   local cursorPos = self.cursorPosition
 
+  local filter = self.filter
   if #key == 1 then -- Type a character
-    self.text = text:sub(1, cursorPos) .. key .. text:sub(cursorPos + 1)
-    if text ~= self.text then
-      self:setCursorPosition(cursorPos + 1)
+    text = text:sub(1, cursorPos) .. key .. text:sub(cursorPos + 1)
+    if filter then
+      if not text:match(filter) then
+        return true
+      end
     end
+    self.text = text
+    self:setCursorPosition(cursorPos + 1)
   else -- Special character
     if key == "backspace" then
       if cursorPos > 0 then
-        self.text = text:sub(1, cursorPos - 1) .. text:sub(cursorPos + 1)
+        text = text:sub(1, cursorPos - 1) .. text:sub(cursorPos + 1)
+        if filter then
+          if not text:match(filter) then
+            return true
+          end
+        end
+        self.text = text
         self:setCursorPosition(cursorPos - 1)
       end
     elseif key == "enter" then
@@ -237,7 +250,13 @@ function TextField:keyEvent(keyCode, pressed)
       end
     elseif key == "delete" then
       if cursorPos < #text then
-        self.text = text:sub(1, cursorPos) .. text:sub(cursorPos + 2)
+        text = text:sub(1, cursorPos) .. text:sub(cursorPos + 2)
+        if filter then
+          if not text:match(filter) then
+            return true
+          end
+        end
+        self.text = text
       end
     elseif key == "right" then
       self:setCursorPosition(math.min(cursorPos + 1, #text))
