@@ -28,6 +28,11 @@ TextField.cursorRate = 1
 --- The filter pattern to restrict this TextField's text to, or nil if none.
 TextField.filter = nil
 
+--- Delay before a key starts repeating.
+TextField.repeatDelay = 0.5
+--- Interval between key repeats.
+TextField.repeatInterval = 0.05
+
 --- Constructor
 -- @section
 
@@ -53,12 +58,25 @@ function TextField:_init(x, y, width, height, defaultText)
   self.textOffset = 0
   self.textClip = nil
   self.mouseOver = false
+  self.keyTimes = {}
 end
 
 --- @section end
 
 function TextField:update(dt)
   if self.hasFocus then
+    -- Key repeat
+    local keyTimes = self.keyTimes
+    for key,dur in pairs(keyTimes) do
+      local time = dur + dt
+      keyTimes[key] = time
+      if time > self.repeatDelay + self.repeatInterval then
+        self:keyEvent(key, true)
+        keyTimes[key] = self.repeatDelay
+      end
+    end
+    
+    -- Cursor blink
     local timer = self.cursorTimer
     local rate = self.cursorRate
     timer = timer - dt
@@ -206,6 +224,13 @@ function TextField:clickEvent(position, button, pressed)
 end
 
 function TextField:keyEvent(keyCode, pressed)
+  -- Update key timings
+  if pressed then
+    self.keyTimes[keyCode] = self.keyTimes[keyCode] or 0
+  else
+    self.keyTimes[keyCode] = nil
+  end
+  
   -- Ignore key releases and any keys pressed while ctrl or alt is held
   local keyState = GUI.keyState
   if not pressed
