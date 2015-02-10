@@ -1,6 +1,6 @@
 -- "version": "Beta v. Upbeat Giraffe",
 -- "author": "PenguinToast",
--- "version": "0.3.2",
+-- "version": "0.4",
 -- "support_url": "http://penguintoast.github.io/PenguinGUI"
 -- This script contains all the scripts in this library, so you only need to
 -- include this script for production purposes.
@@ -1586,6 +1586,9 @@ TextField.cursorColor = "white"
 TextField.cursorRate = 1
 TextField.filter = nil
 
+TextField.repeatDelay = 0.5
+TextField.repeatInterval = 0.05
+
 
 function TextField:_init(x, y, width, height, defaultText)
   Component._init(self)
@@ -1602,11 +1605,22 @@ function TextField:_init(x, y, width, height, defaultText)
   self.textOffset = 0
   self.textClip = nil
   self.mouseOver = false
+  self.keyTimes = {}
 end
 
 
 function TextField:update(dt)
   if self.hasFocus then
+    local keyTimes = self.keyTimes
+    for key,dur in pairs(keyTimes) do
+      local time = dur + dt
+      keyTimes[key] = time
+      if time > self.repeatDelay + self.repeatInterval then
+        self:keyEvent(key, true)
+        keyTimes[key] = self.repeatDelay
+      end
+    end
+    
     local timer = self.cursorTimer
     local rate = self.cursorRate
     timer = timer - dt
@@ -1743,6 +1757,12 @@ function TextField:clickEvent(position, button, pressed)
 end
 
 function TextField:keyEvent(keyCode, pressed)
+  if pressed then
+    self.keyTimes[keyCode] = self.keyTimes[keyCode] or 0
+  else
+    self.keyTimes[keyCode] = nil
+  end
+  
   local keyState = GUI.keyState
   if not pressed
     or keyState[305] or keyState[306]

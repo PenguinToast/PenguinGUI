@@ -5,7 +5,7 @@
     "dependencies": [],
     "metadata": {
         "author": "PenguinToast",
-        "version": "0.3.2",
+        "version": "0.4",
         "description": "Extensible object-oriented GUI library in LUA for canvases",
         "support_url": "http://penguintoast.github.io/PenguinGUI"
     }
