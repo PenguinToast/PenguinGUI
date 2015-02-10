@@ -45,10 +45,16 @@
 <h2>Contents</h2>
 <ul>
 <li><a href="#Fields">Fields</a></li>
-<li><a href="#Constructor">Constructor </a></li>
 </ul>
 
 
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/Binding.html">Binding</a></li>
+  <li><a href="../modules/GUI.html">GUI</a></li>
+  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
+  <li><strong>penguingui.align</strong></li>
+</ul>
 <h2>Classes</h2>
 <ul class="$(kind=='Topics' and '' or 'nowrap'">
   <li><a href="../classes/Button.html">Button</a></li>
@@ -66,59 +72,40 @@
   <li><a href="../classes/Slider.html">Slider</a></li>
   <li><a href="../classes/TextButton.html">TextButton</a></li>
   <li><a href="../classes/TextField.html">TextField</a></li>
-  <li><strong>TextRadioButton</strong></li>
+  <li><a href="../classes/TextRadioButton.html">TextRadioButton</a></li>
   <li><a href="../classes/VerticalLayout.html">VerticalLayout</a></li>
-</ul>
-<h2>Modules</h2>
-<ul class="$(kind=='Topics' and '' or 'nowrap'">
-  <li><a href="../modules/Binding.html">Binding</a></li>
-  <li><a href="../modules/GUI.html">GUI</a></li>
-  <li><a href="../modules/PtUtil.html">PtUtil</a></li>
-  <li><a href="../modules/penguingui.align.html">penguingui.align</a></li>
 </ul>
 
 </div>
 
 <div id="content">
 
-<h1>Class <code>TextRadioButton</code></h1>
-<p>A radio button with text.</p>
-<p>
- Extends <a href="../classes/RadioButton.html#">RadioButton</a>, so all fields of <a href="../classes/RadioButton.html#">RadioButton</a> are inherited.</p>
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example">
- -- Create a group of buttons that print when they are selected.
- local group = Panel(0, 0)
- local numButtons = 10
- for i = 1, numButtons, 1 do
-   local button = TextRadioButton(0, i * 20, 60, 16, &quot;Button &quot; .. i)
-   button:addListener(&quot;selected&quot;, function(t, k, old, new)
-     if new then
-       print(t.text .. &quot; was selected&quot;)
-     end
-   end)
-   group:add(button)
- end</pre>
-    </ul>
+<h1>Module <code>penguingui.align</code></h1>
+<p>Alignment enum</p>
+<p></p>
 
 
 <h2><a href="#Fields">Fields</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#TextRadioButton.text">TextRadioButton.text</a></td>
-	<td class="summary">The text of the button.</td>
+	<td class="name" nowrap><a href="#Align.BOTTOM">Align.BOTTOM</a></td>
+	<td class="summary">Align to the bottom.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#TextRadioButton.textPadding">TextRadioButton.textPadding</a></td>
-	<td class="summary">The padding between the text and the button edge.</td>
+	<td class="name" nowrap><a href="#Align.CENTER">Align.CENTER</a></td>
+	<td class="summary">Align to the center.</td>
 	</tr>
-</table>
-<h2><a href="#Constructor">Constructor </a></h2>
-<table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#TextRadioButton:_init">TextRadioButton:_init (x, y, width, height, text)</a></td>
-	<td class="summary">Constructs a new TextRadioButton.</td>
+	<td class="name" nowrap><a href="#Align.LEFT">Align.LEFT</a></td>
+	<td class="summary">Align to the left.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Align.RIGHT">Align.RIGHT</a></td>
+	<td class="summary">Align to the right.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Align.TOP">Align.TOP</a></td>
+	<td class="summary">Align to the top.</td>
 	</tr>
 </table>
 
@@ -130,11 +117,11 @@
 
     <dl class="function">
     <dt>
-    <a name = "TextRadioButton.text"></a>
-    <strong>TextRadioButton.text</strong>
+    <a name = "Align.BOTTOM"></a>
+    <strong>Align.BOTTOM</strong>
     </dt>
     <dd>
-    The text of the button.
+    Align to the bottom.
 
 
 
@@ -144,11 +131,11 @@
 
 </dd>
     <dt>
-    <a name = "TextRadioButton.textPadding"></a>
-    <strong>TextRadioButton.textPadding</strong>
+    <a name = "Align.CENTER"></a>
+    <strong>Align.CENTER</strong>
     </dt>
     <dd>
-    The padding between the text and the button edge.
+    Align to the center.
 
 
 
@@ -157,37 +144,42 @@
 
 
 </dd>
-</dl>
-    <h2><a name="Constructor"></a>Constructor </h2>
-
-
-    <dl class="function">
     <dt>
-    <a name = "TextRadioButton:_init"></a>
-    <strong>TextRadioButton:_init (x, y, width, height, text)</strong>
+    <a name = "Align.LEFT"></a>
+    <strong>Align.LEFT</strong>
     </dt>
     <dd>
-    Constructs a new TextRadioButton.
+    Align to the left.
 
 
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">x</span>
-         The x coordinate of the new component, relative to its parent.
-        </li>
-        <li><span class="parameter">y</span>
-         The y coordinate of the new component, relative to its parent.
-        </li>
-        <li><span class="parameter">width</span>
-         The width of the new component.
-        </li>
-        <li><span class="parameter">height</span>
-         The height of the new component.
-        </li>
-        <li><span class="parameter">text</span>
-         The text of this radio button.
-        </li>
-    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Align.RIGHT"></a>
+    <strong>Align.RIGHT</strong>
+    </dt>
+    <dd>
+    Align to the right.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Align.TOP"></a>
+    <strong>Align.TOP</strong>
+    </dt>
+    <dd>
+    Align to the top.
+
+
 
 
 

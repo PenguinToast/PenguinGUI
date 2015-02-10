@@ -46,7 +46,6 @@
 <ul>
 <li><a href="#Fields">Fields</a></li>
 <li><a href="#Constructor">Constructor </a></li>
-<li><a href="#Methods">Methods</a></li>
 </ul>
 
 
@@ -65,10 +64,10 @@
   <li><a href="../classes/RadioButton.html">RadioButton</a></li>
   <li><a href="../classes/Rectangle.html">Rectangle</a></li>
   <li><a href="../classes/Slider.html">Slider</a></li>
-  <li><strong>TextButton</strong></li>
+  <li><a href="../classes/TextButton.html">TextButton</a></li>
   <li><a href="../classes/TextField.html">TextField</a></li>
   <li><a href="../classes/TextRadioButton.html">TextRadioButton</a></li>
-  <li><a href="../classes/VerticalLayout.html">VerticalLayout</a></li>
+  <li><strong>VerticalLayout</strong></li>
 </ul>
 <h2>Modules</h2>
 <ul class="$(kind=='Topics' and '' or 'nowrap'">
@@ -82,40 +81,37 @@
 
 <div id="content">
 
-<h1>Class <code>TextButton</code></h1>
-<p>A button that has a text label.</p>
+<h1>Class <code>VerticalLayout</code></h1>
+<p>Lays out components vertically.</p>
 <p></p>
     <h3>Usage:</h3>
     <ul>
         <pre class="example">
- -- Create a text button with the text &quot;Hello&quot;
- local button = TextButton(0, 0, 100, 16, &quot;Hello&quot;)</pre>
+ -- Create a vertical layout manager with padding of 2.
+ local layout = VerticalLayout(2)</pre>
     </ul>
 
 
 <h2><a href="#Fields">Fields</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#TextButton.text">TextButton.text</a></td>
-	<td class="summary">The text of the button.</td>
+	<td class="name" nowrap><a href="#VerticalLayout.hAlignment">VerticalLayout.hAlignment</a></td>
+	<td class="summary">Horizontal alignment of contained components.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#TextButton.textPadding">TextButton.textPadding</a></td>
-	<td class="summary">The padding between the text and the button edge.</td>
+	<td class="name" nowrap><a href="#VerticalLayout.padding">VerticalLayout.padding</a></td>
+	<td class="summary">Padding between contained components.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#VerticalLayout.vAlignment">VerticalLayout.vAlignment</a></td>
+	<td class="summary">Vertical alignment of contained components.</td>
 	</tr>
 </table>
 <h2><a href="#Constructor">Constructor </a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#TextButton:_init">TextButton:_init (x, y, width, height, text, fontColor)</a></td>
-	<td class="summary">Constructs a button with a text label.</td>
-	</tr>
-</table>
-<h2><a href="#Methods">Methods</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#TextButton:onClick">TextButton:onClick (button)</a></td>
-	<td class="summary">Called when this button is clicked.</td>
+	<td class="name" nowrap><a href="#VerticalLayout:_init">VerticalLayout:_init ([padding=0[, vAlign=Align.TOP[, hAlign=Align.CENTER]]])</a></td>
+	<td class="summary">Constructs a VerticalLayout.</td>
 	</tr>
 </table>
 
@@ -127,11 +123,12 @@
 
     <dl class="function">
     <dt>
-    <a name = "TextButton.text"></a>
-    <strong>TextButton.text</strong>
+    <a name = "VerticalLayout.hAlignment"></a>
+    <strong>VerticalLayout.hAlignment</strong>
     </dt>
     <dd>
-    The text of the button.
+    Horizontal alignment of contained components.
+ Default center.
 
 
 
@@ -141,11 +138,26 @@
 
 </dd>
     <dt>
-    <a name = "TextButton.textPadding"></a>
-    <strong>TextButton.textPadding</strong>
+    <a name = "VerticalLayout.padding"></a>
+    <strong>VerticalLayout.padding</strong>
     </dt>
     <dd>
-    The padding between the text and the button edge.
+    Padding between contained components.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "VerticalLayout.vAlignment"></a>
+    <strong>VerticalLayout.vAlignment</strong>
+    </dt>
+    <dd>
+    Vertical alignment of contained components.
+ Default top.
 
 
 
@@ -160,57 +172,26 @@
 
     <dl class="function">
     <dt>
-    <a name = "TextButton:_init"></a>
-    <strong>TextButton:_init (x, y, width, height, text, fontColor)</strong>
+    <a name = "VerticalLayout:_init"></a>
+    <strong>VerticalLayout:_init ([padding=0[, vAlign=Align.TOP[, hAlign=Align.CENTER]]])</strong>
     </dt>
     <dd>
-    Constructs a button with a text label.
+    Constructs a VerticalLayout.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">x</span>
-         The x coordinate of the new component, relative to its parent.
+        <li><span class="parameter">padding</span>
+         The padding between components within this layout.
+         (<em>default</em> 0)
         </li>
-        <li><span class="parameter">y</span>
-         The y coordinate of the new component, relative to its parent.
+        <li><span class="parameter">vAlign</span>
+         The vertical alignment of the components.
+         (<em>default</em> Align.TOP)
         </li>
-        <li><span class="parameter">width</span>
-         The width of the new component.
-        </li>
-        <li><span class="parameter">height</span>
-         The height of the new component.
-        </li>
-        <li><span class="parameter">text</span>
-         The text string to display on the button. The button's size will
-             be based on this string.
-        </li>
-        <li><span class="parameter">fontColor</span>
-         (optional) The color of the text to display, default white.
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-</dl>
-    <h2><a name="Methods"></a>Methods</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "TextButton:onClick"></a>
-    <strong>TextButton:onClick (button)</strong>
-    </dt>
-    <dd>
-    Called when this button is clicked.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">button</span>
-         The mouse button that was used.
+        <li><span class="parameter">hAlign</span>
+         The horizontal alignment of the components.
+         (<em>default</em> Align.CENTER)
         </li>
     </ul>
 
