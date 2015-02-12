@@ -1,6 +1,7 @@
 --- Lua port of the Java TableLayout library
 
-TableLayout = class()
+-- TableLayout = class()
+TableLayout = {}
 
 local table = table
 local bit32 = bit32
@@ -192,7 +193,7 @@ function reset(self)
     end
     i = i + 1
   end
-  self:columnDefaults = {}
+  self.columnDefaults = {}
 end
 
 function clear(self)
@@ -417,7 +418,7 @@ function computeSize(self)
   local toolkit = self.toolkit
   local cells = self.cells
 
-  if #cells > = and not cells[#cells].endRow then
+  if #cells > 0 and not cells[#cells].endRow then
     self:endRow()
   end
 
