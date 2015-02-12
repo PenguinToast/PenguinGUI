@@ -481,7 +481,269 @@ function computeSize(self)
     if prefWidth < minWidth then
       prefWidth = minWidth
     end
+    if prefHeight < minHeight then
+      prefHeight = minHeight
+    end
+    if maxWidth > 0 and prefWidth > maxWidth then
+      prefWidth = maxWidth
+    end
+    if maxHeight > 0 and prefHeight > maxHeight then
+      prefHeight = maxHeight
+    end
+
+    if c.colspan == 1 then
+      local hpadding = c.computedPadLeft + c.computedPadRight
+      columnPrefWidth[c.column] = math.max(columnPrefWidth[c.column],
+                                           prefWidth + hpadding)
+      columnMinWidth[c.column] = math.max(columnMinWidth[c.column],
+                                          minWidth + hpadding)
+    end
+    local vpadding = c.computedPadTop + c.computedPadBottom
+    rowPrefHeight[c.row] = math.max(rowPrefHeight[c.row],
+                                    prefHeight + vpadding)
+    rowMinHeight[c.row] = math.max(rowMinHeight[c.row],
+                                   minHeight + vpadding)
     
     ::continue::
   end
+
+  for i=1,n,1 do
+    local c = cells[i]
+    if c.ignore or c.expandX == 0 then
+      goto continue2
+    end
+    local nn = column + c.colspan
+    for column=c.column,nn,1 do
+      if expandWidth[column] ~= 0 then
+        goto continue2
+      end
+    end
+    nn = column + c.colspan
+    for column=c.column,nn,1 do
+      expandWidth[column] = c.expandX
+    end
+    ::continue2::
+  end
+
+  for i=1,n,1 do
+    local c = cells[i]
+    if c.ignore or c.colspan == 1 then
+      goto continue3
+    end
+
+    local minWidth = c.minWidth
+    local prefWidth = c.prefWidth
+    local maxWidth = c.maxWidth
+    if prefWidth < minWidth then
+      prefWidth = minWidth
+    end
+    if maxWidth > 0 and prefWidth > maxWidth then
+      prefWidth = maxWidth
+    end
+
+    local spannedMinWidth = -(c.computedPadLeft + c.computedPadRight)
+    local spannedPrefWidth = spannedMinWidth
+    local nn = column + c.colspan
+    for column=c.column,nn,1 do
+      spannedMinWidth = spannedMinWidth + columnMinWidth[column]
+      spannedPrefWidth = spannedPrefWidth + columnPrefWidth[column]
+    end
+
+    local totalExpandWidth = 0
+    nn = column + c.colspan
+    for column=c.column,nn,1 do
+      totalExpandWidth = totalExpandWidth + column
+    end
+
+    local extraMinWidth = math.max(0, minWidth - spannedMinWidth)
+    local extraPrefWidth = math.max(0, prefWidth - spannedPrefWidth)
+    nn = column + c.colspan
+    for column=c.column,nn,1 do
+      local ratio = totalExpandWidth == 0 and 1 / c.colspan or
+        expandWidth[column] / totalExpandWidth
+      columnMinWidth[column] = columnMinWidth[column] + extraMinWidth * ratio
+      columnPrefWidth[column] = columnPrefWidth[column] + extraPrefWidth * ratio
+    end
+    ::continue3::
+  end
+
+  -- Collect uniform size
+  local uniformMinWidth = 0
+  local uniformMinHeight = 0
+  local uniformPrefWidth = 0
+  local uniformPrefHeight = 0
+  for i=1,n,1 do
+    local c = cells[i]
+    if c.ignore then
+      goto continue4
+    end
+    
+    -- Collect uniform sizes.
+    if c.uniformX == true and c.colspan == 1 then
+      local hpadding = c.computedPadLeft + c.computedPadRight
+      uniformMinWidth = math.max(uniformMinWidth, columnMinWidth[c.column] -
+                                   hpadding)
+      uniformPrefWidth = math.max(uniformPrefWidth, columnPrefWidth[c.column] -
+                                   hpadding)
+    end
+    if c.uniformY == true then
+      local vpadding = c.computedPadTop + c.computedPadBottom
+      uniformMinHeight = math.max(uniformMinHeight, columnMinHeight[c.column] -
+                                   vpadding)
+      uniformPrefHeight = math.max(uniformPrefHeight,
+                                   columnPrefHeight[c.column] - vpadding)
+    end
+    ::continue4::
+  end
+
+  -- Size uniform cells to the same width/height
+  if uniformPrefWidth > 0 or uniformPrefHeight > 0 then
+    for i=1,n,1 do
+      local c = cells[i]
+      if c.ignore then
+        goto continue5
+      end
+      if uniformPrefWidth > 0 and c.uniformX == true and c.colspan == 1 then
+        local hpadding = c.computedPadLeft + c.computedPadRight
+        columnMinWidth[c.column] = uniformMinWidth + hpadding
+        columnPrefWidth[c.column] = uniformPrefWidth + hpadding
+      end
+      if uniformPrefHeight > 0 and c.uniformY == true then
+        local vpadding = c.computedPadTop + c.computedPadBottom
+        rowMinHeight[c.column] = uniformMinHeight + vpadding
+        rowPrefHeight[c.column] = uniformPrefHeight + vpadding
+      end
+      ::continue5::
+    end
+  end
+
+  -- Determine table min and pref size.
+  self.tableMinWidth = 0
+  self.tableMinHeight = 0
+  self.tablePrefWidth = 0
+  self.tablePrefHeight = 0
+  for i=1,columns,1 do
+    self.tableMinWidth = self.tableMinWidth + columnMinWidth[i]
+    self.tablePrefWidth = self.tablePrefWidth + columnPrefWidth[i]
+  end
+  for i=1,rows,1 do
+    self.tableMinHeight = self.tableMinHeight + rowMinHeight[i]
+    self.tablePrefHeight = self.tablePrefHeight + math.max(
+      rowPrefHeight[i], rowMinHeight[i])
+  end
+  local hpadding = self.padLeft + self.padRight
+  local vpadding = self.padTop + self.padBottom
+  self.tableMinWidth = self.tableMinWidth + hpadding
+  self.tableMinHeight = self.tableMinHeight + vpadding
+  self.tablePrefWidth = math.max(self.tablePrefWidth + hpadding,
+                                 self.tableMinWidth)
+  self.tablePrefHeight = math.max(self.tablePrefHeight + vpadding,
+                                  self.tableMinHeight)
+end
+
+function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
+  local toolkit = self.toolkit
+  local cells = self.cells
+
+  if self.sizeInvalid then
+    self:computeSize()
+  end
+
+  local hpadding = self.padLeft + self.padRight
+  local vpadding = self.padTop + self.padBottom
+
+  local totalExpandWidth = 0
+  local totalExpandHeight = 0
+  for i=1,self.columns,1 do
+    totalExpandWidth = totalExpandWidth + self.expandWidth[i]
+  end
+  for i=1,self.rows,1 do
+    totalExpandHeight = totalExpandHeight + self.expandHeight[i]
+  end
+
+  -- Size columns and rows between min and pref size using (preferred - min)
+  -- size to weight distributions of extra space.
+  local columnWeightedWidth
+  local totalGrowWidth = self.tablePrefWidth - self.tableMinWidth
+  if totalGrowWidth == 0 then
+    self.columnWeightedWidth = self.columnMinWidth
+  else
+    local extraWidth = math.min(totalGrowWidth,
+                                math.max(0,
+                                         self.layoutWidth - self.tableMinWidth))
+    columnWeightedWidth = ensureSize(self.columnWeightedWidth, columns)
+    self.columnWeightedWidth = columnWeightedWidth
+    for i=1,columns,1 do
+      local growWidth = self.columnPrefWidth[i] - self.columnMinWidth[i]
+      local growRatio = growWidth / totalGrowWidth
+      self.columnWeightedWidth[i] = self.columnMinWidth[i] +
+        extraWidth * growRatio
+    end
+  end
+
+  local rowWeightedHeight
+  local totalGrowHeight = self.tablePrefHeight - self.tableMinHeight
+  if totalGrowHeight == 0 then
+    self.rowWeightedHeight = self.rowMinHeight
+  else
+    local extraHeight = math.min(totalGrowHeight,
+                                 math.max(0,
+                                          self.layoutHeight - self.tableMinHeight))
+    rowWeightedHeight = ensureSize(self.rowWeightedHeight, rows)
+    self.rowWeightedHeight = rowWeightedHeight
+    for i=1,rows,1 do
+      local growHeight = self.rowPrefHeight[i] - self.rowMinHeight[i]
+      local growRatio = growHeight / totalGrowHeight
+      self.rowWeightedHeight[i] = self.rowMinHeight[i] +
+        extraHeight * growRatio
+    end
+  end
+
+  -- Determine widget and cell sizes (before expand or fill)
+  local n = #cells
+  for i=1,n,1 do
+    local c = cells[i]
+    if not c.ignore then
+      local spannedWeightedWidth = 0
+      local nn = column + c.colspan
+      for column=c.column,nn,1 do
+        spannedWeightedWidth = spannedWeightedWidth +
+          self.columnWeightedWidth[column]
+      end
+      local weightedHeight = self.rowWeightedHeight[c.row]
+
+      local prefWidth = c.prefWidth
+      local prefHeight = c.prefHeight
+      local minWidth = c.minWidth
+      local minHeight = c.minHeight
+      local maxWidth = c.maxWidth
+      local maxHeight = c.maxHeight
+      if prefWidth < minWidth then
+        prefWidth = minWidth
+      end
+      if prefHeight < minHeight then
+        prefHeight = minHeight
+      end
+      if maxWidth > 0 and prefWidth > maxWidth then
+        prefWidth = maxWidth
+      end
+      if maxHeight > 0 and prefHeight > maxHeight then
+        prefHeight = maxHeight
+      end
+
+      c.widgetWidth = math.min(spannedWeightedWidth - c.computedPadLeft -
+                                 c.computedPadRight, prefWidth)
+      c.widgetHeight = math.min(spannedWeightedHeight - c.computedPadTop -
+                                  c.computedPadBottom, prefHeight)
+
+      if c.colspan == 1 then
+        self.columnWidth[c.column] = math.max(self.columnWidth[c.column],
+                                              spannedWeightedWidth)
+      end
+      self.rowHeight[c.row] = math.max(self.rowHeight[c.row], weightedHeight)
+    end
+  end
+
+  -- Distribute remaining space to any expanding columns/rows.
+  -- TODO
 end
