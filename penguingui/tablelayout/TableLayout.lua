@@ -512,7 +512,7 @@ function computeSize(self)
     if c.ignore or c.expandX == 0 then
       goto continue2
     end
-    local nn = column + c.colspan
+    local nn = c.column + c.colspan
     for column=c.column,nn,1 do
       if expandWidth[column] ~= 0 then
         goto continue2
@@ -543,7 +543,7 @@ function computeSize(self)
 
     local spannedMinWidth = -(c.computedPadLeft + c.computedPadRight)
     local spannedPrefWidth = spannedMinWidth
-    local nn = column + c.colspan
+    local nn = c.column + c.colspan
     for column=c.column,nn,1 do
       spannedMinWidth = spannedMinWidth + columnMinWidth[column]
       spannedPrefWidth = spannedPrefWidth + columnPrefWidth[column]
@@ -670,7 +670,7 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
   else
     local extraWidth = math.min(totalGrowWidth,
                                 math.max(0,
-                                         self.layoutWidth - self.tableMinWidth))
+                                         layoutWidth - self.tableMinWidth))
     columnWeightedWidth = ensureSize(self.columnWeightedWidth, columns)
     self.columnWeightedWidth = columnWeightedWidth
     for i=1,columns,1 do
@@ -688,7 +688,7 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
   else
     local extraHeight = math.min(totalGrowHeight,
                                  math.max(0,
-                                          self.layoutHeight - self.tableMinHeight))
+                                          layoutHeight - self.tableMinHeight))
     rowWeightedHeight = ensureSize(self.rowWeightedHeight, rows)
     self.rowWeightedHeight = rowWeightedHeight
     for i=1,rows,1 do
@@ -705,7 +705,7 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
     local c = cells[i]
     if not c.ignore then
       local spannedWeightedWidth = 0
-      local nn = column + c.colspan
+      local nn = c.column + c.colspan
       for column=c.column,nn,1 do
         spannedWeightedWidth = spannedWeightedWidth +
           self.columnWeightedWidth[column]
@@ -745,5 +745,192 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
   end
 
   -- Distribute remaining space to any expanding columns/rows.
-  -- TODO
+  if totalExpandWidth > 0 then
+    local extra = layoutWidth - hpadding
+    for i=1,self.columns,1 do
+      extra = extra - self.columnWidth[i]
+    end
+    local used = 0
+    local lastIndex = 0
+    for i=1,self.columns,i do
+      if self.expandWidth[i] ~= 0 then
+        local amount = extra * self.expandWidth[i] / totalExpandWidth
+        self.columnWidth[i] = self.columnWidth[i] + amount
+        used = used + amount
+        lastIndex = i
+      end
+    end
+    self.columnWidth[lastIndex] = self.columnWidth[lastIndex] + extra - used
+  end
+  if totalExpandHeight > 0 then
+    local extra = layoutHeight - vpadding
+    for i=1,self.rows,1 do
+      extra = extra - self.rowHeight[i]
+    end
+    local used = 0
+    local lastIndex = 0
+    for i=1,self.rows,i do
+      if self.expandHeight[i] ~= 0 then
+        local amount = extra * self.expandHeight[i] / totalExpandHeight
+        self.rowHeight[i] = self.rowHeight[i] + amount
+        used = used + amount
+        lastIndex = i
+      end
+    end
+    self.rowHeight[lastIndex] = self.rowHeight[lastIndex] + extra - used
+  end
+
+  -- Distribute any additional width added by colspanned cells to the columns
+  -- spanned.
+  for i=1,n,1 do
+    local c = cells[i]
+    if not c.ignore and c.colspan ~= 1 then
+      local extraWidth = 0
+      local nn = c.column + c.colspan
+      for column=c.column,nn,1 do
+        extraWidth = extraWidth + self.columnWeightedWidth[column] -
+          self.columnWidth[column]
+      end
+      extraWidth = extraWidth - math.max(0, c.computedPadLeft +
+                                           c.computedPadRight)
+
+      extraWidth = extraWidth / c.colspan
+      if extraWidth > 0 then
+        for column=c.column,nn,1 do
+          self.columnWidth[column] = self.columnWidth[column] + extraWidth
+        end
+      end
+    end
+  end
+
+  -- Determine table size.
+  local tableWidth = hpadding
+  local tableHeight = vpadding
+  for i=1,self.columns,1 do
+    tableWidth = tableWidth + self.columnWidth[i]
+  end
+  for i=1,self.rows,1 do
+    tableHeight = tableHeight + self.rowHeight[i]
+  end
+
+  -- Position table within the container.
+  local x = layoutX + self.padLeft
+  if bit32.band(self.align, RIGHT) ~= 0 then
+    x = x + layoutWidth - tableWidth
+  elseif bit32.band(self.align, LEFT) == 0 then -- Center
+    x = x + (layoutWidth - tableWidth) / 2
+  end
+
+  local y = layoutY + self.padLeft
+  if bit32.band(self.align, BOTTOM) ~= 0 then
+    y = y + layoutHeight - tableHeight
+  elseif bit32.band(self.align, TOP) == 0 then -- Center
+    y = y + (layoutHeight - tableHeight) / 2
+  end
+
+  -- Position widgets within cells.
+  local currentX = x
+  local currentY = y
+  for i=1,n,1 do
+    local c = cells[i]
+    if not c.ignore then
+      local spannedCellWidth = 0
+      local nn = c.column + c.colspan
+      for column=c.column,nn,1 do
+        spannedCellWidth = spannedCellWidth + self.columnWidth[column]
+      end
+      spannedCellWidth = spannedCellWidth -
+        (c.computedPadLeft + c.computedPadRight)
+
+      currentX = currentX + c.computedPadLeft
+
+      if c.fillX > 0 then
+        c.widgetWidth = spannedCellWidth * c.fillX
+        local maxWidth = c.maxWidth
+        if maxWidth > 0 then
+          c.widgetWidth = math.min(c.widgetWidth, maxWidth)
+        end
+      end
+      if c.fillY > 0 then
+        c.widgetHeight = self.rowHeight[c.row] * c.fillY - c.computedPadTop -
+          c.computedPadBottom
+        local maxHeight = c.maxHeight
+        if maxHeight > 0 then
+          c.widgetHeight = math.min(c.widgetHeight, maxHeight)
+        end
+      end
+
+      if bit32.band(c.align, LEFT) ~= 0 then
+        c.widgetX = currentX
+      elseif bit32.band(c.align, RIGHT) ~= 0 then
+        c.widgetX = currentX + spannedCellWidth - c.widgetWidth
+      else
+        c.widgetX = currentX + (spannedCellWidth - c.widgetWidth) / 2
+      end
+
+      if bit32.band(c.align, TOP) ~= 0 then
+        c.widgetY = currentY + c.computedPadTop
+      elseif bit32.band(c.align, BOTTOM) ~= 0 then
+        c.widgetY = currentY + self.rowHeight[c.row] - c.widgetHeight -
+          c.computedPadBottom
+      else
+        c.widgetY = currentY + (self.rowHeight[c.row] - c.widgetHeight +
+                                  c.computedPadTop - c.computedPadBottom) / 2
+      end
+
+      if c.endRow then
+        currentX = x
+        currentY = currentY + self.rowHeight[c.row]
+      else
+        currentX = currentX + spannedCellWidth + c.computedPadRight
+      end
+    end
+  end
+
+  -- Draw debug widgets and bounds.
+  if self.debug == Debug.NONE then
+    return
+  end
+  toolkit:clearDebugRectangles(self)
+  currentX = x
+  currentY = y
+  if self.debug == Debug.TABLE or self.debug == Debug.ALL then
+    toolkit:addDebugRectangle(self, Debug.TABLE, layoutX, layoutY, layoutWidth,
+                              layoutHeight)
+    toolkit:addDebugRectangle(self, Debug.TABLE, x, y, tableWidth - hpadding,
+                              tableHeight - vpadding)
+  end
+  for i=1,n,1 do
+    local c = cells[i]
+    if not c.ignore then
+      -- Widget bounds.
+      if self.debug == Debug.WIDGET or self.debug == Debug.ALL then
+        toolkit:addDebugRectangle(self, Debug.WIDGET, c.widgetX, c.widgetY,
+                                  c.widgetWidth, c.widgetHeight)
+      end
+
+      -- Cell bounds.
+      local spannedCellWidth = 0
+      local nn = c.column + c.colspan
+      for column=c.column,nn,1 do
+        spannedCellWdith = spannedCellWidth + self.columnWidth[column]
+      end
+      spannedCellWidth = spannedCellWidth - (c.computedPadLeft +
+                                               c.computedPadRight)
+      currentX = currentX + c.computedPadLeft
+      if self.debug == Debug.CELL or self.debug == Debug.ALL then
+        toolkit:addDebugRectangle(self, Debug.CELL, currentX, currentY +
+                                    c.computedPadTop, spannedCellWidth,
+                                  self.rowHeight[c.row] - c.computedPadTop -
+                                    c.computedPadBottom)
+      end
+
+      if c.endRow then
+        currentX = x
+        currentY = currentY + self.rowHeight[c.row]
+      else
+        currentX = currentX + spannedCellWidth + c.computedPadRight
+      end
+    end
+  end
 end
