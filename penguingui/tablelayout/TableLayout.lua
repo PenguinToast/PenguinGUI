@@ -3,9 +3,6 @@
 -- TableLayout = class()
 TableLayout = {}
 
-local table = table
-local bit32 = bit32
-local math = math
 local _ENV = TableLayout
 
 local NULL = {}
@@ -23,6 +20,13 @@ Debug = {
   CELL = 3,
   WIDGET
 }
+
+local CENTER = CENTER
+local TOP = TOP
+local BOTTOM = BOTTOM
+local LEFT = LEFT
+local RIGHT = RIGHT
+local Debug = Debug
 
 function _init(self, toolkit)
   self.toolkit = nil
@@ -59,7 +63,7 @@ function _init(self, toolkit)
   self.debug = Debug.NONE 
   
   self.toolkit = toolkit
-  self.cellDefaults = toolkit:obtainCell(self)
+  self.cellDefaults = toolkit.obtainCell(self)
   self.cellDefaults:defaults()
 end
 
@@ -73,7 +77,7 @@ end
 
 function add(self, widget)
   local cells = self.cells
-  local cell = self.toolkit:obtainCell(self)
+  local cell = self.toolkit.obtainCell(self)
   cell.widget = widget
 
   if #cells > 0 then
@@ -118,7 +122,7 @@ function add(self, widget)
   cell:merge(self.rowDefaults)
 
   if widget ~= nil then
-    self.toolkit:addChild(self.tableWidget, widget)
+    self.toolkit.addChild(self.tableWidget, widget)
   end
 
   return cell
@@ -131,9 +135,9 @@ function row(self)
     self:endRow()
   end
   if self.rowDefaults ~= nil then
-    self.toolkit:freeCell(self.rowDefaults)
+    self.toolkit.freeCell(self.rowDefaults)
   end
-  self.rowDefaults = toolkit:obtainCell(self)
+  self.rowDefaults = toolkit.obtainCell(self)
   self.rowDefaults:clear()
   return self.rowDefaults
 end
@@ -158,7 +162,7 @@ function columnDefaults(self, column)
   local cell = #self.columnDefaults >= column and
     self.columnDefaults[column] or nil
   if cell == nil then
-    cell = self.toolkit:obtainCell(self)
+    cell = self.toolkit.obtainCell(self)
     cell:clear()
     if column > #self.columnDefaults then
       for i=#self.columnDefaults,column-2,1 do
@@ -180,7 +184,7 @@ function reset(self)
   self.padRight = nil
   self.align = CENTER
   if self.debug ~= Debug.NONE then
-    self.toolkit:clearDebugRectangles(self)
+    self.toolkit.clearDebugRectangles(self)
   end
   self.debug = Debug.NONE
   self.cellDefaults:defaults()
@@ -189,7 +193,7 @@ function reset(self)
   while i <= n do
     local columnCell = self.columnDefaults[i]
     if columnCell ~= NULL then
-      self.toolkit:freeCell(columnCell)
+      self.toolkit.freeCell(columnCell)
     end
     i = i + 1
   end
@@ -201,15 +205,15 @@ function clear(self)
     local cell = self.cells[i]
     local widget = cell.widget
     if widget ~= nil then
-      self.toolkit:removeChild(self.tableWidget, widget)
+      self.toolkit.removeChild(self.tableWidget, widget)
     end
-    self.toolkit:freeCell(cell)
+    self.toolkit.freeCell(cell)
   end
   self.cells = {}
   self.rows = 0
   self.columns = 0
   if self.rowDefaults ~= nil then
-    self.toolkit:freeCell(self.rowDefaults)
+    self.toolkit.freeCell(self.rowDefaults)
   end
   self.rowDefaults = nil
   self:invalidate()
@@ -361,7 +365,7 @@ end
 function setDebug(self, debug)
   self.debug = debug
   if debug == Debug.NONE then
-    self.toolkit:clearDebugRectangles(self)
+    self.toolkit.clearDebugRectangles(self)
   else
     self:invalidate()
   end
@@ -892,13 +896,13 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
   if self.debug == Debug.NONE then
     return
   end
-  toolkit:clearDebugRectangles(self)
+  toolkit.clearDebugRectangles(self)
   currentX = x
   currentY = y
   if self.debug == Debug.TABLE or self.debug == Debug.ALL then
-    toolkit:addDebugRectangle(self, Debug.TABLE, layoutX, layoutY, layoutWidth,
+    toolkit.addDebugRectangle(self, Debug.TABLE, layoutX, layoutY, layoutWidth,
                               layoutHeight)
-    toolkit:addDebugRectangle(self, Debug.TABLE, x, y, tableWidth - hpadding,
+    toolkit.addDebugRectangle(self, Debug.TABLE, x, y, tableWidth - hpadding,
                               tableHeight - vpadding)
   end
   for i=1,n,1 do
@@ -906,7 +910,7 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
     if not c.ignore then
       -- Widget bounds.
       if self.debug == Debug.WIDGET or self.debug == Debug.ALL then
-        toolkit:addDebugRectangle(self, Debug.WIDGET, c.widgetX, c.widgetY,
+        toolkit.addDebugRectangle(self, Debug.WIDGET, c.widgetX, c.widgetY,
                                   c.widgetWidth, c.widgetHeight)
       end
 
@@ -920,7 +924,7 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
                                                c.computedPadRight)
       currentX = currentX + c.computedPadLeft
       if self.debug == Debug.CELL or self.debug == Debug.ALL then
-        toolkit:addDebugRectangle(self, Debug.CELL, currentX, currentY +
+        toolkit.addDebugRectangle(self, Debug.CELL, currentX, currentY +
                                     c.computedPadTop, spannedCellWidth,
                                   self.rowHeight[c.row] - c.computedPadTop -
                                     c.computedPadBottom)
