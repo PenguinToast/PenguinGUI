@@ -18,7 +18,7 @@ Debug = {
   ALL = 1,
   TABLE = 2,
   CELL = 3,
-  WIDGET
+  WIDGET = 4
 }
 
 local CENTER = CENTER
@@ -55,12 +55,12 @@ function _init(self, toolkit)
   self.columnWeightedWidth = {}
   self.rowWeightedHeight = {}
 
-  self.padTop = nil
-  self.padLeft = nil
-  self.padBottom = nil
-  self.padRight = nil
-  self.align = CENTER
-  self.debug = Debug.NONE 
+  self._padTop = nil
+  self._padLeft = nil
+  self._padBottom = nil
+  self._padRight = nil
+  self._align = CENTER
+  self._debug = Debug.NONE 
   
   self.toolkit = toolkit
   self.cellDefaults = toolkit.obtainCell(self)
@@ -84,20 +84,20 @@ function add(self, widget)
     -- Set cell column and row
     local lastCell = cells[#cells]
     if not lastCell.endRow then
-      cell.column = lastCell.column + lastCell.colspan
-      cell.row = lastCell.row
+      cell._column = lastCell._column + lastCell._colspan
+      cell._row = lastCell._row
     else
-      cell.column = 1
-      cell.row = lastCell.row + 1
+      cell._column = 1
+      cell._row = lastCell._row + 1
     end
     -- Set index of cell above
-    if cell.row > 1 then
+    if cell._row > 1 then
       for i=#cells,1,-1 do
         local other = cells[i]
-        local column = other.column
-        local nn = column + other.colspan
+        local column = other._column
+        local nn = column + other._colspan
         while column < nn do
-          if column == cell.column then
+          if column == cell._column then
             cell.cellAboveIndex = i
             goto outer
           end
@@ -107,14 +107,14 @@ function add(self, widget)
       ::outer::
     end
   else
-    cell.column = 1
-    cell.row = 1
+    cell._column = 1
+    cell._row = 1
   end
   table.insert(cells, cell)
 
   cell:set(self.cellDefaults)
-  if cell.column <= #self.columnDefaults then
-    local columnCell = self.columnDefaults[cell.column]
+  if cell._column <= #self.columnDefaults then
+    local columnCell = self.columnDefaults[cell._column]
     if columnCell ~= NULL then
       cell:merge(columnCell)
     end
@@ -150,7 +150,7 @@ function endRow(self)
     if cell.endRow then
       break
     end
-    rowColumns = rowColumns + cell.colspan
+    rowColumns = rowColumns + cell._colspan
   end
   self.columns = math.max(self.columns, rowColumns)
   self.rows = self.rows + 1
@@ -178,15 +178,15 @@ end
 
 function reset(self)
   self:clear()
-  self.padTop = nil
-  self.padLeft = nil
-  self.padBottom = nil
-  self.padRight = nil
-  self.align = CENTER
-  if self.debug ~= Debug.NONE then
+  self._padTop = nil
+  self._padLeft = nil
+  self._padBottom = nil
+  self._padRight = nil
+  self._align = CENTER
+  if self._debug ~= Debug.NONE then
     self.toolkit.clearDebugRectangles(self)
   end
-  self.debug = Debug.NONE
+  self._debug = Debug.NONE
   self.cellDefaults:defaults()
   local i = 1
   local n = #self.columnDefaults
@@ -230,6 +230,22 @@ function getCell(self, widget)
   return nil
 end
 
+function getCells(self)
+  return self.cells
+end
+
+function setToolkit(self, toolkit)
+  self.toolkit = toolkit
+end
+
+function getTable(self)
+  return self.tableWidget
+end
+
+function setTable(self, table)
+  self.tableWidget = table
+end
+
 function getMinWidth(self)
   if self.sizeInvalid then
     self:computeSize()
@@ -263,118 +279,141 @@ function defaults(self)
 end
 
 function pad(self, pad)
-  self.padTop = pad
-  self.padLeft = pad
-  self.padBottom = pad
-  self.padRight = pad
+  self._padTop = pad
+  self._padLeft = pad
+  self._padBottom = pad
+  self._padRight = pad
   self.sizeInvalid = true
   return self
 end
 
 function pad(self, top, left, bottom, right)
-  self.padTop = top
-  self.padLeft = left
-  self.padBottom = bottom
-  self.padRight = right
+  self._padTop = top
+  self._padLeft = left
+  self._padBottom = bottom
+  self._padRight = right
   self.sizeInvalid = true
   return self
 end
 
-function setPadTop(self, padTop)
-  self.padTop = padTop
+function padTop(self, padTop)
+  self._padTop = padTop
   self.sizeInvalid = true
   return self
 end
 
-function setPadLeft(self, padLeft)
-  self.padLeft = padLeft
+function padLeft(self, padLeft)
+  self._padLeft = padLeft
   self.sizeInvalid = true
   return self
 end
 
-function setPadBottom(self, padBottom)
-  self.padBottom = padBottom
+function padBottom(self, padBottom)
+  self._padBottom = padBottom
   self.sizeInvalid = true
   return self
 end
 
-function setPadRight(self, padRight)
-  self.padRight = padRight
+function padRight(self, padRight)
+  self._padRight = padRight
   self.sizeInvalid = true
   return self
 end
 
-function setAlign(self, align)
-  self.align = align
+function align(self, align)
+  self._align = align
   return self
 end
 
 function center(self)
-  self.align = CENTER
+  self._align = CENTER
   return self
 end
 
 function top(self)
-  self.align = bit32.bor(self.align, TOP)
-  self.align = bit32.band(self.align, bit32.bnot(BOTTOM))
+  self._align = bit32.bor(self._align, TOP)
+  self._align = bit32.band(self._align, bit32.bnot(BOTTOM))
   return self
 end
 
 function left(self)
-  self.align = bit32.bor(self.align, LEFT)
-  self.align = bit32.band(self.align, bit32.bnot(RIGHT))
+  self._align = bit32.bor(self._align, LEFT)
+  self._align = bit32.band(self._align, bit32.bnot(RIGHT))
   return self
 end
 
 function bottom(self)
-  self.align = bit32.bor(self.align, BOTTOM)
-  self.align = bit32.band(self.align, bit32.bnot(TOP))
+  self._align = bit32.bor(self._align, BOTTOM)
+  self._align = bit32.band(self._align, bit32.bnot(TOP))
   return self
 end
 
 function right(self)
-  self.align = bit32.bor(self.align, RIGHT)
-  self.align = bit32.band(self.align, bit32.bnot(LEFT))
-  return self
-end
-
-function debugAll(self)
-  self.debug = Debug.ALL
-  self:invalidate()
+  self._align = bit32.bor(self._align, RIGHT)
+  self._align = bit32.band(self._align, bit32.bnot(LEFT))
   return self
 end
 
 function debugTable(self)
-  self.debug = Debug.TABLE
+  self._debug = Debug.TABLE
   self:invalidate()
   return self
 end
 
 function debugCell(self)
-  self.debug = Debug.CELL
+  self._debug = Debug.CELL
   self:invalidate()
   return self
 end
 
 function debugWidget(self)
-  self.debug = Debug.WIDGET
+  self._debug = Debug.WIDGET
   self:invalidate()
   return self
 end
 
-function setDebug(self, debug)
-  self.debug = debug
-  if debug == Debug.NONE then
-    self.toolkit.clearDebugRectangles(self)
-  else
+function debug(self, debug)
+  if debug == nil then
+    self._debug = Debug.ALL
     self:invalidate()
+  else
+    self._debug = debug
+    if debug == Debug.NONE then
+      self.toolkit.clearDebugRectangles(self)
+    else
+      self:invalidate()
+    end
   end
   return self
 end
 
+function getDebug(self)
+  return self._debug
+end
+
+function getPadTop(self)
+  return self._padTop
+end
+
+function getPadLeft(self)
+  return self._padLeft
+end
+
+function getPadBottom(self)
+  return self._padBottom
+end
+
+function getPadRight(self)
+  return self._padRight
+end
+
+function getAlign()
+  return self._align
+end
+
 function getRow(self, y)
   local row = 0
-  y = y + self.padTop
+  y = y + self._padTop
   local i = 1
   local n = #self.cells
   if n == 0 then
@@ -447,129 +486,122 @@ function computeSize(self)
   local n = #cells
   for i=1,n,1 do
     local c = cells[i]
-    if c.ignore then
-      goto continue
-    end
+    if not c._ignore then
 
-    -- Collect columns/rows that expand.
-    if c.expandY ~= 0 and expandHeight[c.row] == 0 then
-      expandHeight[c.row] = c.expandY
-    end
-    if c.colspan == 1 and c.expandX ~= 0 and expandWidth[c.column] == 0 then
-      expandWidth[c.column] = c.expandX
-    end
+      -- Collect columns/rows that expand.
+      if c._expandY ~= 0 and expandHeight[c._row] == 0 then
+        expandHeight[c._row] = c.expandY
+      end
+      if c._colspan == 1 and c._expandX ~= 0 and expandWidth[c._column] == 0 then
+        expandWidth[c._column] = c.expandX
+      end
 
-    -- Compute combined padding/spacing for cells
-    -- Spacing between widgets isn't additive, the larger is used.
-    -- ALso, no spacing around edges.
-    c.computedPadLeft = c.padLeft +
-      (c.column == 1 and 0 or math.max(0, c.spaceLeft - spaceRightLast))
-    c.computedPadTop = c.padTop
-    if c.cellAboveIndex ~= -1 then
-      local above = cells[c.cellAboveIndex]
-      c.computedPadTop = c.computedPadTop +
-        math.max(0, c.spaceTop - above.spaceBottom)
-    end
-    local spaceRight = c.spaceRight
-    c.computedPadRight = c.padRight +
-      ((c.column + c.colspan) == columns + 1 and 0 or spaceRight)
-    c.computedPadBottom = c.padBottom + (c.row == rows and 0 or c.spaceBottom)
-    spaceRightLast = spaceRight
+      -- Compute combined padding/spacing for cells
+      -- Spacing between widgets isn't additive, the larger is used.
+      -- ALso, no spacing around edges.
+      c.computedPadLeft = c._padLeft +
+        (c._column == 1 and 0 or math.max(0, c._spaceLeft - spaceRightLast))
+      c.computedPadTop = c._padTop
+      if c.cellAboveIndex ~= -1 then
+        local above = cells[c.cellAboveIndex]
+        c.computedPadTop = c.computedPadTop +
+          math.max(0, c._spaceTop - above.spaceBottom)
+      end
+      local spaceRight = c.spaceRight
+      c.computedPadRight = c._padRight +
+        ((c._column + c._colspan) == columns + 1 and 0 or spaceRight)
+      c.computedPadBottom = c._padBottom + (c._row == rows and 0 or c.spaceBottom)
+      spaceRightLast = spaceRight
 
-    -- Determine minimum and preferred cell sizes.
-    local prefWidth = c.prefWidth
-    local prefHeight = c.prefHeight
-    local minWidth = c.minWidth
-    local minHeight = c.minHeight
-    local maxWidth = c.maxWidth
-    local maxHeight = c.maxHeight
-    if prefWidth < minWidth then
-      prefWidth = minWidth
-    end
-    if prefHeight < minHeight then
-      prefHeight = minHeight
-    end
-    if maxWidth > 0 and prefWidth > maxWidth then
-      prefWidth = maxWidth
-    end
-    if maxHeight > 0 and prefHeight > maxHeight then
-      prefHeight = maxHeight
-    end
+      -- Determine minimum and preferred cell sizes.
+      local prefWidth = c.prefWidth
+      local prefHeight = c.prefHeight
+      local minWidth = c.minWidth
+      local minHeight = c.minHeight
+      local maxWidth = c.maxWidth
+      local maxHeight = c.maxHeight
+      if prefWidth < minWidth then
+        prefWidth = minWidth
+      end
+      if prefHeight < minHeight then
+        prefHeight = minHeight
+      end
+      if maxWidth > 0 and prefWidth > maxWidth then
+        prefWidth = maxWidth
+      end
+      if maxHeight > 0 and prefHeight > maxHeight then
+        prefHeight = maxHeight
+      end
 
-    if c.colspan == 1 then
-      local hpadding = c.computedPadLeft + c.computedPadRight
-      columnPrefWidth[c.column] = math.max(columnPrefWidth[c.column],
-                                           prefWidth + hpadding)
-      columnMinWidth[c.column] = math.max(columnMinWidth[c.column],
-                                          minWidth + hpadding)
+      if c._colspan == 1 then
+        local hpadding = c.computedPadLeft + c.computedPadRight
+        columnPrefWidth[c._column] = math.max(columnPrefWidth[c.column],
+                                             prefWidth + hpadding)
+        columnMinWidth[c._column] = math.max(columnMinWidth[c.column],
+                                            minWidth + hpadding)
+      end
+      local vpadding = c.computedPadTop + c.computedPadBottom
+      rowPrefHeight[c._row] = math.max(rowPrefHeight[c.row],
+                                      prefHeight + vpadding)
+      rowMinHeight[c._row] = math.max(rowMinHeight[c.row],
+                                     minHeight + vpadding)
     end
-    local vpadding = c.computedPadTop + c.computedPadBottom
-    rowPrefHeight[c.row] = math.max(rowPrefHeight[c.row],
-                                    prefHeight + vpadding)
-    rowMinHeight[c.row] = math.max(rowMinHeight[c.row],
-                                   minHeight + vpadding)
-    
-    ::continue::
   end
 
   for i=1,n,1 do
     local c = cells[i]
-    if c.ignore or c.expandX == 0 then
-      goto continue2
-    end
-    local nn = c.column + c.colspan
-    for column=c.column,nn,1 do
-      if expandWidth[column] ~= 0 then
-        goto continue2
+    if not (c._ignore or c._expandX == 0) then
+      local nn = c._column + c.colspan
+      for column=c._column,nn,1 do
+        if expandWidth[column] ~= 0 then
+          goto continue2
+        end
+      end
+      nn = column + c.colspan
+      for column=c._column,nn,1 do
+        expandWidth[column] = c.expandX
       end
     end
-    nn = column + c.colspan
-    for column=c.column,nn,1 do
-      expandWidth[column] = c.expandX
-    end
-    ::continue2::
   end
 
   for i=1,n,1 do
     local c = cells[i]
-    if c.ignore or c.colspan == 1 then
-      goto continue3
-    end
+    if not (c._ignore or c._colspan == 1) then
+      local minWidth = c.minWidth
+      local prefWidth = c.prefWidth
+      local maxWidth = c.maxWidth
+      if prefWidth < minWidth then
+        prefWidth = minWidth
+      end
+      if maxWidth > 0 and prefWidth > maxWidth then
+        prefWidth = maxWidth
+      end
 
-    local minWidth = c.minWidth
-    local prefWidth = c.prefWidth
-    local maxWidth = c.maxWidth
-    if prefWidth < minWidth then
-      prefWidth = minWidth
-    end
-    if maxWidth > 0 and prefWidth > maxWidth then
-      prefWidth = maxWidth
-    end
+      local spannedMinWidth = -(c.computedPadLeft + c.computedPadRight)
+      local spannedPrefWidth = spannedMinWidth
+      local nn = c._column + c.colspan
+      for column=c._column,nn,1 do
+        spannedMinWidth = spannedMinWidth + columnMinWidth[column]
+        spannedPrefWidth = spannedPrefWidth + columnPrefWidth[column]
+      end
 
-    local spannedMinWidth = -(c.computedPadLeft + c.computedPadRight)
-    local spannedPrefWidth = spannedMinWidth
-    local nn = c.column + c.colspan
-    for column=c.column,nn,1 do
-      spannedMinWidth = spannedMinWidth + columnMinWidth[column]
-      spannedPrefWidth = spannedPrefWidth + columnPrefWidth[column]
-    end
+      local totalExpandWidth = 0
+      nn = column + c.colspan
+      for column=c._column,nn,1 do
+        totalExpandWidth = totalExpandWidth + column
+      end
 
-    local totalExpandWidth = 0
-    nn = column + c.colspan
-    for column=c.column,nn,1 do
-      totalExpandWidth = totalExpandWidth + column
+      local extraMinWidth = math.max(0, minWidth - spannedMinWidth)
+      local extraPrefWidth = math.max(0, prefWidth - spannedPrefWidth)
+      nn = column + c.colspan
+      for column=c._column,nn,1 do
+        local ratio = totalExpandWidth == 0 and 1 / c._colspan or
+          expandWidth[column] / totalExpandWidth
+        columnMinWidth[column] = columnMinWidth[column] + extraMinWidth * ratio
+        columnPrefWidth[column] = columnPrefWidth[column] + extraPrefWidth
+          * ratio
+      end
     end
-
-    local extraMinWidth = math.max(0, minWidth - spannedMinWidth)
-    local extraPrefWidth = math.max(0, prefWidth - spannedPrefWidth)
-    nn = column + c.colspan
-    for column=c.column,nn,1 do
-      local ratio = totalExpandWidth == 0 and 1 / c.colspan or
-        expandWidth[column] / totalExpandWidth
-      columnMinWidth[column] = columnMinWidth[column] + extraMinWidth * ratio
-      columnPrefWidth[column] = columnPrefWidth[column] + extraPrefWidth * ratio
-    end
-    ::continue3::
   end
 
   -- Collect uniform size
@@ -579,46 +611,41 @@ function computeSize(self)
   local uniformPrefHeight = 0
   for i=1,n,1 do
     local c = cells[i]
-    if c.ignore then
-      goto continue4
+    if not c._ignore then
+      -- Collect uniform sizes.
+      if c._uniformX == true and c._colspan == 1 then
+        local hpadding = c.computedPadLeft + c.computedPadRight
+        uniformMinWidth = math.max(uniformMinWidth, columnMinWidth[c._column] -
+                                     hpadding)
+        uniformPrefWidth = math.max(uniformPrefWidth, columnPrefWidth[c._column] -
+                                      hpadding)
+      end
+      if c._uniformY == true then
+        local vpadding = c.computedPadTop + c.computedPadBottom
+        uniformMinHeight = math.max(uniformMinHeight, columnMinHeight[c._column] -
+                                      vpadding)
+        uniformPrefHeight = math.max(uniformPrefHeight,
+                                     columnPrefHeight[c._column] - vpadding)
+      end
     end
-    
-    -- Collect uniform sizes.
-    if c.uniformX == true and c.colspan == 1 then
-      local hpadding = c.computedPadLeft + c.computedPadRight
-      uniformMinWidth = math.max(uniformMinWidth, columnMinWidth[c.column] -
-                                   hpadding)
-      uniformPrefWidth = math.max(uniformPrefWidth, columnPrefWidth[c.column] -
-                                   hpadding)
-    end
-    if c.uniformY == true then
-      local vpadding = c.computedPadTop + c.computedPadBottom
-      uniformMinHeight = math.max(uniformMinHeight, columnMinHeight[c.column] -
-                                   vpadding)
-      uniformPrefHeight = math.max(uniformPrefHeight,
-                                   columnPrefHeight[c.column] - vpadding)
-    end
-    ::continue4::
   end
 
   -- Size uniform cells to the same width/height
   if uniformPrefWidth > 0 or uniformPrefHeight > 0 then
     for i=1,n,1 do
       local c = cells[i]
-      if c.ignore then
-        goto continue5
+      if not c._ignore then
+        if uniformPrefWidth > 0 and c._uniformX == true and c._colspan == 1 then
+          local hpadding = c.computedPadLeft + c.computedPadRight
+          columnMinWidth[c._column] = uniformMinWidth + hpadding
+          columnPrefWidth[c._column] = uniformPrefWidth + hpadding
+        end
+        if uniformPrefHeight > 0 and c._uniformY == true then
+          local vpadding = c.computedPadTop + c.computedPadBottom
+          rowMinHeight[c._column] = uniformMinHeight + vpadding
+          rowPrefHeight[c._column] = uniformPrefHeight + vpadding
+        end
       end
-      if uniformPrefWidth > 0 and c.uniformX == true and c.colspan == 1 then
-        local hpadding = c.computedPadLeft + c.computedPadRight
-        columnMinWidth[c.column] = uniformMinWidth + hpadding
-        columnPrefWidth[c.column] = uniformPrefWidth + hpadding
-      end
-      if uniformPrefHeight > 0 and c.uniformY == true then
-        local vpadding = c.computedPadTop + c.computedPadBottom
-        rowMinHeight[c.column] = uniformMinHeight + vpadding
-        rowPrefHeight[c.column] = uniformPrefHeight + vpadding
-      end
-      ::continue5::
     end
   end
 
@@ -636,8 +663,8 @@ function computeSize(self)
     self.tablePrefHeight = self.tablePrefHeight + math.max(
       rowPrefHeight[i], rowMinHeight[i])
   end
-  local hpadding = self.padLeft + self.padRight
-  local vpadding = self.padTop + self.padBottom
+  local hpadding = self._padLeft + self._padRight
+  local vpadding = self._padTop + self._padBottom
   self.tableMinWidth = self.tableMinWidth + hpadding
   self.tableMinHeight = self.tableMinHeight + vpadding
   self.tablePrefWidth = math.max(self.tablePrefWidth + hpadding,
@@ -654,8 +681,8 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
     self:computeSize()
   end
 
-  local hpadding = self.padLeft + self.padRight
-  local vpadding = self.padTop + self.padBottom
+  local hpadding = self._padLeft + self._padRight
+  local vpadding = self._padTop + self._padBottom
 
   local totalExpandWidth = 0
   local totalExpandHeight = 0
@@ -708,10 +735,10 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
   local n = #cells
   for i=1,n,1 do
     local c = cells[i]
-    if not c.ignore then
+    if not c._ignore then
       local spannedWeightedWidth = 0
-      local nn = c.column + c.colspan
-      for column=c.column,nn,1 do
+      local nn = c._column + c.colspan
+      for column=c._column,nn,1 do
         spannedWeightedWidth = spannedWeightedWidth +
           self.columnWeightedWidth[column]
       end
@@ -741,11 +768,11 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
       c.widgetHeight = math.min(spannedWeightedHeight - c.computedPadTop -
                                   c.computedPadBottom, prefHeight)
 
-      if c.colspan == 1 then
-        self.columnWidth[c.column] = math.max(self.columnWidth[c.column],
+      if c._colspan == 1 then
+        self.columnWidth[c._column] = math.max(self.columnWidth[c.column],
                                               spannedWeightedWidth)
       end
-      self.rowHeight[c.row] = math.max(self.rowHeight[c.row], weightedHeight)
+      self.rowHeight[c._row] = math.max(self.rowHeight[c._row], weightedHeight)
     end
   end
 
@@ -789,10 +816,10 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
   -- spanned.
   for i=1,n,1 do
     local c = cells[i]
-    if not c.ignore and c.colspan ~= 1 then
+    if not c._ignore and c._colspan ~= 1 then
       local extraWidth = 0
-      local nn = c.column + c.colspan
-      for column=c.column,nn,1 do
+      local nn = c._column + c.colspan
+      for column=c._column,nn,1 do
         extraWidth = extraWidth + self.columnWeightedWidth[column] -
           self.columnWidth[column]
       end
@@ -801,7 +828,7 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
 
       extraWidth = extraWidth / c.colspan
       if extraWidth > 0 then
-        for column=c.column,nn,1 do
+        for column=c._column,nn,1 do
           self.columnWidth[column] = self.columnWidth[column] + extraWidth
         end
       end
@@ -819,17 +846,17 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
   end
 
   -- Position table within the container.
-  local x = layoutX + self.padLeft
-  if bit32.band(self.align, RIGHT) ~= 0 then
+  local x = layoutX + self._padLeft
+  if bit32.band(self._align, RIGHT) ~= 0 then
     x = x + layoutWidth - tableWidth
-  elseif bit32.band(self.align, LEFT) == 0 then -- Center
+  elseif bit32.band(self._align, LEFT) == 0 then -- Center
     x = x + (layoutWidth - tableWidth) / 2
   end
 
-  local y = layoutY + self.padLeft
-  if bit32.band(self.align, BOTTOM) ~= 0 then
+  local y = layoutY + self._padLeft
+  if bit32.band(self._align, BOTTOM) ~= 0 then
     y = y + layoutHeight - tableHeight
-  elseif bit32.band(self.align, TOP) == 0 then -- Center
+  elseif bit32.band(self._align, TOP) == 0 then -- Center
     y = y + (layoutHeight - tableHeight) / 2
   end
 
@@ -838,10 +865,10 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
   local currentY = y
   for i=1,n,1 do
     local c = cells[i]
-    if not c.ignore then
+    if not c._ignore then
       local spannedCellWidth = 0
-      local nn = c.column + c.colspan
-      for column=c.column,nn,1 do
+      local nn = c._column + c.colspan
+      for column=c._column,nn,1 do
         spannedCellWidth = spannedCellWidth + self.columnWidth[column]
       end
       spannedCellWidth = spannedCellWidth -
@@ -849,15 +876,15 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
 
       currentX = currentX + c.computedPadLeft
 
-      if c.fillX > 0 then
+      if c._fillX > 0 then
         c.widgetWidth = spannedCellWidth * c.fillX
         local maxWidth = c.maxWidth
         if maxWidth > 0 then
           c.widgetWidth = math.min(c.widgetWidth, maxWidth)
         end
       end
-      if c.fillY > 0 then
-        c.widgetHeight = self.rowHeight[c.row] * c.fillY - c.computedPadTop -
+      if c._fillY > 0 then
+        c.widgetHeight = self.rowHeight[c._row] * c._fillY - c.computedPadTop -
           c.computedPadBottom
         local maxHeight = c.maxHeight
         if maxHeight > 0 then
@@ -865,21 +892,21 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
         end
       end
 
-      if bit32.band(c.align, LEFT) ~= 0 then
+      if bit32.band(c._align, LEFT) ~= 0 then
         c.widgetX = currentX
-      elseif bit32.band(c.align, RIGHT) ~= 0 then
+      elseif bit32.band(c._align, RIGHT) ~= 0 then
         c.widgetX = currentX + spannedCellWidth - c.widgetWidth
       else
         c.widgetX = currentX + (spannedCellWidth - c.widgetWidth) / 2
       end
 
-      if bit32.band(c.align, TOP) ~= 0 then
+      if bit32.band(c._align, TOP) ~= 0 then
         c.widgetY = currentY + c.computedPadTop
-      elseif bit32.band(c.align, BOTTOM) ~= 0 then
-        c.widgetY = currentY + self.rowHeight[c.row] - c.widgetHeight -
+      elseif bit32.band(c._align, BOTTOM) ~= 0 then
+        c.widgetY = currentY + self.rowHeight[c._row] - c.widgetHeight -
           c.computedPadBottom
       else
-        c.widgetY = currentY + (self.rowHeight[c.row] - c.widgetHeight +
+        c.widgetY = currentY + (self.rowHeight[c._row] - c.widgetHeight +
                                   c.computedPadTop - c.computedPadBottom) / 2
       end
 
@@ -893,13 +920,13 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
   end
 
   -- Draw debug widgets and bounds.
-  if self.debug == Debug.NONE then
+  if self._debug == Debug.NONE then
     return
   end
   toolkit.clearDebugRectangles(self)
   currentX = x
   currentY = y
-  if self.debug == Debug.TABLE or self.debug == Debug.ALL then
+  if self._debug == Debug.TABLE or self._debug == Debug.ALL then
     toolkit.addDebugRectangle(self, Debug.TABLE, layoutX, layoutY, layoutWidth,
                               layoutHeight)
     toolkit.addDebugRectangle(self, Debug.TABLE, x, y, tableWidth - hpadding,
@@ -907,32 +934,32 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
   end
   for i=1,n,1 do
     local c = cells[i]
-    if not c.ignore then
+    if not c._ignore then
       -- Widget bounds.
-      if self.debug == Debug.WIDGET or self.debug == Debug.ALL then
+      if self._debug == Debug.WIDGET or self._debug == Debug.ALL then
         toolkit.addDebugRectangle(self, Debug.WIDGET, c.widgetX, c.widgetY,
                                   c.widgetWidth, c.widgetHeight)
       end
 
       -- Cell bounds.
       local spannedCellWidth = 0
-      local nn = c.column + c.colspan
-      for column=c.column,nn,1 do
+      local nn = c._column + c.colspan
+      for column=c._column,nn,1 do
         spannedCellWdith = spannedCellWidth + self.columnWidth[column]
       end
       spannedCellWidth = spannedCellWidth - (c.computedPadLeft +
                                                c.computedPadRight)
       currentX = currentX + c.computedPadLeft
-      if self.debug == Debug.CELL or self.debug == Debug.ALL then
+      if self._debug == Debug.CELL or self._debug == Debug.ALL then
         toolkit.addDebugRectangle(self, Debug.CELL, currentX, currentY +
                                     c.computedPadTop, spannedCellWidth,
-                                  self.rowHeight[c.row] - c.computedPadTop -
+                                  self.rowHeight[c._row] - c.computedPadTop -
                                     c.computedPadBottom)
       end
 
       if c.endRow then
         currentX = x
-        currentY = currentY + self.rowHeight[c.row]
+        currentY = currentY + self.rowHeight[c._row]
       else
         currentX = currentX + spannedCellWidth + c.computedPadRight
       end
