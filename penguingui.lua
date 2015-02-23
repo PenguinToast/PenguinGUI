@@ -18,24 +18,9 @@ function PtUtil.library()
     "/penguingui/Binding.lua",
     "/penguingui/BindingFunctions.lua",
     "/penguingui/GUI.lua",
-    "/penguingui/Component.lua",
-    "/penguingui/Line.lua",
-    "/penguingui/Rectangle.lua",
-    "/penguingui/Align.lua",
-    "/penguingui/HorizontalLayout.lua",
-    "/penguingui/VerticalLayout.lua",
-    "/penguingui/Panel.lua",
-    "/penguingui/Frame.lua",
-    "/penguingui/Button.lua",
-    "/penguingui/Label.lua",
-    "/penguingui/TextButton.lua",
-    "/penguingui/TextField.lua",
-    "/penguingui/Image.lua",
-    "/penguingui/CheckBox.lua",
-    "/penguingui/RadioButton.lua",
-    "/penguingui/TextRadioButton.lua",
-    "/penguingui/Slider.lua",
-    "/penguingui/List.lua",
+    "/penguingui/Toolkit.lua",
+    "/penguingui/tablelayout/TableLayout.lua",
+    "/penguingui/tablelayout/Cell.lua",
     "/lib/profilerapi.lua",
     "/lib/inspect.lua"
   }
@@ -227,40 +212,6 @@ function class(...)
   return cls
 end
 
-function dump(value, indent, seen)
-  if type(value) ~= "table" then
-    if type(value) == "string" then
-      return string.format('%q', value)
-    else
-      return tostring(value)
-    end
-  else
-    if type(seen) ~= "table" then
-      seen = {}
-    elseif seen[value] then
-      return "{...}"
-    end
-    seen[value] = true
-    indent = indent or ""
-    if next(value) == nil then
-      return "{}"
-    end
-    local str = "{"
-    local first = true
-    for k,v in pairs(value) do
-      if first then
-        first = false
-      else
-        str = str..","
-      end
-      str = str.."\n"..indent.."  ".."["..dump(k, "", seen)
-        .."] = "..dump(v, indent.."  ", seen)
-    end
-    str = str.."\n"..indent.."}"
-    return str
-  end
-end
-
 --------------------------------------------------------------------------------
 -- Binding.lua
 --------------------------------------------------------------------------------
@@ -276,7 +227,14 @@ Binding = setmetatable(
 
 Binding.proxyTable = {
   __index = function(t, k)
-    local out = t._instance[k]
+    local instance = t._instance
+    if instance._getters then
+      local getter = instance._getters[k]
+      if getter then
+        return getter(instance, k, instance[k])
+      end
+    end
+    local out = instance[k]
     if out ~= nil then
       return out
     else
@@ -955,1639 +913,1693 @@ end
 
 
 --------------------------------------------------------------------------------
--- Component.lua
+-- Toolkit.lua
 --------------------------------------------------------------------------------
 
-Component = class()
-Component.x = 0
-Component.y = 0
-Component.width = 0
-Component.height = 0
+Toolkit = {]
 
-Component.mouseOver = nil
+local _ENV = Toolkit
 
-Component.hasFocus = nil
-
-
-function Component:_init()
-  self.children = {}
-  self.offset = Binding.proxy({0, 0})
+function obtainCell(layout)
+  local cell = Cell()
+  cell:setLayout(layout)
+  return cell
 end
 
-
-function Component:add(child)
-  local children = self.children
-  children[#children + 1] = child
-  child:setParent(self)
+function freeCell(cell)
 end
 
-function Component:remove(child)
-  local children = self.children
-  for index,comp in ripairs(children) do
-    if (comp == child) then
-      child:removeSelf()
-      return true
-    end
-  end
-  return false
+function addChild(parent, child)
+  parent:add(child)
 end
 
-function Component:removeSelf()
-  local siblings
-  if self.parent then
-    siblings = self.parent.children
-  else
-    siblings = GUI.components
-  end
-  for index,sibling in ripairs(siblings) do
-    if sibling == self then
-      table.remove(siblings, index)
-      return
-    end
-  end
+function removeChild(parent, child)
+  parent:remove(child)
 end
 
-function Component:pack(padding)
-  local width = 0
-  local height = 0
-  for _,child in ipairs(self.children) do
-    width = math.max(width, child.x + child.width)
-    height = math.max(height, child.y + child.height)
-  end
-  if padding == nil then
-    if self.width < width then
-      self.width = width
-    end
-    if self.height < height then
-      self.height = height
-    end
-  else
-    self.width = width + padding
-    self.height = height + padding
-  end
+function getMinWidth(widget)
+  return widget:getMinWidth()
 end
 
-function Component:step(dt)
-  local hoverComponent
-  if self.mouseOver ~= nil then
-    if self:contains(GUI.mousePosition) then
-      hoverComponent = self
+function getMinHeight(widget)
+  return widget:getMinHeight()
+end
+
+function getPrefWidth(widget)
+  return widget:getPrefWidth()
+end
+
+function getPrefHeight(widget)
+  return widget:getPrefHeight()
+end
+
+function getMaxWidth(widget)
+  return widget:getMaxWidth()
+end
+
+function getMaxHeight(widget)
+  return widget:getMaxHeight()
+end
+
+function getWidth(widget)
+  return widget:getWidth()
+end
+
+function getHeight(widget)
+  return widget:getHeight()
+end
+
+function clearDebugRectangles(layout)
+end
+
+function addDebugRectangles(layout, type, x, y, w, h)
+end
+
+--------------------------------------------------------------------------------
+-- TableLayout.lua
+--------------------------------------------------------------------------------
+
+
+TableLayout = class()
+
+local bit32 = bit32
+local _ENV = TableLayout
+
+local NULL = {}
+
+CENTER = bit32.lshift(1, 0)
+TOP = bit32.lshift(1, 1)
+BOTTOM = bit32.lshift(1, 2)
+LEFT = bit32.lshift(1, 3)
+RIGHT = bit32.lshift(1, 4)
+
+Debug = {
+  NONE = 0,
+  ALL = 1,
+  TABLE = 2,
+  CELL = 3,
+  WIDGET = 4
+}
+
+local CENTER = CENTER
+local TOP = TOP
+local BOTTOM = BOTTOM
+local LEFT = LEFT
+local RIGHT = RIGHT
+local Debug = Debug
+
+function _init(self, toolkit)
+  self.tableWidget = nil
+  self.columns = 0
+  self.rows = 0
+  
+  self.cells = {}
+  self.cellDefaults = nil
+  self.columnDefaults = {}
+  self.rowDefaults = nil
+
+  self.sizeInvalid = true
+  self.columnMinWidth = {}
+  self.rowMinHeight = {}
+  self.columnPrefWidth = {}
+  self.rowPrefHeight = {}
+  self.tableMinWidth = 0
+  self.tableMinHeight = 0
+  self.tablePrefWidth = 0
+  self.tablePrefHeight = 0
+  self.columnWidth = {}
+  self.rowHeight = {}
+  self.expandWidth = {}
+  self.expandHeight = {}
+  self.columnWeightedWidth = {}
+  self.rowWeightedHeight = {}
+
+  self._padTop = nil
+  self._padLeft = nil
+  self._padBottom = nil
+  self._padRight = nil
+  self._align = CENTER
+  self._debug = Debug.NONE 
+  
+  self.toolkit = toolkit or Toolkit
+  self.cellDefaults = toolkit.obtainCell(self)
+  self.cellDefaults:defaults()
+end
+
+function invalidate(self)
+  self.sizeInvalid = true
+end
+
+function invalidateHierarchy(self)
+end
+
+function add(self, widget)
+  local cells = self.cells
+  local cell = self.toolkit.obtainCell(self)
+  cell.widget = widget
+
+  if #cells > 0 then
+    local lastCell = cells[#cells]
+    if not lastCell.endRow then
+      cell._column = lastCell._column + lastCell._colspan
+      cell._row = lastCell._row
     else
-      self.mouseOver = false
+      cell._column = 1
+      cell._row = lastCell._row + 1
     end
-  end
-  
-  self:update(dt)
-  
-  local layout = self.layout
-  if layout then
-    self:calculateOffset()
-    self.layout = false
-  end
-  self:draw(dt)
-  
-  for _,child in ipairs(self.children) do
-    if layout then
-      child.layout = true
+    if cell._row > 1 then
+      for i=#cells,1,-1 do
+        local other = cells[i]
+        local column = other._column
+        local nn = column + other._colspan
+        while column < nn do
+          if column == cell._column then
+            cell.cellAboveIndex = i
+            goto outer
+          end
+          column = column + 1
+        end
+      end
+      ::outer::
     end
-    if child.visible ~= false then
-      hoverComponent = child:step(dt) or hoverComponent
-    end
-  end
-  return hoverComponent
-end
-
-function Component:update(dt)
-end
-
-function Component:draw(dt)
-end
-
-function Component:setParent(parent)
-  self.parent = parent
-  if parent then
-    parent.layout = true
-  end
-end
-
-function Component:calculateOffset()
-  local offset = self.offset
-  
-  local parent = self.parent
-  if parent then
-    offset[1] = parent.offset[1] + parent.x
-    offset[2] = parent.offset[2] + parent.y
   else
-    offset[1] = 0
-    offset[2] = 0
+    cell._column = 1
+    cell._row = 1
   end
-  
-  return offset
-end
+  table.insert(cells, cell)
 
-function Component:contains(position)
-  local pos = {position[1] - self.offset[1], position[2] - self.offset[2]}
-  
-  if pos[1] >= self.x and pos[1] <= self.x + self.width
-    and pos[2] >= self.y and pos[2] <= self.y + self.height
-  then
-    return true
-  end
-  return false
-end
-
-
-
---------------------------------------------------------------------------------
--- Line.lua
---------------------------------------------------------------------------------
-
-Line = class(Component)
-Line.color = "black"
-Line.size = 1
-
-
-function Line:_init(x, y, endX, endY, color, lineSize)
-  Component._init(self)
-  self.x = x
-  self.y = y
-  self.endX = x
-  self.endY = y
-  self.width = endX - x
-  self.height = endY - y
-  self.color = color
-  self.size = size
-end
-
-
-function Line:draw(dt)
-  local offset = self.offset
-  local startX = self.x + offset[1]
-  local startY = self.y + offset[2]
-  local endX = self.endX + offset[1]
-  local endY = self.endY + offset[2]
-
-  local size = self.size
-  local color = self.color
-  PtUtil.drawLine({startX, startY}, {endX, endY}, color, width)
-end
-
-
---------------------------------------------------------------------------------
--- Rectangle.lua
---------------------------------------------------------------------------------
-
-Rectangle = class(Component)
-Rectangle.color = "black"
-Rectangle.lineSize = nil
-
-
-function Rectangle:_init(x, y, width, height, color, lineSize)
-  Component._init(self)
-  self.x = x
-  self.y = y
-  self.width = width
-  self.height = height
-  self.color = color
-  self.lineSize = lineSize
-end
-
-
-function Rectangle:draw(dt)
-  local startX = self.x + self.offset[1]
-  local startY = self.y + self.offset[2]
-  local w = self.width
-  local h = self.height
-
-  local rect = {startX, startY, startX + w, startY + h}
-  local lineSize = self.lineSize
-  local color = self.color
-  if lineSize then
-    PtUtil.drawRect(rect, color, lineSize)
-  else
-    PtUtil.fillRect(rect, color)
-  end
-end
-
---------------------------------------------------------------------------------
--- Align.lua
---------------------------------------------------------------------------------
-
-Align = {}
-
-Align.LEFT = 0
-Align.CENTER = 1
-Align.RIGHT = 2
-Align.TOP = 3
-Align.BOTTOM = 4
-
---------------------------------------------------------------------------------
--- HorizontalLayout.lua
---------------------------------------------------------------------------------
-
-HorizontalLayout = class()
-
-HorizontalLayout.padding = nil
-HorizontalLayout.vAlignment = Align.CENTER
-HorizontalLayout.hAlignment = Align.LEFT
-
-
-function HorizontalLayout:_init(padding, hAlign, vAlign)
-  self.padding = padding or 0
-  if hAlign then
-    self.hAlignment = hAlign
-  end
-  if vAlign then
-    self.vAlignment = vAlign
-  end
-end
-
-
-function HorizontalLayout:layout()
-  local vAlign = self.vAlignment
-  local hAlign = self.hAlignment
-  local padding = self.padding
-
-  local container = self.container
-  local components = container.children
-  local totalWidth = 0
-  for _,component in ipairs(components) do
-    totalWidth = totalWidth + component.width
-  end
-  totalWidth = totalWidth + (#components - 1) * padding
-
-  local startX
-  if hAlign == Align.LEFT then
-    startX = 0
-  elseif hAlign == Align.CENTER then
-    startX = (container.width - totalWidth) / 2
-  else -- ALIGN_RIGHT
-    startX = container.width - totalWidth
-  end
-
-  for _,component in ipairs(components) do
-    component.x = startX
-    if vAlign == Align.TOP then
-      component.y = container.height - component.height
-    elseif vAlign == Align.CENTER then
-      component.y = (container.height - component.height) / 2
-    else -- ALIGN_BOTTOM
-      component.y = 0
+  cell:set(self.cellDefaults)
+  if cell._column <= #self.columnDefaults then
+    local columnCell = self.columnDefaults[cell._column]
+    if columnCell ~= NULL and columnCell ~= nil then
+      cell:merge(columnCell)
     end
-    startX = startX + component.width + padding
   end
+  cell:merge(self.rowDefaults)
+
+  if widget ~= nil then
+    self.toolkit.addChild(self.tableWidget, widget)
+  end
+
+  return cell
 end
 
---------------------------------------------------------------------------------
--- VerticalLayout.lua
---------------------------------------------------------------------------------
-
-VerticalLayout = class()
-
-VerticalLayout.padding = nil
-VerticalLayout.vAlignment = Align.TOP
-VerticalLayout.hAlignment = Align.CENTER
-
-
-function VerticalLayout:_init(padding, vAlign, hAlign)
-  self.padding = padding or 0
-  if hAlign then
-    self.hAlignment = hAlign
+function row(self)
+  if #cells > 0 then
+    self:endRow()
   end
-  if vAlign then
-    self.vAlignment = vAlign
+  if self.rowDefaults ~= nil then
+    self.toolkit.freeCell(self.rowDefaults)
   end
+  self.rowDefaults = toolkit.obtainCell(self)
+  self.rowDefaults:clear()
+  return self.rowDefaults
 end
 
-
-function VerticalLayout:layout()
-  local vAlign = self.vAlignment
-  local hAlign = self.hAlignment
-  local padding = self.padding
-
-  local container = self.container
-  local components = container.children
-  local totalHeight = 0
-  for _,component in ipairs(components) do
-    totalHeight = totalHeight + component.height
-  end
-  totalHeight = totalHeight + (#components - 1) * padding
-
-  local startY
-  if vAlign == Align.TOP then
-    startY = container.height
-  elseif vAlign == Align.CENTER then
-    startY = container.height - (container.height - totalHeight) / 2
-  else -- ALIGN_BOTTOM
-    startY = totalHeight
-  end
-
-  for _,component in ipairs(components) do
-    component.y = startY - component.height
-    if hAlign == Align.LEFT then
-      component.x = 0
-    elseif hAlign == Align.CENTER then
-      component.x = (container.width - component.width) / 2
-    else -- ALIGN_RIGHT
-      component.x = container.width - component.width
+function endRow(self)
+  local cells = self.cells
+  local rowColumns = 0
+  for i=#cells,1,-1 do
+    local cell = cells[i]
+    if cell.endRow then
+      break
     end
-    startY = startY - (component.height + padding)
+    rowColumns = rowColumns + cell._colspan
   end
+  self.columns = math.max(self.columns, rowColumns)
+  self.rows = self.rows + 1
+  cells[#cells].endRow = true
+  self:invalidate()
 end
 
---------------------------------------------------------------------------------
--- Panel.lua
---------------------------------------------------------------------------------
-
-Panel = class(Component)
-
-
-function Panel:_init(x, y, width, height)
-  Component._init(self)
-  self.x = x
-  self.y = y
-  if width then
-    self.width = width
-  end
-  if height then
-    self.height = height
-  end
-end
-
-
-function Panel:add(child)
-  Component.add(self, child)
-  self:updateLayoutManager()
-  if not self.layoutManager then
-    self:pack()
-  end
-end
-
-function Panel:setLayoutManager(layout)
-  self.layoutManager = layout
-  layout.container = self
-  self:updateLayoutManager()
-end
-
-function Panel:updateLayoutManager()
-  local layout = self.layoutManager
-  if layout then
-    layout:layout()
-  end
-end
-
---------------------------------------------------------------------------------
--- Frame.lua
---------------------------------------------------------------------------------
-
-Frame = class(Panel)
-Frame.borderColor = "black"
-Frame.borderThickness = 1
-Frame.backgroundColor = "#232323"
-
-
-function Frame:_init(x, y)
-  Panel._init(self, x, y)
-end
-
-
-function Frame:update(dt)
-  if self.dragging then
-    if self.hasFocus then
-      local mousePos = GUI.mousePosition
-      self.x = self.x + (mousePos[1] - self.dragOrigin[1])
-      self.y = self.y + (mousePos[2] - self.dragOrigin[2])
-      self.layout = true
-      self.dragOrigin = mousePos
+function columnDefaults(self, column)
+  local cell = #self.columnDefaults >= column and
+    self.columnDefaults[column] or nil
+  if cell == nil or cell == NULL then
+    cell = self.toolkit.obtainCell(self)
+    cell:clear()
+    if column > #self.columnDefaults then
+      for i=#self.columnDefaults,column-2,1 do
+        table.insert(self.columnDefaults, NULL)
+      end
+      table.insert(self.columnDefaults, cell)
     else
-      self.dragging = false
+      self.columnDefaults[column] = cell
     end
   end
+  return cell
 end
 
-function Frame:draw(dt)
-  local startX = self.x - self.offset[1]
-  local startY = self.y - self.offset[2]
-  local w = self.width
-  local h = self.height
-  local border = self.borderThickness
-  
-  local borderRect = {
-    startX, startY,
-    startX + w, startY + h
-  }
-  local backgroundRect = {
-    startX + border, startY + border,
-    startX + w - border, startY + h - border
-  }
-  
-  PtUtil.drawRect(borderRect, self.borderColor, border)
-  PtUtil.fillRect(backgroundRect, self.backgroundColor)
+function reset(self)
+  self:clear()
+  self._padTop = nil
+  self._padLeft = nil
+  self._padBottom = nil
+  self._padRight = nil
+  self._align = CENTER
+  if self._debug ~= Debug.NONE then
+    self.toolkit.clearDebugRectangles(self)
+  end
+  self._debug = Debug.NONE
+  self.cellDefaults:defaults()
+  local i = 1
+  local n = #self.columnDefaults
+  while i <= n do
+    local columnCell = self.columnDefaults[i]
+    if columnCell ~= NULL and columnCell ~= nil then
+      self.toolkit.freeCell(columnCell)
+    end
+    i = i + 1
+  end
+  self.columnDefaults = {}
 end
 
-function Frame:clickEvent(position, button, pressed)
-  if pressed then
-    self.dragging = true
-    self.dragOrigin = position
+function clear(self)
+  for i=#self.cells,1,-1 do
+    local cell = self.cells[i]
+    local widget = cell.widget
+    if widget ~= nil then
+      self.toolkit.removeChild(self.tableWidget, widget)
+    end
+    self.toolkit.freeCell(cell)
+  end
+  self.cells = {}
+  self.rows = 0
+  self.columns = 0
+  if self.rowDefaults ~= nil then
+    self.toolkit.freeCell(self.rowDefaults)
+  end
+  self.rowDefaults = nil
+  self:invalidate()
+end
+
+function getCell(self, widget)
+  local n = #self.cells
+  for i=1,n,1 do
+    local c = self.cells[i]
+    if c.widget == widget then
+      return c
+    end
+  end
+  return nil
+end
+
+function getCells(self)
+  return self.cells
+end
+
+function setToolkit(self, toolkit)
+  self.toolkit = toolkit
+end
+
+function getTable(self)
+  return self.tableWidget
+end
+
+function setTable(self, table)
+  self.tableWidget = table
+end
+
+function getMinWidth(self)
+  if self.sizeInvalid then
+    self:computeSize()
+  end
+  return self.tableMinWidth
+end
+
+function getMinHeight(self)
+  if self.sizeInvalid then
+    self:computeSize()
+  end
+  return self.tableMinHeight
+end
+
+function getPrefWidth(self)
+  if self.sizeInvalid then
+    self:computeSize()
+  end
+  return self.tablePrefWidth
+end
+
+function getPrefHeight(self)
+  if self.sizeInvalid then
+    self:computeSize()
+  end
+  return self.tablePrefHeight
+end
+
+function defaults(self)
+  return self.cellDefaults
+end
+
+function pad(self, pad)
+  self._padTop = pad
+  self._padLeft = pad
+  self._padBottom = pad
+  self._padRight = pad
+  self.sizeInvalid = true
+  return self
+end
+
+function pad(self, top, left, bottom, right)
+  self._padTop = top
+  self._padLeft = left
+  self._padBottom = bottom
+  self._padRight = right
+  self.sizeInvalid = true
+  return self
+end
+
+function padTop(self, padTop)
+  self._padTop = padTop
+  self.sizeInvalid = true
+  return self
+end
+
+function padLeft(self, padLeft)
+  self._padLeft = padLeft
+  self.sizeInvalid = true
+  return self
+end
+
+function padBottom(self, padBottom)
+  self._padBottom = padBottom
+  self.sizeInvalid = true
+  return self
+end
+
+function padRight(self, padRight)
+  self._padRight = padRight
+  self.sizeInvalid = true
+  return self
+end
+
+function align(self, align)
+  self._align = align
+  return self
+end
+
+function center(self)
+  self._align = CENTER
+  return self
+end
+
+function top(self)
+  self._align = bit32.bor(self._align, TOP)
+  self._align = bit32.band(self._align, bit32.bnot(BOTTOM))
+  return self
+end
+
+function left(self)
+  self._align = bit32.bor(self._align, LEFT)
+  self._align = bit32.band(self._align, bit32.bnot(RIGHT))
+  return self
+end
+
+function bottom(self)
+  self._align = bit32.bor(self._align, BOTTOM)
+  self._align = bit32.band(self._align, bit32.bnot(TOP))
+  return self
+end
+
+function right(self)
+  self._align = bit32.bor(self._align, RIGHT)
+  self._align = bit32.band(self._align, bit32.bnot(LEFT))
+  return self
+end
+
+function debugTable(self)
+  self._debug = Debug.TABLE
+  self:invalidate()
+  return self
+end
+
+function debugCell(self)
+  self._debug = Debug.CELL
+  self:invalidate()
+  return self
+end
+
+function debugWidget(self)
+  self._debug = Debug.WIDGET
+  self:invalidate()
+  return self
+end
+
+function debug(self, debug)
+  if debug == nil then
+    self._debug = Debug.ALL
+    self:invalidate()
   else
-    self.dragging = false
-  end
-  return true
-end
-
---------------------------------------------------------------------------------
--- Button.lua
---------------------------------------------------------------------------------
-
-Button = class(Component)
-Button.outerBorderColor = "black"
-Button.innerBorderColor = "#545454"
-Button.innerBorderHoverColor = "#939393"
-Button.color = "#262626"
-Button.hoverColor = "#545454"
-
-
-function Button:_init(x, y, width, height)
-  Component._init(self)
-  self.mouseOver = false
-
-  self.x = x
-  self.y = y
-  self.width = width
-  self.height = height
-end
-
-
-function Button:update(dt)
-  if self.pressed and not self.mouseOver then
-    self:setPressed(false)
-  end
-end
-
-function Button:draw(dt)
-  local startX = self.x + self.offset[1]
-  local startY = self.y + self.offset[2]
-  local w = self.width
-  local h = self.height
-  
-  local borderPoly = {
-    {startX + 1, startY + 0.5},
-    {startX + w - 1, startY + 0.5},
-    {startX + w - 0.5, startY + 1},
-    {startX + w - 0.5, startY + h - 1},
-    {startX + w - 1, startY + h - 0.5},
-    {startX + 1, startY + h - 0.5},
-    {startX + 0.5, startY + h - 1},
-    {startX + 0.5, startY + 1},
-  }
-  local innerBorderRect = {
-    startX + 1, startY + 1, startX + w - 1, startY + h - 1
-  }
-  local rectOffset = 1.5
-  local rect = {
-    startX + rectOffset, startY + rectOffset, startX + w - rectOffset, startY + h - rectOffset
-  }
-
-  PtUtil.drawPoly(borderPoly, self.outerBorderColor, 1)
-  if self.mouseOver then
-    PtUtil.drawRect(innerBorderRect, self.innerBorderHoverColor, 0.5)
-    PtUtil.fillRect(rect, self.hoverColor)
-  else
-    PtUtil.drawRect(innerBorderRect, self.innerBorderColor, 0.5)
-    PtUtil.fillRect(rect, self.color)
-  end
-end
-
-function Button:setPressed(pressed)
-  if pressed and not self.pressed then
-    self.x = self.x + 1
-    self.y = self.y - 1
-    self.layout = true
-  end
-  if not pressed and self.pressed then
-    self.x = self.x - 1
-    self.y = self.y + 1
-    self.layout = true
-  end
-  self.pressed = pressed
-end
-
-function Button:clickEvent(position, button, pressed)
-  if button <= 3 then
-    if self.onClick and not pressed and self.pressed then
-      self:onClick(button)
+    self._debug = debug
+    if debug == Debug.NONE then
+      self.toolkit.clearDebugRectangles(self)
+    else
+      self:invalidate()
     end
-    self:setPressed(pressed)
-    return true
-  end 
-end
-
-
---------------------------------------------------------------------------------
--- Label.lua
---------------------------------------------------------------------------------
-
-Label = class(Component)
-Label.text = nil
-
-
-function Label:_init(x, y, text, fontSize, fontColor)
-  Component._init(self)
-  fontSize = fontSize or 10
-  self.fontSize = fontSize
-  self.fontColor = fontColor or "white"
-  self.text = text
-  self.x = x
-  self.y = y
-  self:addListener("text", self.recalculateBounds)
-  self:recalculateBounds()
-end
-
-
-function Label:recalculateBounds()
-  self.width = PtUtil.getStringWidth(self.text, self.fontSize)
-  self.height = self.fontSize
-end
-
-function Label:draw(dt)
-  local startX = self.x + self.offset[1]
-  local startY = self.y + self.offset[2]
-  
-  PtUtil.drawText(self.text, {
-                    position = {startX, startY},
-                    verticalAnchor = "bottom"
-                             }, self.fontSize, self.fontColor)
-end
-
---------------------------------------------------------------------------------
--- TextButton.lua
---------------------------------------------------------------------------------
-
-TextButton = class(Button)
-TextButton.text = nil
-TextButton.textPadding = 2
-
-
-function TextButton:_init(x, y, width, height, text, fontColor)
-  Button._init(self, x, y, width, height)
-  local padding = self.textPadding
-  local fontSize = height - padding * 2
-  local label = Label(0, padding, text, fontSize, fontColor)
-  self.text = text
-  
-  self.label = label
-  self:add(label)
-
-  self:addListener(
-    "text",
-    function(t, k, old, new)
-      t.label.text = new
-      t:repositionLabel()
-    end
-  )
-
-  self:repositionLabel()
-end
-
-
-function TextButton:repositionLabel()
-  local label = self.label
-  local text = label.text
-  local padding = self.textPadding
-  local maxHeight = self.height - padding * 2
-  local maxWidth = self.width - padding * 2
-  if label.height < maxHeight then
-    label.fontSize = maxHeight
-    label:recalculateBounds()
   end
-  while label.width > maxWidth do
-    label.fontSize = label.fontSize - 1
-    label:recalculateBounds()
+  return self
+end
+
+function getDebug(self)
+  return self._debug
+end
+
+function getPadTop(self)
+  return self._padTop
+end
+
+function getPadLeft(self)
+  return self._padLeft
+end
+
+function getPadBottom(self)
+  return self._padBottom
+end
+
+function getPadRight(self)
+  return self._padRight
+end
+
+function getAlign()
+  return self._align
+end
+
+function getRow(self, y)
+  local row = 0
+  y = y + self._padTop
+  local i = 1
+  local n = #self.cells
+  if n == 0 then
+    return -1
   end
-  label.x = (self.width - label.width) / 2
-  label.y = (self.height - label.height) / 2
-end
-
-
---------------------------------------------------------------------------------
--- TextField.lua
---------------------------------------------------------------------------------
-
-TextField = class(Component)
-TextField.vPadding = 3
-TextField.hPadding = 4
-TextField.borderColor = "#545454"
-TextField.backgroundColor = "#000000"
-TextField.textColor = "white"
-TextField.textHoverColor = "#999999"
-TextField.defaultTextColor = "#333333"
-TextField.defaultTextHoverColor = "#777777"
-TextField.cursorColor = "white"
-TextField.cursorRate = 1
-TextField.filter = nil
-
-TextField.repeatDelay = 0.5
-TextField.repeatInterval = 0.05
-
-
-function TextField:_init(x, y, width, height, defaultText)
-  Component._init(self)
-  self.x = x
-  self.y = y
-  self.width = width
-  self.height = height
-  self.fontSize = height - self.vPadding * 2
-  self.cursorPosition = 0
-  self.cursorX = 0
-  self.cursorTimer = self.cursorRate
-  self.text = ""
-  self.defaultText = defaultText
-  self.textOffset = 0
-  self.textClip = nil
-  self.mouseOver = false
-  self.keyTimes = {}
-end
-
-
-function TextField:update(dt)
-  if self.hasFocus then
-    local keyTimes = self.keyTimes
-    for key,dur in pairs(keyTimes) do
-      local time = dur + dt
-      keyTimes[key] = time
-      if time > self.repeatDelay + self.repeatInterval then
-        self:keyEvent(key, true)
-        keyTimes[key] = self.repeatDelay
+  if n == 1 then
+    return 1
+  end
+  while i <= n do
+    local c = self.cells[i]
+    i = i + 1
+    if c:getIgnore() then
+    else
+      if c.widgetY + c.computedPadTop < y then
+        break
+      end
+      if c.endRow then
+        row = row + 1
       end
     end
-    
-    local timer = self.cursorTimer
-    local rate = self.cursorRate
-    timer = timer - dt
-    if timer < 0 then
-      timer = rate
-    end
-    self.cursorTimer = timer
   end
+  return row
 end
 
-function TextField:draw(dt)
-  local startX = self.x + self.offset[1]
-  local startY = self.y + self.offset[2]
-  local w = self.width
-  local h = self.height
-
-  local borderRect = {
-    startX, startY, startX + w, startY + h
-  }
-  local backgroundRect = {
-    startX + 1, startY + 1, startX + w - 1, startY + h - 1
-  }
-  PtUtil.fillRect(borderRect, self.borderColor)
-  PtUtil.fillRect(backgroundRect, self.backgroundColor)
-
-  local text = self.text
-  local default = (text == "") and (self.defaultText ~= nil)
-  
-  local textColor
-  if self.mouseOver then
-    textColor = default and self.defaultTextHoverColor or self.textHoverColor
-  else
-    textColor = default and self.defaultTextColor or self.textColor
-  end
-
-  local cursorPosition = self.cursorPosition
-  text = default and self.defaultText
-    or text:sub(self.textOffset + 1, self.textOffset
-                  + (self.textClip or #text))
-
-  PtUtil.drawText(text, {
-                    position = {
-                      startX + self.hPadding,
-                      startY + self.vPadding
-                    },
-                    verticalAnchor = "bottom"
-                        }, self.fontSize, textColor)
-
-  if self.hasFocus then
-    local timer = self.cursorTimer
-    local rate = self.cursorRate
-
-    if timer > rate / 2 then -- Draw cursor
-      local cursorX = startX + self.cursorX + self.hPadding
-      local cursorY = startY + self.vPadding
-      PtUtil.drawLine({cursorX, cursorY},
-        {cursorX, cursorY + h - self.vPadding * 2},
-        self.cursorColor,
-        1)
+function ensureSize(array, size)
+  if array == nil or #array < size then
+    local out = {}
+    for i=1,size,1 do
+      out[i] = 0
     end
+    return out
   end
+  local n = #array
+  for i=1,n,1 do
+    array[i] = 0
+  end
+  return array
 end
 
-function TextField:setCursorPosition(pos)
-  if pos > #self.text then
-    pos = #self.text
-  end
-  self.cursorPosition = pos
+function computeSize(self)
+  self.sizeInvalid = false
 
-  if pos < self.textOffset then
-    self.textOffset = pos
-  end
-  self:calculateTextClip()
-  local textClip = self.textClip
-  while (textClip) and (pos > self.textOffset + textClip) do
-    self.textOffset = self.textOffset + 1
-    self:calculateTextClip()
-    textClip = self.textClip
-  end
-  while self.textOffset > 0 and not textClip do
-    self.textOffset = self.textOffset - 1
-    self:calculateTextClip()
-    textClip = self.textClip
-    if textClip then
-      self.textOffset = self.textOffset + 1
-      self:calculateTextClip()
-    end
-  end
-  
-  local text = self.text
-  local cursorX = 0
-  for i=self.textOffset + 1,pos,1 do
-    local charWidth = PtUtil.getStringWidth(text:sub(i, i), self.fontSize)
-    cursorX = cursorX + charWidth
-  end
-  self.cursorX = cursorX
-  self.cursorTimer = self.cursorRate
-end
+  local toolkit = self.toolkit
+  local cells = self.cells
 
-function TextField:calculateTextClip()
-  local maxX = self.width - self.hPadding * 2
-  local text = self.text
-  local totalWidth = 0
-  local startI = self.textOffset + 1
-  for i=startI,#text,1 do
-    totalWidth = totalWidth
-      + PtUtil.getStringWidth(text:sub(i, i), self.fontSize)
-    if totalWidth > maxX then
-      self.textClip = i - startI
-      return
-    end
+  if #cells > 0 and not cells[#cells].endRow then
+    self:endRow()
   end
-  self.textClip = nil
-end
 
-function TextField:clickEvent(position, button, pressed)
-  if button <= 3 then
-    local xPos = position[1] - self.x - self.offset[1] - self.hPadding
+  local columnMinWidth = ensureSize(self.columnMinWidth, columns)
+  self.columnMinWidth = columnMinWidth
+  local rowMinHeight = ensureSize(self.rowMinHeight, rows)
+  self.rowMinHeight = rowMinHeight
+  local columnPrefWidth = ensureSize(self.columnPrefWidth, columns)
+  self.columnPrefWidth = columnPrefWidth
+  local rowPrefHeight = ensureSize(self.rowPrefHeight, rows)
+  self.rowPrefHeight = rowPrefHeight
+  local columnWidth = ensureSize(self.columnWidth, columns)
+  self.columnWidth = columnWidth
+  local rowHeight = ensureSize(self.rowHeight, rows)
+  self.rowHeight = rowHeight
+  local expandWidth = ensureSize(self.expandWidth, columns)
+  self.expandWidth = expandWidth
+  local expandHeight = ensureSize(self.expandHeight, rows)
+  self.expandHeight = expandHeight
 
-    local text = self.text
-    local totalWidth = 0
-    for i=self.textOffset + 1,#text,1 do
-      local charWidth = PtUtil.getStringWidth(text:sub(i, i), self.fontSize)
-      if xPos < (totalWidth + charWidth * 0.6) then
-        self:setCursorPosition(i - 1)
-        return true
+  local spaceRightLast = 0
+  local n = #cells
+  for i=1,n,1 do
+    local c = cells[i]
+    if not c._ignore then
+
+      if c._expandY ~= 0 and expandHeight[c._row] == 0 then
+        expandHeight[c._row] = c.expandY
       end
-      totalWidth = totalWidth + charWidth
-    end
-    self:setCursorPosition(#text)
+      if c._colspan == 1 and c._expandX ~= 0 and expandWidth[c._column] == 0 then
+        expandWidth[c._column] = c.expandX
+      end
 
-    return true
+      c.computedPadLeft = c._padLeft +
+        (c._column == 1 and 0 or math.max(0, c._spaceLeft - spaceRightLast))
+      c.computedPadTop = c._padTop
+      if c.cellAboveIndex ~= -1 then
+        local above = cells[c.cellAboveIndex]
+        c.computedPadTop = c.computedPadTop +
+          math.max(0, c._spaceTop - above.spaceBottom)
+      end
+      local spaceRight = c.spaceRight
+      c.computedPadRight = c._padRight +
+        ((c._column + c._colspan) == columns + 1 and 0 or spaceRight)
+      c.computedPadBottom = c._padBottom + (c._row == rows and 0 or c.spaceBottom)
+      spaceRightLast = spaceRight
+
+      local prefWidth = c.prefWidth
+      local prefHeight = c.prefHeight
+      local minWidth = c.minWidth
+      local minHeight = c.minHeight
+      local maxWidth = c.maxWidth
+      local maxHeight = c.maxHeight
+      if prefWidth < minWidth then
+        prefWidth = minWidth
+      end
+      if prefHeight < minHeight then
+        prefHeight = minHeight
+      end
+      if maxWidth > 0 and prefWidth > maxWidth then
+        prefWidth = maxWidth
+      end
+      if maxHeight > 0 and prefHeight > maxHeight then
+        prefHeight = maxHeight
+      end
+
+      if c._colspan == 1 then
+        local hpadding = c.computedPadLeft + c.computedPadRight
+        columnPrefWidth[c._column] = math.max(columnPrefWidth[c.column],
+                                             prefWidth + hpadding)
+        columnMinWidth[c._column] = math.max(columnMinWidth[c.column],
+                                            minWidth + hpadding)
+      end
+      local vpadding = c.computedPadTop + c.computedPadBottom
+      rowPrefHeight[c._row] = math.max(rowPrefHeight[c.row],
+                                      prefHeight + vpadding)
+      rowMinHeight[c._row] = math.max(rowMinHeight[c.row],
+                                     minHeight + vpadding)
+    end
   end
+
+  for i=1,n,1 do
+    local c = cells[i]
+    if not (c._ignore or c._expandX == 0) then
+      local nn = c._column + c.colspan
+      for column=c._column,nn,1 do
+        if expandWidth[column] ~= 0 then
+          goto continue2
+        end
+      end
+      nn = column + c.colspan
+      for column=c._column,nn,1 do
+        expandWidth[column] = c.expandX
+      end
+    end
+  end
+
+  for i=1,n,1 do
+    local c = cells[i]
+    if not (c._ignore or c._colspan == 1) then
+      local minWidth = c.minWidth
+      local prefWidth = c.prefWidth
+      local maxWidth = c.maxWidth
+      if prefWidth < minWidth then
+        prefWidth = minWidth
+      end
+      if maxWidth > 0 and prefWidth > maxWidth then
+        prefWidth = maxWidth
+      end
+
+      local spannedMinWidth = -(c.computedPadLeft + c.computedPadRight)
+      local spannedPrefWidth = spannedMinWidth
+      local nn = c._column + c.colspan
+      for column=c._column,nn,1 do
+        spannedMinWidth = spannedMinWidth + columnMinWidth[column]
+        spannedPrefWidth = spannedPrefWidth + columnPrefWidth[column]
+      end
+
+      local totalExpandWidth = 0
+      nn = column + c.colspan
+      for column=c._column,nn,1 do
+        totalExpandWidth = totalExpandWidth + column
+      end
+
+      local extraMinWidth = math.max(0, minWidth - spannedMinWidth)
+      local extraPrefWidth = math.max(0, prefWidth - spannedPrefWidth)
+      nn = column + c.colspan
+      for column=c._column,nn,1 do
+        local ratio = totalExpandWidth == 0 and 1 / c._colspan or
+          expandWidth[column] / totalExpandWidth
+        columnMinWidth[column] = columnMinWidth[column] + extraMinWidth * ratio
+        columnPrefWidth[column] = columnPrefWidth[column] + extraPrefWidth
+          * ratio
+      end
+    end
+  end
+
+  local uniformMinWidth = 0
+  local uniformMinHeight = 0
+  local uniformPrefWidth = 0
+  local uniformPrefHeight = 0
+  for i=1,n,1 do
+    local c = cells[i]
+    if not c._ignore then
+      if c._uniformX == true and c._colspan == 1 then
+        local hpadding = c.computedPadLeft + c.computedPadRight
+        uniformMinWidth = math.max(uniformMinWidth, columnMinWidth[c._column] -
+                                     hpadding)
+        uniformPrefWidth = math.max(uniformPrefWidth, columnPrefWidth[c._column] -
+                                      hpadding)
+      end
+      if c._uniformY == true then
+        local vpadding = c.computedPadTop + c.computedPadBottom
+        uniformMinHeight = math.max(uniformMinHeight, columnMinHeight[c._column] -
+                                      vpadding)
+        uniformPrefHeight = math.max(uniformPrefHeight,
+                                     columnPrefHeight[c._column] - vpadding)
+      end
+    end
+  end
+
+  if uniformPrefWidth > 0 or uniformPrefHeight > 0 then
+    for i=1,n,1 do
+      local c = cells[i]
+      if not c._ignore then
+        if uniformPrefWidth > 0 and c._uniformX == true and c._colspan == 1 then
+          local hpadding = c.computedPadLeft + c.computedPadRight
+          columnMinWidth[c._column] = uniformMinWidth + hpadding
+          columnPrefWidth[c._column] = uniformPrefWidth + hpadding
+        end
+        if uniformPrefHeight > 0 and c._uniformY == true then
+          local vpadding = c.computedPadTop + c.computedPadBottom
+          rowMinHeight[c._column] = uniformMinHeight + vpadding
+          rowPrefHeight[c._column] = uniformPrefHeight + vpadding
+        end
+      end
+    end
+  end
+
+  self.tableMinWidth = 0
+  self.tableMinHeight = 0
+  self.tablePrefWidth = 0
+  self.tablePrefHeight = 0
+  for i=1,columns,1 do
+    self.tableMinWidth = self.tableMinWidth + columnMinWidth[i]
+    self.tablePrefWidth = self.tablePrefWidth + columnPrefWidth[i]
+  end
+  for i=1,rows,1 do
+    self.tableMinHeight = self.tableMinHeight + rowMinHeight[i]
+    self.tablePrefHeight = self.tablePrefHeight + math.max(
+      rowPrefHeight[i], rowMinHeight[i])
+  end
+  local hpadding = self._padLeft + self._padRight
+  local vpadding = self._padTop + self._padBottom
+  self.tableMinWidth = self.tableMinWidth + hpadding
+  self.tableMinHeight = self.tableMinHeight + vpadding
+  self.tablePrefWidth = math.max(self.tablePrefWidth + hpadding,
+                                 self.tableMinWidth)
+  self.tablePrefHeight = math.max(self.tablePrefHeight + vpadding,
+                                  self.tableMinHeight)
 end
 
-function TextField:keyEvent(keyCode, pressed)
-  if pressed then
-    self.keyTimes[keyCode] = self.keyTimes[keyCode] or 0
-  else
-    self.keyTimes[keyCode] = nil
+function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
+  local toolkit = self.toolkit
+  local cells = self.cells
+
+  if layoutX == nil then
+    layoutX = 
   end
-  
-  local keyState = GUI.keyState
-  if not pressed
-    or keyState[305] or keyState[306]
-    or keyState[307] or keyState[308]
-  then
+
+  if self.sizeInvalid then
+    self:computeSize()
+  end
+
+  local hpadding = self._padLeft + self._padRight
+  local vpadding = self._padTop + self._padBottom
+
+  local totalExpandWidth = 0
+  local totalExpandHeight = 0
+  for i=1,self.columns,1 do
+    totalExpandWidth = totalExpandWidth + self.expandWidth[i]
+  end
+  for i=1,self.rows,1 do
+    totalExpandHeight = totalExpandHeight + self.expandHeight[i]
+  end
+
+  local columnWeightedWidth
+  local totalGrowWidth = self.tablePrefWidth - self.tableMinWidth
+  if totalGrowWidth == 0 then
+    self.columnWeightedWidth = self.columnMinWidth
+  else
+    local extraWidth = math.min(totalGrowWidth,
+                                math.max(0,
+                                         layoutWidth - self.tableMinWidth))
+    columnWeightedWidth = ensureSize(self.columnWeightedWidth, columns)
+    self.columnWeightedWidth = columnWeightedWidth
+    for i=1,columns,1 do
+      local growWidth = self.columnPrefWidth[i] - self.columnMinWidth[i]
+      local growRatio = growWidth / totalGrowWidth
+      self.columnWeightedWidth[i] = self.columnMinWidth[i] +
+        extraWidth * growRatio
+    end
+  end
+
+  local rowWeightedHeight
+  local totalGrowHeight = self.tablePrefHeight - self.tableMinHeight
+  if totalGrowHeight == 0 then
+    self.rowWeightedHeight = self.rowMinHeight
+  else
+    local extraHeight = math.min(totalGrowHeight,
+                                 math.max(0,
+                                          layoutHeight - self.tableMinHeight))
+    rowWeightedHeight = ensureSize(self.rowWeightedHeight, rows)
+    self.rowWeightedHeight = rowWeightedHeight
+    for i=1,rows,1 do
+      local growHeight = self.rowPrefHeight[i] - self.rowMinHeight[i]
+      local growRatio = growHeight / totalGrowHeight
+      self.rowWeightedHeight[i] = self.rowMinHeight[i] +
+        extraHeight * growRatio
+    end
+  end
+
+  local n = #cells
+  for i=1,n,1 do
+    local c = cells[i]
+    if not c._ignore then
+      local spannedWeightedWidth = 0
+      local nn = c._column + c.colspan
+      for column=c._column,nn,1 do
+        spannedWeightedWidth = spannedWeightedWidth +
+          self.columnWeightedWidth[column]
+      end
+      local weightedHeight = self.rowWeightedHeight[c.row]
+
+      local prefWidth = c.prefWidth
+      local prefHeight = c.prefHeight
+      local minWidth = c.minWidth
+      local minHeight = c.minHeight
+      local maxWidth = c.maxWidth
+      local maxHeight = c.maxHeight
+      if prefWidth < minWidth then
+        prefWidth = minWidth
+      end
+      if prefHeight < minHeight then
+        prefHeight = minHeight
+      end
+      if maxWidth > 0 and prefWidth > maxWidth then
+        prefWidth = maxWidth
+      end
+      if maxHeight > 0 and prefHeight > maxHeight then
+        prefHeight = maxHeight
+      end
+
+      c.widgetWidth = math.min(spannedWeightedWidth - c.computedPadLeft -
+                                 c.computedPadRight, prefWidth)
+      c.widgetHeight = math.min(spannedWeightedHeight - c.computedPadTop -
+                                  c.computedPadBottom, prefHeight)
+
+      if c._colspan == 1 then
+        self.columnWidth[c._column] = math.max(self.columnWidth[c.column],
+                                              spannedWeightedWidth)
+      end
+      self.rowHeight[c._row] = math.max(self.rowHeight[c._row], weightedHeight)
+    end
+  end
+
+  if totalExpandWidth > 0 then
+    local extra = layoutWidth - hpadding
+    for i=1,self.columns,1 do
+      extra = extra - self.columnWidth[i]
+    end
+    local used = 0
+    local lastIndex = 0
+    for i=1,self.columns,i do
+      if self.expandWidth[i] ~= 0 then
+        local amount = extra * self.expandWidth[i] / totalExpandWidth
+        self.columnWidth[i] = self.columnWidth[i] + amount
+        used = used + amount
+        lastIndex = i
+      end
+    end
+    self.columnWidth[lastIndex] = self.columnWidth[lastIndex] + extra - used
+  end
+  if totalExpandHeight > 0 then
+    local extra = layoutHeight - vpadding
+    for i=1,self.rows,1 do
+      extra = extra - self.rowHeight[i]
+    end
+    local used = 0
+    local lastIndex = 0
+    for i=1,self.rows,i do
+      if self.expandHeight[i] ~= 0 then
+        local amount = extra * self.expandHeight[i] / totalExpandHeight
+        self.rowHeight[i] = self.rowHeight[i] + amount
+        used = used + amount
+        lastIndex = i
+      end
+    end
+    self.rowHeight[lastIndex] = self.rowHeight[lastIndex] + extra - used
+  end
+
+  for i=1,n,1 do
+    local c = cells[i]
+    if not c._ignore and c._colspan ~= 1 then
+      local extraWidth = 0
+      local nn = c._column + c.colspan
+      for column=c._column,nn,1 do
+        extraWidth = extraWidth + self.columnWeightedWidth[column] -
+          self.columnWidth[column]
+      end
+      extraWidth = extraWidth - math.max(0, c.computedPadLeft +
+                                           c.computedPadRight)
+
+      extraWidth = extraWidth / c.colspan
+      if extraWidth > 0 then
+        for column=c._column,nn,1 do
+          self.columnWidth[column] = self.columnWidth[column] + extraWidth
+        end
+      end
+    end
+  end
+
+  local tableWidth = hpadding
+  local tableHeight = vpadding
+  for i=1,self.columns,1 do
+    tableWidth = tableWidth + self.columnWidth[i]
+  end
+  for i=1,self.rows,1 do
+    tableHeight = tableHeight + self.rowHeight[i]
+  end
+
+  local x = layoutX + self._padLeft
+  if bit32.band(self._align, RIGHT) ~= 0 then
+    x = x + layoutWidth - tableWidth
+  elseif bit32.band(self._align, LEFT) == 0 then -- Center
+    x = x + (layoutWidth - tableWidth) / 2
+  end
+
+  local y = layoutY + self._padLeft
+  if bit32.band(self._align, BOTTOM) ~= 0 then
+    y = y + layoutHeight - tableHeight
+  elseif bit32.band(self._align, TOP) == 0 then -- Center
+    y = y + (layoutHeight - tableHeight) / 2
+  end
+
+  local currentX = x
+  local currentY = y
+  for i=1,n,1 do
+    local c = cells[i]
+    if not c._ignore then
+      local spannedCellWidth = 0
+      local nn = c._column + c.colspan
+      for column=c._column,nn,1 do
+        spannedCellWidth = spannedCellWidth + self.columnWidth[column]
+      end
+      spannedCellWidth = spannedCellWidth -
+        (c.computedPadLeft + c.computedPadRight)
+
+      currentX = currentX + c.computedPadLeft
+
+      if c._fillX > 0 then
+        c.widgetWidth = spannedCellWidth * c.fillX
+        local maxWidth = c.maxWidth
+        if maxWidth > 0 then
+          c.widgetWidth = math.min(c.widgetWidth, maxWidth)
+        end
+      end
+      if c._fillY > 0 then
+        c.widgetHeight = self.rowHeight[c._row] * c._fillY - c.computedPadTop -
+          c.computedPadBottom
+        local maxHeight = c.maxHeight
+        if maxHeight > 0 then
+          c.widgetHeight = math.min(c.widgetHeight, maxHeight)
+        end
+      end
+
+      if bit32.band(c._align, LEFT) ~= 0 then
+        c.widgetX = currentX
+      elseif bit32.band(c._align, RIGHT) ~= 0 then
+        c.widgetX = currentX + spannedCellWidth - c.widgetWidth
+      else
+        c.widgetX = currentX + (spannedCellWidth - c.widgetWidth) / 2
+      end
+
+      if bit32.band(c._align, TOP) ~= 0 then
+        c.widgetY = currentY + c.computedPadTop
+      elseif bit32.band(c._align, BOTTOM) ~= 0 then
+        c.widgetY = currentY + self.rowHeight[c._row] - c.widgetHeight -
+          c.computedPadBottom
+      else
+        c.widgetY = currentY + (self.rowHeight[c._row] - c.widgetHeight +
+                                  c.computedPadTop - c.computedPadBottom) / 2
+      end
+
+      if c.endRow then
+        currentX = x
+        currentY = currentY + self.rowHeight[c.row]
+      else
+        currentX = currentX + spannedCellWidth + c.computedPadRight
+      end
+    end
+  end
+
+  if self._debug == Debug.NONE then
     return
   end
+  toolkit.clearDebugRectangles(self)
+  currentX = x
+  currentY = y
+  if self._debug == Debug.TABLE or self._debug == Debug.ALL then
+    toolkit.addDebugRectangle(self, Debug.TABLE, layoutX, layoutY, layoutWidth,
+                              layoutHeight)
+    toolkit.addDebugRectangle(self, Debug.TABLE, x, y, tableWidth - hpadding,
+                              tableHeight - vpadding)
+  end
+  for i=1,n,1 do
+    local c = cells[i]
+    if not c._ignore then
+      if self._debug == Debug.WIDGET or self._debug == Debug.ALL then
+        toolkit.addDebugRectangle(self, Debug.WIDGET, c.widgetX, c.widgetY,
+                                  c.widgetWidth, c.widgetHeight)
+      end
+
+      local spannedCellWidth = 0
+      local nn = c._column + c.colspan
+      for column=c._column,nn,1 do
+        spannedCellWdith = spannedCellWidth + self.columnWidth[column]
+      end
+      spannedCellWidth = spannedCellWidth - (c.computedPadLeft +
+                                               c.computedPadRight)
+      currentX = currentX + c.computedPadLeft
+      if self._debug == Debug.CELL or self._debug == Debug.ALL then
+        toolkit.addDebugRectangle(self, Debug.CELL, currentX, currentY +
+                                    c.computedPadTop, spannedCellWidth,
+                                  self.rowHeight[c._row] - c.computedPadTop -
+                                    c.computedPadBottom)
+      end
+
+      if c.endRow then
+        currentX = x
+        currentY = currentY + self.rowHeight[c._row]
+      else
+        currentX = currentX + spannedCellWidth + c.computedPadRight
+      end
+    end
+  end
+
   
-  local shift = keyState[303] or keyState[304]
-  local caps = keyState[301]
-  local key = PtUtil.getKey(keyCode, shift, caps)
-
-  local text = self.text
-  local cursorPos = self.cursorPosition
-
-  local filter = self.filter
-  if #key == 1 then -- Type a character
-    text = text:sub(1, cursorPos) .. key .. text:sub(cursorPos + 1)
-    if filter then
-      if not text:match(filter) then
-        return true
-      end
-    end
-    self.text = text
-    self:setCursorPosition(cursorPos + 1)
-  else -- Special character
-    if key == "backspace" then
-      if cursorPos > 0 then
-        text = text:sub(1, cursorPos - 1) .. text:sub(cursorPos + 1)
-        if filter then
-          if not text:match(filter) then
-            return true
-          end
-        end
-        self.text = text
-        self:setCursorPosition(cursorPos - 1)
-      end
-    elseif key == "enter" then
-      if self.onEnter then
-        self:onEnter()
-      end
-    elseif key == "delete" then
-      if cursorPos < #text then
-        text = text:sub(1, cursorPos) .. text:sub(cursorPos + 2)
-        if filter then
-          if not text:match(filter) then
-            return true
-          end
-        end
-        self.text = text
-      end
-    elseif key == "right" then
-      self:setCursorPosition(math.min(cursorPos + 1, #text))
-    elseif key == "left" then
-      self:setCursorPosition(math.max(0, cursorPos - 1))
-    elseif key == "home" then
-      self:setCursorPosition(0)
-    elseif key == "end" then
-      self:setCursorPosition(#text)
-    end
-  end
-  return true
-end
-
-
---------------------------------------------------------------------------------
--- Image.lua
---------------------------------------------------------------------------------
-
-Image = class(Component)
-
-
-function Image:_init(x, y, image, scale)
-  Component._init(self)
-  scale = scale or 1
-  
-  self.x = x
-  self.y = y
-  local imageSize = root.imageSize(image)
-  self.width = imageSize[1] * scale
-  self.height = imageSize[2] * scale
-  self.image = image
-  self.scale = scale
-end
-
-
-function Image:draw(dt)
-  local startX = self.x + self.offset[1]
-  local startY = self.y + self.offset[2]
-  local image = self.image
-  local scale = self.scale
-  
-  PtUtil.drawImage(image, {startX, startY}, scale)
 end
 
 --------------------------------------------------------------------------------
--- CheckBox.lua
+-- Cell.lua
 --------------------------------------------------------------------------------
 
-CheckBox = class(Component)
-CheckBox.borderColor = "#545454"
-CheckBox.backgroundColor = "black"
-CheckBox.hoverColor = "#1C1C1C"
-CheckBox.checkColor = "#C51A0B"
-CheckBox.pressedColor = "#343434"
+Cell = class()
 
+local bit32 = bit32
+local _ENV = Cell
 
-function CheckBox:_init(x, y, size)
-  Component._init(self)
-  self.mouseOver = false
+CENTER = bit32.lshift(1, 0)
+TOP = bit32.lshift(1, 1)
+BOTTOM = bit32.lshift(1, 2)
+LEFT = bit32.lshift(1, 3)
+RIGHT = bit32.lshift(1, 4)
 
-  self.x = x
-  self.y = y
-  self.width = size
-  self.height = size
+local CENTER = CENTER
+local TOP = TOP
+local BOTTOM = BOTTOM
+local LEFT = LEFT
+local RIGHT = RIGHT
 
-  self.selected = false
-end
-
-
-function CheckBox:update(dt)
-  if self.pressed and not self.mouseOver then
-    self.pressed = false
-  end
-end
-
-function CheckBox:draw(dt)
-  local startX = self.x + self.offset[1]
-  local startY = self.y + self.offset[2]
-  local w = self.width
-  local h = self.height
-
-  local borderRect = {startX, startY, startX + w, startY + h}
-  local rect = {startX + 1, startY + 1, startX + w - 1, startY + h - 1}
-  PtUtil.drawRect(borderRect, self.borderColor, 1)
-
-  if self.pressed then
-    PtUtil.fillRect(rect, self.pressedColor)
-  elseif self.mouseOver then
-    PtUtil.fillRect(rect, self.hoverColor)
+function getFunctionValue(self, k, v)
+  if type(v) == "function" then
+    return v(self, k, v)
   else
-    PtUtil.fillRect(rect, self.backgroundColor)
-  end
-
-  if self.selected then
-    self:drawCheck(dt)
+    return v
   end
 end
 
-function CheckBox:drawCheck(dt)
-  local startX = self.x + self.offset[1]
-  local startY = self.y + self.offset[2]
-  local w = self.width
-  local h = self.height
-  PtUtil.drawLine(
-    {startX + w / 4, startY + w / 2},
-    {startX + w / 3, startY + h / 4},
-    self.checkColor, 1)
-  PtUtil.drawLine(
-    {startX + w / 3, startY + h / 4},
-    {startX + 3 * w / 4, startY + 3 * h / 4},
-    self.checkColor, 1)
+_getters = {
+  _minWidth = getFunctionValue,
+  _minHeight = getFunctionValue,
+  _prefWidth = getFunctionValue,
+  _prefHeight = getFunctionValue,
+  _maxWidth = getFunctionValue,
+  _maxHeight = getFunctionValue
+}
+
+function _init(self)
+  self._minWidth = 0
+  self._minHeight = 0
+  self._prefWidth = 0
+  self._prefHeight = 0
+  self._maxWidth = 0
+  self._maxHeight = 0
+  self._spaceTop = 0
+  self._spaceLeft = 0
+  self._spaceBottom = 0
+  self._spaceRight = 0
+  self._padTop = 0
+  self._padLeft = 0
+  self._padBottom = 0
+  self._padRight = 0
+
+  self._fillX = 0
+  self._fillY = 0
+  self._align = 0
+  self._expandX = 0
+  self._expandY = 0
+  self._ignore = false
+  self._colspan = 0
+  self._uniformX = false
+  self._uniformY = false
+
+  self.widget = nil
+  self.widgetX = 0
+  self.widgetY = 0
+  self.widgetWidth = 0
+  self.widgetHeighat = 0
+
+  self.layout = nil
+  self.endRow = false
+  self._column = 0
+  self._row = 0
+  self.cellAboveIndex = -1
+  self.computedPadTop = 0
+  self.computedPadLeft = 0
+  self.computedPadBottom = 0
+  self.computedPadRight = 0
 end
 
-function CheckBox:clickEvent(position, button, pressed)
-  if button <= 3 then
-    if not pressed and self.pressed then
-      self.selected = not self.selected
-    end
-    self.pressed = pressed
-    return true
+function set(self, defaults)
+  self._minWidth = defaults._minWidth
+  self._minHeight = defaults._minHeight
+  self._prefWidth = defaults._prefWidth
+  self._prefHeight = defaults._prefHeight
+  self._maxWidth = defaults._maxWidth
+  self._maxHeight = defaults._maxHeight
+  self._spaceTop = defaults._spaceTop
+  self._spaceLeft = defaults._spaceLeft
+  self._spaceBottom = defaults._spaceBottom
+  self._spaceRight = defaults._spaceRight
+  self._padTop = defaults._padTop
+  self._padLeft = defaults._padLeft
+  self._padBottom = defaults._padBottom
+  self._padRight = defaults._padRight
+  self._fillX = defaults._fillX
+  self._fillY = defaults._fillY
+  self._align = defaults._align
+  self._expandX = defaults._expandX
+  self._expandY = defaults._expandY
+  self._ignore = defaults._ignore
+  self._colspan = defaults._colspan
+  self._uniformX = defaults._uniformX
+  self._uniformY = defaults._uniformY
+end
+
+function merge(self, cell)
+  if not cell then
+    return
+  end
+  self._minWidth = cell._minWidth or self._minWidth
+  self._minHeight = cell._minHeight or self._minHeight
+  self._prefWidth = cell._prefWidth or self._prefWidth
+  self._prefHeight = cell._prefHeight or self._prefHeight
+  self._maxWidth = cell._maxWidth or self._maxWidth
+  self._maxHeight = cell._maxHeight or self._maxHeight
+  self._spaceTop = cell._spaceTop or self._spaceTop
+  self._spaceLeft = cell._spaceLeft or self._spaceLeft
+  self._spaceBottom = cell._spaceBottom or self._spaceBottom
+  self._spaceRight = cell._spaceRight or self._spaceRight
+  self._padTop = cell._padTop or self._padTop
+  self._padLeft = cell._padLeft or self._padLeft
+  self._padBottom = cell._padBottom or self._padBottom
+  self._padRight = cell._padRight or self._padRight
+  self._fillX = cell._fillX or self._fillX
+  self._fillY = cell._fillY or self._fillY
+  self._align = cell._align or self._align
+  self._expandX = cell._expandX or self._expandX
+  self._expandY = cell._expandY or self._expandY
+  if cell._ignore ~= nil then
+    self._ignore = cell._ignore
+  end
+  self._colspan = cell._colspan or self._colspan
+  if cell._uniformX ~= nil then
+    self._uniformX = cell._uniformX
+  end
+  if cell._uniformY ~= nil then
+    self._uniformY = cell._uniformY
   end
 end
 
---------------------------------------------------------------------------------
--- RadioButton.lua
---------------------------------------------------------------------------------
-
-RadioButton = class(CheckBox)
-
-
-
-
-function RadioButton:drawCheck(dt)
-  local startX = self.x + self.offset[1]
-  local startY = self.y + self.offset[2]
-  local w = self.width
-  local h = self.height
-  local checkRect = {startX + w / 4, startY + h / 4,
-                     startX + 3 * w / 4, startY + 3 * h / 4}
-  PtUtil.fillRect(checkRect, self.checkColor)
+function setWidget(self, widget)
+  self.layout.toolkit.setWidget(self.layout, self, widget)
+  return self
 end
 
-function RadioButton:select()
-  local siblings
-  if self.parent == nil then
-    siblings = GUI.components
+function getWidget(self)
+  return self.widget
+end
+
+function hasWidget(self)
+  return self.widget ~= nil
+end
+
+function size(self, width, height)
+  if height == nil then
+    height = width
+  end
+  self._minWidth = width
+  self._minHeight = height
+  self._prefWidth = width
+  self._prefHeight = height
+  self._maxWidth = width
+  self._maxHeight = height
+  return self
+end
+
+function width(self, width)
+  self._minWidth = width
+  self._prefWidth = width
+  self._maxWidth = width
+  return self
+end
+
+function height(self, height)
+  self._minHeight = height
+  self._prefHeight = height
+  self._maxHeight = height
+  return self
+end
+
+function minSize(self, width, height)
+  self._minWidth = width
+  self._minHeight = height or width
+  return self
+end
+
+function minWidth(self, width)
+  self._minWidth = width
+  return self
+end
+
+function minHeight(self, height)
+  self._minHeight = height
+  return self
+end
+
+function prefSize(self, width, height)
+  self._prefWidth = width
+  self._prefHeight = height or width
+  return self
+end
+
+function prefWidth(self, width)
+  self._prefWidth = width
+  return self
+end
+
+function prefHeight(self, height)
+  self._prefHeight = height
+  return self
+end
+
+function maxSize(self, width, height)
+  self._maxWidth = width
+  self._maxHeight = width or height
+  return self
+end
+
+function maxWidth(self, width)
+  self._maxWidth = width
+  return self
+end
+
+function maxHeight(self, height)
+  self._maxHeight = height
+  return self
+end
+
+function space(self, top, left, bottom, right)
+  self._spaceTop = top
+  self._spaceLeft = left or top
+  self._spaceBottom = bottom or top
+  self._spaceRight = right or top
+  return self
+end
+
+function spaceTop(self, space)
+  self._spaceTop = space
+  return self
+end
+
+function spaceLeft(self, space)
+  self._spaceLeft = space
+  return self
+end
+
+function spaceBottom(self, space)
+  self._spaceBottom = space
+  return self
+end
+
+function spaceRight(self, space)
+  self._spaceRight = space
+  return self
+end
+
+function pad(self, top, left, bottom, right)
+  self._padTop = top
+  self._padLeft = left or top
+  self._padBottom = bottom or top
+  self._padRight = right or top
+  return self
+end
+
+function padTop(self, pad)
+  self._padTop = pad
+  return self
+end
+
+function padLeft(self, pad)
+  self._padLeft = pad
+  return self
+end
+
+function padBottom(self, pad)
+  self._padBottom = pad
+  return self
+end
+
+function padRight(self, pad)
+  self._padRight = pad
+  return self
+end
+
+function fill(self, x, y)
+  if type(xn) == "boolean" then
+    x = x and 1 or 0
+  elseif x == nil then
+    x = 1
+  end -- Assume X is a number
+  if type(y) == "boolean" then
+    y = y and 1 or 0
+  elseif y == nil then
+    y = 1
+  end -- Assume Y is a number
+  self._fillX = x
+  self._fillY = y
+  return self
+end
+
+function fillX(self, x)
+  if type(x) == "boolean" then
+    x = x and 1 or 0
+  elseif x == nil then
+    x = 1
+  end -- Assume X is a number
+  self._fillX = x
+  return self
+end
+
+function fillY(self, y)
+  if type(y) == "boolean" then
+    y = y and 1 or 0
+  elseif y == nil then
+    y = 1
+  end -- Assume Y is a number
+  self._fillY = y
+  return self
+end
+
+function align(self, align)
+  self._align = align
+  return self
+end
+
+function top(self)
+  if self._align == nil then
+    self._align = TOP
   else
-    siblings = self.parent.children
+    self._align = bit32.bor(self._align, TOP)
+    self._align = bit32.band(self._align, bit32.bnot(BOTTOM))
   end
-
-  local selectedButton
-  for _,sibling in ipairs(siblings) do
-    if sibling ~= self and sibling.is_a[RadioButton]
-      and sibling.selected
-    then
-      selectedButton = sibling
-    end
-  end
-  if selectedButton then
-    selectedButton.selected = false
-  end
-
-  if not self.selected then
-    self.selected = true
-  end
+  return self
 end
 
-function RadioButton:setParent(parent)
-  Component.setParent(self, parent)
-  local siblings
-  if self.parent == nil then
-    siblings = GUI.components
+function left(self)
+  if self._align == nil then
+    self._align = LEFT
   else
-    siblings = self.parent.children
+    self._align = bit32.bor(self._align, LEFT)
+    self._align = bit32.band(self._align, bit32.bnot(RIGHT))
   end
-
-  for _,sibling in ipairs(siblings) do
-    if sibling ~= self and sibling.is_a[RadioButton] and sibling.selected then
-      return
-    end
-  end
-  self.selected = true
+  return self
 end
 
-function RadioButton:removeSelf()
-  CheckBox.removeSelf(self)
-  if self.selected then
-    local siblings
-    if self.parent == nil then
-      siblings = GUI.components
-    else
-      siblings = self.parent.children
-    end
-
-    for _,sibling in ipairs(siblings) do
-      if sibling.is_a[RadioButton] then
-        sibling:select()
-        return
-      end
-    end
-  end
-end
-
-function RadioButton:clickEvent(position, button, pressed)
-  if button <= 3 then
-    if not pressed and self.pressed then
-      self:select()
-    end
-    self.pressed = pressed
-    return true
-  end
-end
-
---------------------------------------------------------------------------------
--- TextRadioButton.lua
---------------------------------------------------------------------------------
-
-TextRadioButton = class(RadioButton)
-TextRadioButton.hoverColor = "#1F1F1F"
-TextRadioButton.pressedColor = "#454545"
-TextRadioButton.checkColor = "#343434"
-TextRadioButton.text = nil
-TextRadioButton.textPadding = 2
-
-
-function TextRadioButton:_init(x, y, width, height, text)
-  RadioButton._init(self, x, y, 0)
-  self.width = width
-  self.height = height
-  
-  local padding = self.textPadding
-  local fontSize = height - padding * 2
-  local label = Label(0, padding, text, fontSize, fontColor)
-  
-  self.label = label
-  self:add(label)
-
-  self.text = text
-  self:addListener(
-    "text",
-    function(t, k, old, new)
-      t.label.text = new
-      t:repositionLabel()
-    end
-  )
-  self:repositionLabel()
-end
-
-
-function TextRadioButton:drawCheck(dt)
-  local startX = self.x + self.offset[1]
-  local startY = self.y + self.offset[2]
-  local w = self.width
-  local h = self.height
-  local checkRect = {startX + 1, startY + 1,
-                     startX + w - 1, startY + h - 1}
-  PtUtil.fillRect(checkRect, self.checkColor)
-end
-
-TextRadioButton.repositionLabel = TextButton.repositionLabel
-
---------------------------------------------------------------------------------
--- Slider.lua
---------------------------------------------------------------------------------
-
-Slider = class(Component)
-Slider.lineColor = "black"
-Slider.lineSize = 2
-Slider.handleBorderColor = "#B1B1B1"
-Slider.handleBorderSize = 1
-Slider.handleColor = Slider.lineColor
-Slider.handleHoverColor = "#323232"
-Slider.handlePressedColor = "#545454"
-Slider.handleSize = 5
-Slider.value = nil
-Slider.maxValue = nil
-Slider.minValue = nil
-
-
-function Slider:_init(x, y, width, height, min, max, step, vertical)
-  Component._init(self)
-  self.x = x
-  self.y = y
-  self.width = width
-  self.height = height
-  self.mouseOver = false
-  self.minValue = min or 0
-  self.maxValue = max or 1
-  self.valueStep = step
-  self.vertical = vertical
-  self.value = self.minValue
-  self:addListener(
-    "maxValue",
-    function(t, k, old, new)
-      if t.value > new then
-        t.value = new
-      end
-    end
-  )
-end
-
-
-function Slider:update(dt)
-  if self.dragging then
-    if not GUI.mouseState[1] then
-      self.dragging = false
-    else
-      local mousePos = GUI.mousePosition
-      local lineSize = self.lineSize
-      local min = self.minValue
-      local max = self.maxValue
-      local len = max - min
-      local step = self.valueStep
-      local sliderValue
-      if self.vertical then
-        sliderValue = (mousePos[2] - self.dragOffset
-                         - (self.y + self.offset[2] + lineSize)
-                      ) / (self.height - lineSize * 2 - self.handleSize) * len
-      else
-        sliderValue = (mousePos[1] - self.dragOffset
-                         - (self.x + self.offset[1] + lineSize)
-                      ) / (self.width - lineSize * 2 - self.handleSize) * len
-      end
-      if sliderValue ~= sliderValue then -- sliderValue is NaN
-        sliderValue = 0
-      end
-      sliderValue = math.max(sliderValue, 0)
-      sliderValue = math.min(sliderValue, len)
-      if step then
-        local stepFreq = 1 / step
-        sliderValue = math.floor(sliderValue * stepFreq + 0.5) / stepFreq
-      end
-      sliderValue = sliderValue + min
-      self.value = sliderValue
-    end
-  end
-  if self.moving ~= nil then
-    if not GUI.mouseState[1] then
-      self.moving = nil
-    else
-      local step = self.valueStep
-      local direction = self.moving
-      local max = self.maxValue
-      local min = self.minValue
-      local len = max - min
-      if not step then
-        step = len / 100
-      end
-      local value = self.value
-      if direction then
-        self.value = math.min(value + step, max)
-      else
-        self.value = math.max(value - step, min)
-      end
-    end
-  end
-end
-
-function Slider:draw(dt)
-  local startX = self.x + self.offset[1]
-  local startY = self.y + self.offset[2]
-  local w = self.width
-  local h = self.height
-
-  local lineSize = self.lineSize
-  local lineColor = self.lineColor
-  local percentage = self:getPercentage()
-  local handleBorderSize = self.handleBorderSize
-  local handleSize = self.handleSize
-  local slidableLength
-  local handleBorderRect
-  local handleRect
-  if self.vertical then
-    PtUtil.drawLine({startX + w / 2, startY},
-      {startX + w / 2, startY + h}, lineColor, lineSize)
-    PtUtil.drawLine({startX, startY + lineSize / 2}
-      , {startX + w, startY + lineSize / 2}, lineColor, lineSize)
-    PtUtil.drawLine({startX, startY + h - lineSize / 2}
-      , {startX + w, startY + h - lineSize / 2}, lineColor, lineSize)
-      
-    slidableLength = h - lineSize * 2 - handleSize
-    local sliderY = startY + lineSize + percentage * slidableLength
-    handleBorderRect = {startX, sliderY, startX + w, sliderY + handleSize}
-    handleRect = {startX + handleBorderSize, sliderY + handleBorderSize
-                  , startX + w - handleBorderSize
-                  , sliderY + handleSize - handleBorderSize}
+function bottom(self)
+  if self._align == nil then
+    self._align = BOTTOM
   else
-    PtUtil.drawLine({startX, startY + h / 2},
-      {startX + w, startY + h / 2}, self.lineColor, self.lineSize)
-    PtUtil.drawLine({startX + lineSize / 2, startY},
-      {startX + lineSize / 2, startY + h}, lineColor, lineSize)
-    PtUtil.drawLine({startX + w - lineSize / 2, startY},
-      {startX + w - lineSize / 2, startY + h}, lineColor, lineSize)
-    
-    slidableLength = w - lineSize * 2 - handleSize
-    local sliderX = startX + lineSize + percentage * slidableLength
-    handleBorderRect = {sliderX, startY, sliderX + handleSize, startY + h}
-    handleRect = {sliderX + handleBorderSize, startY + handleBorderSize
-                  , sliderX + handleSize - handleBorderSize
-                  , startY + h - handleBorderSize}
+    self._align = bit32.bor(self._align, BOTTOM)
+    self._align = bit32.band(self._align, bit32.bnot(TOP))
   end
-  PtUtil.drawRect(handleBorderRect, self.handleBorderColor, handleBorderSize)
-  local handleColor
-  if self.dragging then
-    handleColor = self.handlePressedColor
-  elseif self.mouseOver then
-    handleColor = self.handleHoverColor
+  return self
+end
+
+function right(self)
+  if self._align == nil then
+    self._align = RIGHT
   else
-    handleColor = self.handleColor
+    self._align = bit32.bor(self._align, RIGHT)
+    self._align = bit32.band(self._align, bit32.bnot(LEFT))
   end
-  PtUtil.fillRect(handleRect, handleColor)
+  return self
 end
 
-function Slider:getPercentage()
-  local min = self.minValue
-  local max = self.maxValue
-  local len = max - min
-  if len == 0 then
-    return 0
+function expand(self, x, y)
+  if type(x) == "boolean" then
+    x = x and 1 or 0
+  elseif x == nil then
+    x = 1
+  end -- Assume X is a number
+  if type(y) == "boolean" then
+    y = y and 1 or 0
+  elseif y == nil then
+    y = 1
+  end -- Assume Y is a number
+  self._expandX = x
+  self._expandY = y
+  return self
+end
+
+function expandX(self, x)
+  if type(x) == "boolean" then
+    x = x and 1 or 0
+  elseif x == nil then
+    x = 1
+  end -- Assume X is a number
+  self._expandX = x
+  return self
+end
+
+function expandY(self, y)
+  if type(y) == "boolean" then
+    y = y and 1 or 0
+  elseif y == nil then
+    y = 1
+  end -- Assume Y is a number
+  self._expandY = y
+  return self
+end
+
+function ignore(self, ignore)
+  if ignore == nil then
+    self._ignore = true
   else
-    return (self.value - min) / len
+    self._ignore = ignore
   end
+  return self
 end
 
-function Slider:clickEvent(position, button, pressed)
-  if button == 1 then -- Only react to LMB
-    if pressed then
-      local startX = self.x + self.offset[1]
-      local startY = self.y + self.offset[2]
-      local w = self.width
-      local h = self.height
-
-      local lineSize = self.lineSize
-      local handleSize = self.handleSize
-      local percentage = self:getPercentage()
-      local handleX
-      local handleY
-      local handleWidth
-      local handleHeight
-      if self.vertical then
-        local slidableLength = h - lineSize * 2 - handleSize
-        handleX = startX
-        handleY = startY + lineSize + percentage * slidableLength
-        handleWidth = w
-        handleHeight = handleSize
-      else
-        local slidableLength = w - lineSize * 2 - handleSize
-        handleX = startX + lineSize + percentage * slidableLength
-        handleY = startY
-        handleWidth = handleSize
-        handleHeight = h
-      end
-      if position[1] >= handleX and position[1] <= handleX + handleWidth
-        and position[2] >= handleY and position[2] <= handleY + handleHeight
-      then
-        local dragOffset
-        if self.vertical then
-          dragOffset = position[2] - handleY
-        else
-          dragOffset = position[1] - handleX
-        end
-        self.dragOffset = dragOffset
-        self.dragging = true
-      else
-        if self.vertical then
-          if position[2] < handleY then
-            self.moving = false
-          else
-            self.moving = true
-          end
-        else
-          if position[1] < handleX then
-            self.moving = false
-          else
-            self.moving = true
-          end
-        end
-      end
-    end
-    return true
-  end
+function getIgnore(self)
+  return self._ignore ~= nil and self._ignore == true
 end
 
---------------------------------------------------------------------------------
--- List.lua
---------------------------------------------------------------------------------
+function colspan(self, colspan)
+  self._colspan = colspan
+  return self
+end
 
-List = class(Component)
-List.borderColor = "#545454"
-List.borderSize = 1
-List.backgroundColor = "black"
-List.itemPadding = 2
-List.scrollBarSize = 3
-
-
-function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
-  Component._init(self)
-  self.x = x
-  self.y = y
-  self.width = width
-  self.height = height
-  self.itemSize = itemSize
-  self.itemFactory = itemFactory or TextRadioButton
-  self.items = {}
-  self.topIndex = 1
-  self.bottomIndex = 1
-  self.itemCount = 0
-  self.horizontal = horizontal
-  self.mouseOver = false
-
-  local borderSize = self.borderSize
-  local barSize = self.scrollBarSize
-  local slider
-  if horizontal then
-    slider = Slider(borderSize + 0.5, borderSize + 0.5
-                    , width - borderSize * 2 - 1, barSize, 0, 0, 1, false)
+function uniform(self, x, y)
+  if x == nil then
+    self._uniformX = true
   else
-    slider = Slider(width - borderSize - barSize - 0.5
-                    , borderSize + 0.5, barSize
-                    , height - borderSize * 2 - 1, 0, 0, 1, true)
+    self._uniformX = x
   end
-  slider.lineSize = 0
-  slider.handleBorderSize = 0
-  slider.handleColor = "#545454"
-  slider.handleHoverColor = "#787878"
-  slider.handlePressedColor = "#A0A0A0"
-  slider:addListener(
-    "value",
-    function(t, k, old, new)
-      local list = t.parent
-      if list.horizontal then
-        list.topIndex = new + 1
-      else
-        list.topIndex = t.maxValue - t.value + 1
-      end
-      list:positionItems()
-    end
-  )
-  self.slider = slider
-  self:add(slider)
-
-  self:positionItems()
-end
-
-
-function List:draw(dt)
-  local startX = self.x + self.offset[1]
-  local startY = self.y + self.offset[2]
-  local w = self.width
-  local h = self.height
-
-  local borderSize = self.borderSize
-  local borderColor = self.borderColor
-  local borderRect = {startX, startY, startX + w, startY + h}
-  local rect = {startX + 1, startY + 1, startX + w - 1, startY + h - 1}
-  PtUtil.drawRect(borderRect, borderColor, borderSize)
-  PtUtil.fillRect(rect, self.backgroundColor)
-
-  local scrollBarSize = self.scrollBarSize
-  if self.horizontal then
-    local lineY = startY + borderSize + scrollBarSize + 1.5
-    PtUtil.drawLine({startX, lineY}, {startX + w, lineY}, borderColor, 1)
+  if y == nil then
+    self._uniformY = true
   else
-    local lineX = startX + w - borderSize - scrollBarSize - 1.5
-    PtUtil.drawLine({lineX, startY}, {lineX, startY + h}, borderColor, 1)
+    self._uniformY = y
   end
+  return self
 end
 
-function List:emplaceItem(...)
-  local width
-  local height
-  if self.horizontal then
-    width = self.itemSize
-    height = self.height - (self.borderSize * 2
-                              + self.itemPadding * 2
-                              + self.scrollBarSize + 2)
+function uniformX(self, x)
+  if x == nil then
+    self._uniformX = true
   else
-    width = self.width - (self.borderSize * 2
-                            + self.itemPadding * 2
-                            + self.scrollBarSize + 2)
-    height = self.itemSize
+    self._uniformX = x
   end
-  item = self.itemFactory(0, 0, width, height, ...)
-  return self:addItem(item)
+  return self
 end
 
-function List:addItem(item)
-  self:add(item)
-  local items = self.items
-  local index = #items + 1
-  items[index] = item
-  self.itemCount = self.itemCount + 1
-  self:positionItems()
-  return item, index
-end
-
-function List:removeItem(target)
-  local item
-  local index
-  if type(target) == "number" then -- Remove by index
-    index = target
-    item = table.remove(self.items, index)
-    if not item then
-      return nil, -1
-    end
-  else -- Remove by item
-    if target == nil then
-      return nil
-    end
-    item = target
-    index = PtUtil.removeObject(self.items, item)
-    if index == -1 then
-      return nil, -1
-    end
-  end
-  self:remove(item)
-  if not item.filtered then
-    self.itemCount = self.itemCount - 1
-  end
-  if self.bottomIndex > self.itemCount + 1 then
-    self:scroll(true)
+function uniformY(self, y)
+  if y == nil then
+    self._uniformY = true
   else
-    self:positionItems()
+    self._uniformY = y
   end
-  return item, index
+  return self
 end
 
-function List:clearItems()
-  for index,item in ripairs(self.items) do
-    self:removeItem(index)
-  end
+function getWidgetX(self)
+  return self.widgetX
 end
 
-function List:getItem(index)
-  return self.items[index]
+function setWidgetX(self, x)
+  self.widgetX = x
 end
 
-function List:indexOfItem(item)
-  for index,obj in ipairs(self.items) do
-    if item == obj then
-      return index
-    end
-  end
-  return -1
+function getWidgetY(self)
+  return self.widgetY
 end
 
-function List:filter(filter)
-  local itemCount = 0
-  if filter then
-    for _,item in ipairs(self.items) do
-      if not filter(item) then
-        item.filtered = true
-      else
-        itemCount = itemCount + 1
-        item.filtered = nil
-      end
-    end
-  else
-    for _,item in ipairs(self.items) do
-      itemCount = itemCount + 1
-      item.filtered = nil
-    end
-  end
-  self.itemCount = itemCount
-  self.topIndex = 1
-  self:positionItems()
+function setWidgetY(self, y)
+  self.widgetY = y
 end
 
-function List:positionItems()
-  local items = self.items
-  local padding = self.itemPadding
-  local border = self.borderSize
-  local topIndex = self.topIndex
-  local itemSize = self.itemSize
-  local current
-  local min
-  if self.horizontal then
-    current = border
-    min = border + padding
-  else
-    current = self.height - border
-    min = border + padding
-  end
-  local past = false
-  local itemCount = 0
-  local possibleItemCount = 1
-  for i,item in ipairs(items) do
-    if possibleItemCount < topIndex and not item.filtered then
-      item.visible = false
-      possibleItemCount = possibleItemCount + 1
-    elseif past or item.filtered then
-      item.visible = false
-    else
-      itemCount = itemCount + 1
-      item.visible = nil
-      if self.horizontal then
-        item.y = min
-        current = current + (padding + itemSize)
-        item.x = current
-        if current + itemSize > self.width - borderSize then
-          item.visible = false
-          self.bottomIndex = itemCount + topIndex - 1
-          past = true
-        end
-      else
-        item.x = min
-        current = current - (padding + itemSize)
-        item.y = current
-        if current < border then
-          item.visible = false
-          self.bottomIndex = itemCount + topIndex - 1
-          past = true
-        end
-      end
-    end
-    item.layout = true
-  end
-  if not past then
-    self.bottomIndex = topIndex + itemCount
-  end
-  self:updateScrollBar()
+function getWidgetWidth(self)
+  return self.widgetWidth
 end
 
-function List:updateScrollBar()
-  local maxLength
-  local slider = self.slider
-  local offset
-  if self.horizontal then
-    maxLength = slider.width
-  else
-    maxLength = slider.height
-  end
-  local items = self.items
-  local topIndex = self.topIndex
-  local bottomIndex = self.bottomIndex
-  local itemCount = self.itemCount
-  if bottomIndex > itemCount and topIndex == 1 then
-    slider.handleSize = maxLength
-    slider.maxValue = 0
-  else
-    local numItems = bottomIndex - topIndex -- Number of displayed items
-    local barLength = math.max(
-      numItems * maxLength / itemCount,
-      self.scrollBarSize)
-    slider.handleSize = barLength
-    slider.maxValue = itemCount - numItems
-    if self.horizontal then
-      slider.value = topIndex - 1
-    else
-      slider.value = slider.maxValue - (topIndex - 1)
-    end
-  end
+function setWidgetWidth(self, width)
+  self.widgetWidth = width
 end
 
-function List:scroll(up)
-  if up then
-    self.topIndex = math.max(self.topIndex - 1, 1)
-  else
-    if self.bottomIndex <= self.itemCount then
-      self.topIndex = self.topIndex + 1
-    end
-  end
-  self:positionItems()
+function getWidgetHeight(self)
+  return self.widgetHeight
 end
 
-function List:clickEvent(position, button, pressed)
-  if button >= 4 then -- scroll
-    if pressed then
-      if button == 4 then -- Scroll up
-        self:scroll(true)
-      else -- Scroll down
-        self:scroll(false)
-      end
-    end
-    return true
+function setWidgetHeight(self, height)
+  self.widgetHeight = height
+end
+
+function getColumn(self)
+  return self._column
+end
+
+function getRow(self)
+  return self._row
+end
+
+function getMinWidth(self)
+  return self._minWidth == nil and 0 or self._minWidth
+end
+
+function getMinHeight(self)
+  return self._minHeight == nil and 0 or self._minHeight
+end
+
+function getPrefWidth(self)
+  return self._prefWidth == nil and 0 or self._prefWidth
+end
+
+function getPrefHeight(self)
+  return self._prefHeight == nil and 0 or self._prefHeight
+end
+
+function getMaxWidth(self)
+  return self._maxWidth == nil and 0 or self._maxWidth
+end
+
+function getMaxHeight(self)
+  return self._maxHeight == nil and 0 or self._maxHeight
+end
+
+function getSpaceTop(self)
+  return self._spaceTop == nil and 0 or self._spaceTop
+end
+
+function getSpaceLeft(self)
+  return self._spaceLeft == nil and 0 or self._spaceLeft
+end
+
+function getSpaceBottom(self)
+  return self._spaceBottom == nil and 0 or self._spaceBottom
+end
+
+function getSpaceRight(self)
+  return self._spaceRight == nil and 0 or self._spaceRight
+end
+
+function getPadTop(self)
+  return self._padTop == nil and 0 or self._padTop
+end
+
+function getPadLeft(self)
+  return self._padLeft == nil and 0 or self._padLeft
+end
+
+function getPadBottom(self)
+  return self._padBottom == nil and 0 or self._padBottom
+end
+
+function getPadRight(self)
+  return self._padRight == nil and 0 or self._padRight
+end
+
+function getFillX(self)
+  return self._fillX
+end
+
+function getFillY(self)
+  return self._fillY
+end
+
+function getAlign(self)
+  return self._align
+end
+
+function getExpandX(self)
+  return self._expandX
+end
+
+function getExpandY(self)
+  return self._expandY
+end
+
+function getColspan(self)
+  return self._colspan
+end
+
+function getUniformX(self)
+  return self._uniformX
+end
+
+function getUniformY(self)
+  return self._uniformY
+end
+
+function isEndRow(self)
+  return self.endRow
+end
+
+function getComputedPadTop(self)
+  return self.computedPadTop
+end
+
+function getComputedPadLeft(self)
+  return self.computedPadLeft
+end
+
+function getComputedPadBottom(self)
+  return self.computedPadBottom
+end
+
+function getComputedPadRight(self)
+  return self.computedPadRight
+end
+
+function row(self)
+  return self.layout:row()
+end
+
+function getLayout(self)
+  return self.layout
+end
+
+function clear(self)
+  self._minWidth = nil
+  self._minHeight = nil
+  self._prefWidth = nil
+  self._prefHeight = nil
+  self._maxWidth = nil
+  self._maxHeight = nil
+  self._spaceTop = nil
+  self._spaceLeft = nil
+  self._spaceBottom = nil
+  self._spaceRight = nil
+  self._padTop = nil
+  self._padLeft = nil
+  self._padBottom = nil
+  self._padRight = nil
+  self._fillX = nil
+  self._fillY = nil
+  self._align = nil
+  self._expandX = nil
+  self._expandY = nil
+  self._ignore = nil
+  self._colspan = nil
+  self._uniformX = nil
+  self._uniformY = nil
+end
+
+function free(self)
+  self.widget = nil
+  self.layout = nil
+  self.endRow = false
+  self.cellAboveIndex = -1
+end
+
+function defaults(self)
+  self._minWidth = function(t, k, v)
+    return t.layout.toolkit.getMinWidth(t:getWidget())
   end
+  self._minHeight = function(t, k, v)
+    return t.layout.toolkit.getMinHeight(t:getWidget())
+  end 
+  self._prefWidth = function(t, k, v)
+    return t.layout.toolkit.getPrefWidth(t:getWidget())
+  end
+  self._prefHeight = function(t, k, v)
+    return t.layout.toolkit.getPrefHeight(t:getWidget())
+  end
+  self._maxWidth = function(t, k, v)
+    return t.layout.toolkit.getMaxWidth(t:getWidget())
+  end
+  self._maxHeight = function(t, k, v)
+    return t.layout.toolkit.getMaxHeight(t:getWidget())
+  end
+  self._spaceTop = 0
+  self._spaceLeft = 0
+  self._spaceBottom = 0
+  self._spaceRight = 0
+  self._padTop = 0
+  self._padLeft = 0
+  self._padBottom = 0
+  self._padRight = 0
+  self._fillX = 0
+  self._fillY = 0
+  self._align = CENTER
+  self._expandX = 0
+  self._expandY = 0
+  self._ignore = false
+  self._colspan = 1
+  self._uniformX = nil
+  self._uniformY = nil
 end

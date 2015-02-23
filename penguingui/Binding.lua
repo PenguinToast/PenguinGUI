@@ -26,7 +26,14 @@ Binding = setmetatable(
 -- Proxy metatable to add listeners to a table
 Binding.proxyTable = {
   __index = function(t, k)
-    local out = t._instance[k]
+    local instance = t._instance
+    if instance._getters then
+      local getter = instance._getters[k]
+      if getter then
+        return getter(instance, k, instance[k])
+      end
+    end
+    local out = instance[k]
     if out ~= nil then
       return out
     else

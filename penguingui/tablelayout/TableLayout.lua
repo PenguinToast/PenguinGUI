@@ -1,8 +1,8 @@
 --- Lua port of the Java TableLayout library
 
--- TableLayout = class()
-TableLayout = {}
+TableLayout = class()
 
+local bit32 = bit32
 local _ENV = TableLayout
 
 local NULL = {}
@@ -29,7 +29,6 @@ local RIGHT = RIGHT
 local Debug = Debug
 
 function _init(self, toolkit)
-  self.toolkit = nil
   self.tableWidget = nil
   self.columns = 0
   self.rows = 0
@@ -62,7 +61,7 @@ function _init(self, toolkit)
   self._align = CENTER
   self._debug = Debug.NONE 
   
-  self.toolkit = toolkit
+  self.toolkit = toolkit or Toolkit
   self.cellDefaults = toolkit.obtainCell(self)
   self.cellDefaults:defaults()
 end
@@ -115,7 +114,7 @@ function add(self, widget)
   cell:set(self.cellDefaults)
   if cell._column <= #self.columnDefaults then
     local columnCell = self.columnDefaults[cell._column]
-    if columnCell ~= NULL then
+    if columnCell ~= NULL and columnCell ~= nil then
       cell:merge(columnCell)
     end
   end
@@ -161,7 +160,7 @@ end
 function columnDefaults(self, column)
   local cell = #self.columnDefaults >= column and
     self.columnDefaults[column] or nil
-  if cell == nil then
+  if cell == nil or cell == NULL then
     cell = self.toolkit.obtainCell(self)
     cell:clear()
     if column > #self.columnDefaults then
@@ -192,7 +191,7 @@ function reset(self)
   local n = #self.columnDefaults
   while i <= n do
     local columnCell = self.columnDefaults[i]
-    if columnCell ~= NULL then
+    if columnCell ~= NULL and columnCell ~= nil then
       self.toolkit.freeCell(columnCell)
     end
     i = i + 1
@@ -677,6 +676,10 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
   local toolkit = self.toolkit
   local cells = self.cells
 
+  if layoutX == nil then
+    layoutX = 
+  end
+
   if self.sizeInvalid then
     self:computeSize()
   end
@@ -965,4 +968,6 @@ function layout(self, layoutX, layoutY, layoutWidth, layoutHeight)
       end
     end
   end
+
+  
 end

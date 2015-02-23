@@ -1,6 +1,6 @@
--- Cell = class()
-Cell = {}
+Cell = class()
 
+local bit32 = bit32
 local _ENV = Cell
 
 CENTER = bit32.lshift(1, 0)
@@ -15,10 +15,21 @@ local BOTTOM = BOTTOM
 local LEFT = LEFT
 local RIGHT = RIGHT
 
-local widgetValues = {
-  "_minWidth", "_minHeight",
-  "_prefWidth", "_prefHeight",
-  "_maxWidth", "_maxHeight"
+function getFunctionValue(self, k, v)
+  if type(v) == "function" then
+    return v(self, k, v)
+  else
+    return v
+  end
+end
+
+_getters = {
+  _minWidth = getFunctionValue,
+  _minHeight = getFunctionValue,
+  _prefWidth = getFunctionValue,
+  _prefHeight = getFunctionValue,
+  _maxWidth = getFunctionValue,
+  _maxHeight = getFunctionValue
 }
 
 function _init(self)
@@ -62,20 +73,6 @@ function _init(self)
   self.computedPadLeft = 0
   self.computedPadBottom = 0
   self.computedPadRight = 0
-
-  self = self._instance or self
-  setmetatable(
-    self,
-    {
-      __index = function(t, k)
-        for _,value in ipairs(widgetValues) do
-          if k == value then
-            return t.widget[k]
-          end
-        end
-      end
-    }
-  )
 end
 
 function set(self, defaults)
@@ -145,7 +142,7 @@ function setWidget(self, widget)
 end
 
 function getWidget(self)
-  return self.widget)
+  return self.widget
 end
 
 function hasWidget(self)
@@ -284,7 +281,7 @@ function padRight(self, pad)
 end
 
 function fill(self, x, y)
-  if type(x) == "boolean" then
+  if type(xn) == "boolean" then
     x = x and 1 or 0
   elseif x == nil then
     x = 1
@@ -640,5 +637,39 @@ function free(self)
 end
 
 function defaults(self)
-
+  self._minWidth = function(t, k, v)
+    return t.layout.toolkit.getMinWidth(t:getWidget())
+  end
+  self._minHeight = function(t, k, v)
+    return t.layout.toolkit.getMinHeight(t:getWidget())
+  end 
+  self._prefWidth = function(t, k, v)
+    return t.layout.toolkit.getPrefWidth(t:getWidget())
+  end
+  self._prefHeight = function(t, k, v)
+    return t.layout.toolkit.getPrefHeight(t:getWidget())
+  end
+  self._maxWidth = function(t, k, v)
+    return t.layout.toolkit.getMaxWidth(t:getWidget())
+  end
+  self._maxHeight = function(t, k, v)
+    return t.layout.toolkit.getMaxHeight(t:getWidget())
+  end
+  self._spaceTop = 0
+  self._spaceLeft = 0
+  self._spaceBottom = 0
+  self._spaceRight = 0
+  self._padTop = 0
+  self._padLeft = 0
+  self._padBottom = 0
+  self._padRight = 0
+  self._fillX = 0
+  self._fillY = 0
+  self._align = CENTER
+  self._expandX = 0
+  self._expandY = 0
+  self._ignore = false
+  self._colspan = 1
+  self._uniformX = nil
+  self._uniformY = nil
 end

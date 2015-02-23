@@ -13,24 +13,9 @@ function PtUtil.library()
     "/penguingui/Binding.lua",
     "/penguingui/BindingFunctions.lua",
     "/penguingui/GUI.lua",
-    "/penguingui/Component.lua",
-    "/penguingui/Line.lua",
-    "/penguingui/Rectangle.lua",
-    "/penguingui/Align.lua",
-    "/penguingui/HorizontalLayout.lua",
-    "/penguingui/VerticalLayout.lua",
-    "/penguingui/Panel.lua",
-    "/penguingui/Frame.lua",
-    "/penguingui/Button.lua",
-    "/penguingui/Label.lua",
-    "/penguingui/TextButton.lua",
-    "/penguingui/TextField.lua",
-    "/penguingui/Image.lua",
-    "/penguingui/CheckBox.lua",
-    "/penguingui/RadioButton.lua",
-    "/penguingui/TextRadioButton.lua",
-    "/penguingui/Slider.lua",
-    "/penguingui/List.lua",
+    "/penguingui/Toolkit.lua",
+    "/penguingui/tablelayout/TableLayout.lua",
+    "/penguingui/tablelayout/Cell.lua",
     "/lib/profilerapi.lua",
     "/lib/inspect.lua"
   }
@@ -272,48 +257,4 @@ function class(...)
   )
   -- return the new class table, that's ready to fill with methods
   return cls
-end
-
--- Dumps value as a string closely resemling Lua code that could be used to
--- recreate it (with the exception of functions, threads and recursive tables).
--- Credit to MrMagical.
---
--- Basic usage: dump(value)
---
--- @param value The value to be dumped.
--- @param indent (optional) String used for indenting the dumped value.
--- @param seen (optional) Table of already processed tables which will be
---                        dumped as "{...}" to prevent infinite recursion.
-function dump(value, indent, seen)
-  if type(value) ~= "table" then
-    if type(value) == "string" then
-      return string.format('%q', value)
-    else
-      return tostring(value)
-    end
-  else
-    if type(seen) ~= "table" then
-      seen = {}
-    elseif seen[value] then
-      return "{...}"
-    end
-    seen[value] = true
-    indent = indent or ""
-    if next(value) == nil then
-      return "{}"
-    end
-    local str = "{"
-    local first = true
-    for k,v in pairs(value) do
-      if first then
-        first = false
-      else
-        str = str..","
-      end
-      str = str.."\n"..indent.."  ".."["..dump(k, "", seen)
-        .."] = "..dump(v, indent.."  ", seen)
-    end
-    str = str.."\n"..indent.."}"
-    return str
-  end
 end

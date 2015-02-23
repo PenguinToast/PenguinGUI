@@ -1,0 +1,63 @@
+{
+  "objectName" : "tabletestobject",
+  "rarity" : "Rare",
+  "description" : "Testing object for the PenguinGUI library",
+  "shortdescription" : "Penguin GUI Test",
+  "race" : "generic",
+
+  "category" : "wire",
+  "price" : 1,
+  "printable" : false,
+
+  "inventoryIcon" : "tabletestobjecticon.png",
+  "orientations" : [
+    {
+      "image" : "tabletestobject.png:default.off",
+      "imagePosition" : [0, 0],
+
+      "spaceScan" : 0.1,
+      "direction" : "right"
+    }
+  ],
+
+  "scripts" : ["/lib/inspect.lua", "/penguingui/Util.lua", "tabletestobject.lua"],
+  "scriptDelta" : 15,
+
+  "animation" : "/objects/wired/switch/switchtoggle.animation",
+
+  "animationParts" : {
+    "switch" : "tabletestobject.png"
+  },
+  "animationPosition" : [0, 0],
+
+  "interactionConfig" : {
+    "gui" : {
+      "background" : {
+        "zlevel" : 0,
+        "type" : "background",
+        "fileHeader" : "/testconsole/consoleheader.png",
+        "fileBody" : "/testconsole/consolebody.png"
+      },
+      "scriptCanvas" : {
+        "zlevel" : 1,
+        "type" : "canvas",
+        "rect" : [40, 45, 434, 254],
+        "captureMouseEvents" : true,
+        "captureKeyboardEvents" : true
+      },
+      "close" : {
+        "zlevel" : 2,
+        "type" : "button",
+        "base" : "/interface/cockpit/xup.png",
+        "hover" : "/interface/cockpit/xdown.png",
+        "pressed" : "/interface/cockpit/xdown.png",
+        "callback" : "close",
+        "position" : [419, 263],
+        "pressedOffset" : [0, -1]
+      }
+    },
+    "scripts" : ["/penguingui/tableobject/tabletestconsole.lua"],
+    "scriptDelta" : 1,
+    "scriptCanvas" : "scriptCanvas"
+  }
+}
