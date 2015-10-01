@@ -27,7 +27,7 @@ local createFunction = function(f)
       getters[i] = getter
     end
     out.valueChanged = function(binding, old, new)
-      out.value = f(unpack(getters))
+      out.value = f(table.unpack(getters))
     end
     for i = 1, numArgs, 1 do
       local value = args[i]

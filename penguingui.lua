@@ -1,6 +1,6 @@
 -- "version": "Beta v. Upbeat Giraffe",
 -- "author": "PenguinToast",
--- "version": "0.4",
+-- "version": "0.4.1",
 -- "support_url": "http://penguintoast.github.io/PenguinGUI"
 -- This script contains all the scripts in this library, so you only need to
 -- include this script for production purposes.
@@ -604,7 +604,7 @@ local createFunction = function(f)
       getters[i] = getter
     end
     out.valueChanged = function(binding, old, new)
-      out.value = f(unpack(getters))
+      out.value = f(table.unpack(getters))
     end
     for i = 1, numArgs, 1 do
       local value = args[i]
