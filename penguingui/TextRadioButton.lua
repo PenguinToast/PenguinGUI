@@ -15,9 +15,9 @@
 --   group:add(button)
 -- end
 TextRadioButton = class(RadioButton)
-TextRadioButton.hoverColor = "#1F1F1F"
-TextRadioButton.pressedColor = "#454545"
-TextRadioButton.checkColor = "#343434"
+TextRadioButton.hoverColor = {31, 31, 31}
+TextRadioButton.pressedColor = {69, 69, 69}
+TextRadioButton.checkColor = {52, 52, 52}
 --- The text of the button.
 TextRadioButton.text = nil
 --- The padding between the text and the button edge.
