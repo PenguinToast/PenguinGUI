@@ -7,11 +7,11 @@
 -- frame.height = 100
 Frame = class(Panel)
 --- The color of this frame's border.
-Frame.borderColor = "black"
+Frame.borderColor = {0, 0, 0}
 --- The thickness of this frame's border.
 Frame.borderThickness = 1
 --- The color of this frame.
-Frame.backgroundColor = "#232323"
+Frame.backgroundColor = {35, 35, 35}
 
 --- Constructor
 -- @section
