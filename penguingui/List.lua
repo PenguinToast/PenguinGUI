@@ -9,11 +9,11 @@
 -- end
 List = class(Component)
 --- The border color of this list.
-List.borderColor = "#545454"
+List.borderColor = {84, 84, 84}
 --- The thickness of this list's border.
 List.borderSize = 1
 --- The background color of this list.
-List.backgroundColor = "black"
+List.backgroundColor = {0, 0, 0}
 --- Padding in between items.
 List.itemPadding = 2
 --- Thickness of the scroll bar
@@ -62,9 +62,9 @@ function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
   end
   slider.lineSize = 0
   slider.handleBorderSize = 0
-  slider.handleColor = "#545454"
-  slider.handleHoverColor = "#787878"
-  slider.handlePressedColor = "#A0A0A0"
+  slider.handleColor = {84, 84, 84}
+  slider.handleHoverColor = {120, 120, 120}
+  slider.handlePressedColor = {160, 160, 160}
   slider:addListener(
     "value",
     function(t, k, old, new)
