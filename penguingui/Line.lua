@@ -5,7 +5,7 @@
 -- local line = Line(0, 10, 20, 10)
 Line = class(Component)
 --- The color of the line.
-Line.color = "black"
+Line.color = {0, 0, 0}
 --- The width of the line.
 Line.size = 1
 
