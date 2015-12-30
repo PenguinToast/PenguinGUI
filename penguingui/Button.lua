@@ -7,15 +7,15 @@
 -- end
 Button = class(Component)
 --- The color of the outer border of this button.
-Button.outerBorderColor = "black"
+Button.outerBorderColor = {0, 0, 0}
 --- The color of the inner border of this button.
-Button.innerBorderColor = "#545454"
+Button.innerBorderColor = {84, 84, 84}
 --- The color of the inner border of this button when the mouse is over it.
-Button.innerBorderHoverColor = "#939393"
+Button.innerBorderHoverColor = {147, 147, 147}
 --- The color of this button.
-Button.color = "#262626"
+Button.color = {38, 38, 38}
 --- The color of this button when the mouse is over it.
-Button.hoverColor = "#545454"
+Button.hoverColor = {84, 84, 84}
 
 --- Constructor
 -- @section
