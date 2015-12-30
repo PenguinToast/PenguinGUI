@@ -7,15 +7,15 @@
 -- end
 CheckBox = class(Component)
 --- The color of the border of this checkbox.
-CheckBox.borderColor = "#545454"
+CheckBox.borderColor = {84, 84, 84}
 --- The color of the checkbox.
-CheckBox.backgroundColor = "black"
+CheckBox.backgroundColor = {0, 0, 0}
 --- The color of this checkbox when the mouse is over it.
-CheckBox.hoverColor = "#1C1C1C"
+CheckBox.hoverColor = {28, 28, 28}
 --- The color of the check.
-CheckBox.checkColor = "#C51A0B"
+CheckBox.checkColor = {197, 26, 11}
 --- The color of this checkbox when it is pressed.
-CheckBox.pressedColor = "#343434"
+CheckBox.pressedColor = {52, 52, 52}
 
 --- Constructor
 -- @section
