@@ -10,19 +10,19 @@
 --   end)
 Slider = class(Component)
 --- The color of the slider line.
-Slider.lineColor = "black"
+Slider.lineColor = {0, 0, 0}
 --- The thickness of the slider line.
 Slider.lineSize = 2
 --- The color of the slider handle border.
-Slider.handleBorderColor = "#B1B1B1"
+Slider.handleBorderColor = {177, 177, 177}
 --- The thickness of the slider handle border.
 Slider.handleBorderSize = 1
 --- The color of the slider handle.
 Slider.handleColor = Slider.lineColor
 --- The color of the slider handle when the mouse is over it.
-Slider.handleHoverColor = "#323232"
+Slider.handleHoverColor = {50, 50, 50}
 --- The color of the slider handle when it is being dragged.
-Slider.handlePressedColor = "#545454"
+Slider.handlePressedColor = {84, 84, 84}
 --- The size of the slider handle.
 Slider.handleSize = 5
 --- The current value of the slider.

@@ -22,7 +22,7 @@ function Label:_init(x, y, text, fontSize, fontColor)
   Component._init(self)
   fontSize = fontSize or 10
   self.fontSize = fontSize
-  self.fontColor = fontColor or "white"
+  self.fontColor = fontColor or {255, 255, 255}
   self.text = text
   self.x = x
   self.y = y

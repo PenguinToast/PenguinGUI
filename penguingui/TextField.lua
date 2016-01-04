@@ -10,19 +10,19 @@ TextField = class(Component)
 TextField.vPadding = 3
 TextField.hPadding = 4
 --- The color of this text field's border.
-TextField.borderColor = "#545454"
+TextField.borderColor = {84, 84, 84}
 --- The background color of this text field.
-TextField.backgroundColor = "#000000"
+TextField.backgroundColor = {0, 0, 0}
 --- The color of this text field's text.
-TextField.textColor = "white"
+TextField.textColor = {255, 255, 255}
 --- The color of this text field's text when the mouse is over it.
-TextField.textHoverColor = "#999999"
+TextField.textHoverColor = {153, 153, 153}
 --- The color of this text field's default text.
-TextField.defaultTextColor = "#333333"
+TextField.defaultTextColor = {51, 51, 51}
 --- The color of this text field's default text when the mouse is over it.
-TextField.defaultTextHoverColor = "#777777"
+TextField.defaultTextHoverColor = {119, 119, 199}
 --- The color of the text cursor.
-TextField.cursorColor = "white"
+TextField.cursorColor = {255, 255, 255}
 --- The period of the cursor's blinking.
 TextField.cursorRate = 1
 --- The filter pattern to restrict this TextField's text to, or nil if none.

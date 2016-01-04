@@ -5,7 +5,7 @@
 -- local rect = Rectangle(0, 0, 10, 10)
 Rectangle = class(Component)
 --- The color of the rectangle.
-Rectangle.color = "black"
+Rectangle.color = {0, 0, 0}
 --- The width of the line, if not filled.
 Rectangle.lineSize = nil
 

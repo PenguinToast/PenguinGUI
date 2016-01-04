@@ -1103,7 +1103,7 @@ end
 --------------------------------------------------------------------------------
 
 Line = class(Component)
-Line.color = "black"
+Line.color = {0, 0, 0}
 Line.size = 1
 
 
@@ -1138,7 +1138,7 @@ end
 --------------------------------------------------------------------------------
 
 Rectangle = class(Component)
-Rectangle.color = "black"
+Rectangle.color = {0, 0, 0}
 Rectangle.lineSize = nil
 
 
@@ -1341,9 +1341,9 @@ end
 --------------------------------------------------------------------------------
 
 Frame = class(Panel)
-Frame.borderColor = "black"
+Frame.borderColor = {0, 0, 0}
 Frame.borderThickness = 1
-Frame.backgroundColor = "#232323"
+Frame.backgroundColor = {35, 35, 35}
 
 
 function Frame:_init(x, y)
@@ -1400,14 +1400,16 @@ end
 --------------------------------------------------------------------------------
 
 Button = class(Component)
-Button.outerBorderColor = "black"
-Button.innerBorderColor = "#545454"
-Button.innerBorderHoverColor = "#939393"
-Button.color = "#262626"
-Button.hoverColor = "#545454"
+Button.outerBorderColor = {0, 0, 0} --black
+Button.innerBorderColor = {84, 84, 84} --#545454
+Button.innerBorderHoverColor = {147, 147, 147} --#939393
+Button.color = {38, 38, 38} --#262626
+Button.hoverColor = {84, 84, 84} --#545454
 
 
 function Button:_init(x, y, width, height)
+  world.logInfo("Button init with "..x..","..y..","..width..","..height..".")
+
   Component._init(self)
   self.mouseOver = false
 
@@ -1448,6 +1450,8 @@ function Button:draw(dt)
     startX + rectOffset, startY + rectOffset, startX + w - rectOffset, startY + h - rectOffset
   }
 
+  world.logInfo("drawing now...")
+  
   PtUtil.drawPoly(borderPoly, self.outerBorderColor, 1)
   if self.mouseOver then
     PtUtil.drawRect(innerBorderRect, self.innerBorderHoverColor, 0.5)
@@ -1495,7 +1499,7 @@ function Label:_init(x, y, text, fontSize, fontColor)
   Component._init(self)
   fontSize = fontSize or 10
   self.fontSize = fontSize
-  self.fontColor = fontColor or "white"
+  self.fontColor = fontColor or {255, 255, 255}
   self.text = text
   self.x = x
   self.y = y
@@ -1576,13 +1580,13 @@ end
 TextField = class(Component)
 TextField.vPadding = 3
 TextField.hPadding = 4
-TextField.borderColor = "#545454"
-TextField.backgroundColor = "#000000"
-TextField.textColor = "white"
-TextField.textHoverColor = "#999999"
-TextField.defaultTextColor = "#333333"
-TextField.defaultTextHoverColor = "#777777"
-TextField.cursorColor = "white"
+TextField.borderColor = {84, 84, 84}
+TextField.backgroundColor = {0, 0, 0}
+TextField.textColor = {255, 255, 255}
+TextField.textHoverColor = {153, 153, 153}
+TextField.defaultTextColor = {51, 51, 51}
+TextField.defaultTextHoverColor = {119, 119, 119}
+TextField.cursorColor = {255, 255, 255}
 TextField.cursorRate = 1
 TextField.filter = nil
 
@@ -1863,11 +1867,11 @@ end
 --------------------------------------------------------------------------------
 
 CheckBox = class(Component)
-CheckBox.borderColor = "#545454"
-CheckBox.backgroundColor = "black"
-CheckBox.hoverColor = "#1C1C1C"
-CheckBox.checkColor = "#C51A0B"
-CheckBox.pressedColor = "#343434"
+CheckBox.borderColor = {84, 84, 84}
+CheckBox.backgroundColor = {0, 0, 0}
+CheckBox.hoverColor = {28, 28, 28}
+CheckBox.checkColor = {197, 26, 11}
+CheckBox.pressedColor = {52, 52, 52}
 
 
 function CheckBox:_init(x, y, size)
@@ -2032,9 +2036,9 @@ end
 --------------------------------------------------------------------------------
 
 TextRadioButton = class(RadioButton)
-TextRadioButton.hoverColor = "#1F1F1F"
-TextRadioButton.pressedColor = "#454545"
-TextRadioButton.checkColor = "#343434"
+TextRadioButton.hoverColor = {31, 31, 31}
+TextRadioButton.pressedColor = {69, 69, 69}
+TextRadioButton.checkColor = {52, 52, 52}
 TextRadioButton.text = nil
 TextRadioButton.textPadding = 2
 
@@ -2080,13 +2084,13 @@ TextRadioButton.repositionLabel = TextButton.repositionLabel
 --------------------------------------------------------------------------------
 
 Slider = class(Component)
-Slider.lineColor = "black"
+Slider.lineColor = {0, 0, 0}
 Slider.lineSize = 2
-Slider.handleBorderColor = "#B1B1B1"
+Slider.handleBorderColor = {177, 177, 177}
 Slider.handleBorderSize = 1
 Slider.handleColor = Slider.lineColor
-Slider.handleHoverColor = "#323232"
-Slider.handlePressedColor = "#545454"
+Slider.handleHoverColor = {50, 50, 50}
+Slider.handlePressedColor = {84, 84, 84}
 Slider.handleSize = 5
 Slider.value = nil
 Slider.maxValue = nil
@@ -2302,9 +2306,9 @@ end
 --------------------------------------------------------------------------------
 
 List = class(Component)
-List.borderColor = "#545454"
+List.borderColor = {84, 84, 84}
 List.borderSize = 1
-List.backgroundColor = "black"
+List.backgroundColor = {0, 0, 0}
 List.itemPadding = 2
 List.scrollBarSize = 3
 
@@ -2337,9 +2341,9 @@ function List:_init(x, y, width, height, itemSize, itemFactory, horizontal)
   end
   slider.lineSize = 0
   slider.handleBorderSize = 0
-  slider.handleColor = "#545454"
-  slider.handleHoverColor = "#787878"
-  slider.handlePressedColor = "#A0A0A0"
+  slider.handleColor = {84, 84, 84}
+  slider.handleHoverColor = {120, 120, 120}
+  slider.handlePressedColor = {160, 160, 160}
   slider:addListener(
     "value",
     function(t, k, old, new)
